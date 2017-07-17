@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <string>
 
-namespace heapless
+namespace fixed
 {
 	namespace _impl
 	{

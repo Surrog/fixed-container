@@ -3,7 +3,7 @@
 
 #include "impl/basic_string.hpp"
 
-namespace heapless
+namespace fixed
 {
 	template <std::size_t SIZE>
 	using string = _impl::basic_string<char, SIZE>;

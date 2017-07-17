@@ -9,19 +9,19 @@
 #include <iterator>
 #include <algorithm>
 
-#include "heapless/vector.hpp"
+#include "fixed/vector.hpp"
+#include "fixed/impl/basic_allocator.hpp"
 
-namespace heapless
+namespace fixed
 {
 	namespace _impl
 	{
-		template <typename KEY, typename VALUE, std::size_t SIZE, class HASH = std::hash<KEY>, class PRED = std::equal_to<KEY>>
+		template <typename KEY, typename VALUE, std::size_t SIZE, class HASH = std::hash<KEY>, class PRED = std::equal_to<KEY>, typename Allocator = _impl::basic_stack_allocator<std::pair<KEY, VALUE>, SIZE> >
 		class basic_unordered_map
 		{
 		public:
 			typedef KEY key_type;
 			typedef VALUE mapped_type;
-			typedef std::pair<key_type, mapped_type> inner_value_type;
 			typedef std::pair<const key_type, mapped_type> value_type;
 			typedef HASH hasher;
 			typedef PRED key_equal;
@@ -35,7 +35,9 @@ namespace heapless
 			typedef std::ptrdiff_t difference_type;
 
 		private:
-			typedef heapless::vector<inner_value_type, SIZE> value_container;
+			using inner_value_type = std::pair<key_type, mapped_type>;
+
+			using value_container = fixed::vector<inner_value_type, SIZE, Allocator> ;
 
 			value_container _data;
 			hasher _hash;
@@ -147,6 +149,7 @@ namespace heapless
 			{
 				std::fill(_block.begin(), _block.end(), default_block());
 			}
+
 			basic_unordered_map(const basic_unordered_map&) = default;
 			basic_unordered_map(basic_unordered_map&&) noexcept = default;
 			basic_unordered_map& operator=(const basic_unordered_map&) = default;
@@ -516,7 +519,7 @@ namespace heapless
 					for (auto& blk : _block)
 					{
 						if (blk != default_block()
-							&& blk.first >= second)
+							&& &*blk.first >= &*second)
 						{
 							blk.first -= size_to_erase;
 							blk.second -= size_to_erase;

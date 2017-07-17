@@ -1,7 +1,7 @@
 
 #include <vector>
 #include <string>
-#include "heapless/vector.hpp"
+#include "fixed/vector.hpp"
 #include "catch.hpp"
 
 struct test_struct
@@ -11,7 +11,12 @@ struct test_struct
 	unsigned int* ui = nullptr;
 };
 
-typedef heapless::vector<test_struct, 10> local_static_vector;
+bool operator==(const test_struct& lval, const test_struct& rval)
+{
+	return lval.i == rval.i && lval.c == rval.c && lval.ui == rval.ui;
+}
+
+typedef fixed::vector<test_struct, 10> local_static_vector;
 typedef std::vector<test_struct> reference_vector;
 
 void basic_testing()

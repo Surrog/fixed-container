@@ -4,9 +4,9 @@
 #include <cstddef>
 #include <string>
 
-#include "heapless/vector.hpp"
+#include "fixed/vector.hpp"
 
-namespace heapless
+namespace fixed
 {
 	namespace _impl
 	{
@@ -15,7 +15,7 @@ namespace heapless
 			, class Traits = std::char_traits<CHAR_T>>
 			class basic_string
 		{
-			heapless::vector<CHAR_T, SIZE> _data;
+			fixed::vector<CHAR_T, SIZE> _data;
 
 		};
 	}

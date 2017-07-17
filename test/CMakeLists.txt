@@ -4,13 +4,16 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
   message(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the root and call cmake from there")
 endif()
 
-project (heapless_test)
+project (fixed_test)
 
 #compiler requirement
 set (CMAKE_CXX_STANDARD 14)
 
 set(INCLUDE_DIRS 
 	"${PROJECT_SOURCE_DIR}/../include/")
+
+set(FIXED_EXPOSED_SOURCE_DIR "${INCLUDE_DIRS}/fixed")
+set(FIXED_IMPL_SOURCE_DIR "${FIXED_EXPOSED_SOURCE_DIR}/impl")
 
 include_directories(${INCLUDE_DIRS})
 
@@ -20,15 +23,16 @@ set(SOURCES
 	"${PROJECT_SOURCE_DIR}/test_unordered_map.cpp"
 	"${PROJECT_SOURCE_DIR}/test_vector.cpp"
 	
-	"${INCLUDE_DIRS}/heapless/string.hpp"
-	"${INCLUDE_DIRS}/heapless/unordered_map.hpp"
-	"${INCLUDE_DIRS}/heapless/vector.hpp"
+	"${FIXED_EXPOSED_SOURCE_DIR}/string.hpp"
+	"${FIXED_EXPOSED_SOURCE_DIR}/unordered_map.hpp"
+	"${FIXED_EXPOSED_SOURCE_DIR}/vector.hpp"
 	
-	"${INCLUDE_DIRS}/heapless/impl/basic_small_string.hpp"
-	"${INCLUDE_DIRS}/heapless/impl/basic_string.hpp"
-	"${INCLUDE_DIRS}/heapless/impl/basic_unordered_map.hpp"
-	"${INCLUDE_DIRS}/heapless/impl/basic_vector.hpp"
-	"${INCLUDE_DIRS}/heapless/impl/iterator.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_allocator.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_small_string.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_string.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_unordered_map.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_vector.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/iterator.hpp"
 	)
 
-add_executable(heapless_test ${SOURCES})
+add_executable(fixed_test ${SOURCES})

@@ -1,9 +1,9 @@
 
-#include "heapless/unordered_map.hpp"
+#include "fixed/unordered_map.hpp"
 #include "catch.hpp"
 #include <algorithm>
 
-typedef heapless::unordered_map<std::string, std::string, 10> testing_hm;
+typedef fixed::unordered_map<std::string, std::string, 10> testing_hm;
 
 static void test_constructor()
 {
@@ -73,10 +73,10 @@ static void test_modifiers()
 	hash["titi"] = "tutu";
 	hash["tata"] = "tyty";
 
-	std::array<testing_hm::inner_value_type, 3> valid = {
-		testing_hm::inner_value_type{ "test", "toto" },
-		testing_hm::inner_value_type{ "titi", "tutu" },
-		testing_hm::inner_value_type{ "tata", "tyty" }
+	std::array<testing_hm::value_type, 3> valid = {
+		testing_hm::value_type{ "test", "toto" },
+		testing_hm::value_type{ "titi", "tutu" },
+		testing_hm::value_type{ "tata", "tyty" }
 	};
 
 	CHECK(hash.size() == 3);
@@ -91,9 +91,9 @@ static void test_modifiers()
 
 	REQUIRE(hash.size() == 2);
 
-	std::array<testing_hm::inner_value_type, 3> valid1 = {
-		testing_hm::inner_value_type{ "titi", "tutu" },
-		testing_hm::inner_value_type{ "tata", "tyty" }
+	std::array<testing_hm::value_type, 3> valid1 = {
+		testing_hm::value_type{ "titi", "tutu" },
+		testing_hm::value_type{ "tata", "tyty" }
 	};
 
 
@@ -142,10 +142,10 @@ static void test_modifiers()
 	testing_hm hash2;
 	hash.swap(hash2);
 
-	std::array<testing_hm::inner_value_type, 3> valid3 = {
-		testing_hm::inner_value_type{ "test", "yoyo" },
-		testing_hm::inner_value_type{ "habsburg", "austria" },
-		testing_hm::inner_value_type{ "de valois", "france" }
+	std::array<testing_hm::value_type, 3> valid3 = {
+		testing_hm::value_type{ "test", "yoyo" },
+		testing_hm::value_type{ "habsburg", "austria" },
+		testing_hm::value_type{ "de valois", "france" }
 	};
 
 	CHECK(hash2.size() == 3);
@@ -161,7 +161,7 @@ static void test_modifiers()
 
 static void test_limit()
 {
-	heapless::unordered_map<int, char, 5> hash;
+	fixed::unordered_map<int, char, 5> hash;
 	hash.insert({ 1, 'a' });
 	hash.insert({ 2, 'a' });
 	hash.insert({ 3, 'a' });

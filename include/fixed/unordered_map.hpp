@@ -3,7 +3,7 @@
 
 #include "impl/basic_unordered_map.hpp"
 
-namespace heapless
+namespace fixed
 {
 	template <typename KEY, typename VALUE, std::size_t SIZE, class HASH = std::hash<KEY>, class PRED = std::equal_to<KEY>>
 	using unordered_map = _impl::basic_unordered_map<KEY, VALUE, SIZE, HASH, PRED>;
