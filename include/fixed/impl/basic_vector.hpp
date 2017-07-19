@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iterator>
 #include <cassert>
+#include <vector>
 
 #include "fixed/impl/iterator.hpp"
 #include "fixed/impl/basic_allocator.hpp"
@@ -25,7 +26,7 @@ namespace fixed
 			typedef std::ptrdiff_t difference_type;
 
 			typedef pointer_iterator<T> iterator;
-			typedef const_pointer_iterator<T> const_iterator;
+			typedef pointer_iterator<const T> const_iterator;
 			typedef std::reverse_iterator<iterator> reverse_iterator;
 			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -40,51 +41,14 @@ namespace fixed
 				}
 			}
 
-			explicit basic_vector(const Allocator& alloc = Allocator())
+			basic_vector() noexcept(noexcept(Allocator())) : basic_vector(Allocator()) {}
+			explicit basic_vector(const Allocator& alloc) noexcept
 				: _size(0), _data_container(alloc)
 			{}
 
-			template <std::size_t RSIZE, typename RAllocator>
-			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig, const Allocator& alloc = Allocator())
-				: _size(0), _data_container(alloc)
-			{
-				uninitialized_assign(orig.begin(), orig.end());
-			}
-
-			template <std::size_t RSIZE, typename RAllocator>
-			basic_vector& operator=(const basic_vector<T, RSIZE, RAllocator>& rval)
-			{
-				if (this != &orig)
-				{ 
-					auto rbeg = rval.begin();
-					auto rend = rval.end();
-					auto lbeg = begin();
-					auto lend = end();
-
-					while (rbeg != rend && lbeg != lend)
-					{
-						*lbeg = *rbeg;
-						++lbeg;
-						++rbeg;
-					}
-
-					while (rbeg != rend)
-					{
-						push_back(*rbeg);
-						++rbeg;
-					}
-
-					while (lbeg != lend)
-					{
-						lbeg->~T();
-						++lbeg;
-						--size;
-					}
-				}
-				return *this;
-			}
-
-			explicit basic_vector(size_type count, const T& value, const Allocator& alloc = Allocator())
+			basic_vector(size_type count,
+					const T& value,
+					const Allocator& alloc = Allocator())
 				: _size(0), _data_container(alloc)
 			{
 				uninitialized_assign(count, value);
@@ -96,12 +60,34 @@ namespace fixed
 				uninitialized_assign(count);
 			}
 
-			template <typename InputIt>
-			basic_vector(InputIt first, InputIt last, const Allocator& alloc = Allocator())
+			template< class InputIt,
+						std::enable_if_t<is_iterator<InputIt>::value, int> = 0
+			>
+			basic_vector(InputIt first, InputIt last,
+				const Allocator& alloc = Allocator())
 				: _size(0), _data_container(alloc)
 			{
 				uninitialized_assign(first, last);
 			}
+
+			template <std::size_t RSIZE, typename RAllocator>
+			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig)
+				: _size(0), _data_container()
+			{
+				uninitialized_assign(orig.begin(), orig.end());
+			}
+
+			template <std::size_t RSIZE, typename RAllocator>
+			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig, const Allocator& alloc)
+				: _size(0), _data_container(alloc)
+			{
+				uninitialized_assign(orig.begin(), orig.end());
+			}
+
+			template <std::size_t RSIZE>
+			basic_vector(basic_vector<T, RSIZE, Allocator>&& other) noexcept
+				: _size(other._size), _data_container(std::move(other._data_container))
+			{}
 
 			basic_vector(std::initializer_list<T> list, const Allocator& alloc = Allocator())
 				: _size(0), _data_container(alloc)
@@ -109,11 +95,53 @@ namespace fixed
 				uninitialized_assign(list.begin(), list.end());
 			}
 
+			basic_vector& operator=(const basic_vector& rval)
+			{
+				if (this != &rval)
+				{
+					return operator=<SIZE, Allocator>(rval);
+				}
+				return *this;
+			}
+
+			template <std::size_t RSIZE, typename RAllocator>
+			basic_vector& operator=(const basic_vector<T, RSIZE, RAllocator>& rval)
+			{
+				auto rbeg = rval.begin();
+				auto rend = rval.end();
+				auto lbeg = begin();
+				auto lend = end();
+
+				while (rbeg != rend && lbeg != lend)
+				{
+					*lbeg = *rbeg;
+					++lbeg;
+					++rbeg;
+				}
+
+				while (rbeg != rend)
+				{
+					push_back(*rbeg);
+					++rbeg;
+				}
+
+				while (lbeg != lend)
+				{
+					(*lbeg).~T();
+					++lbeg;
+					--_size;
+				}
+				return *this;
+			}
+
+
+			const Allocator& get_allocator() const { return _data_container; }
+
 			//element access
 			T& at(size_type n) { assert(n < _size); return data()[n]; }
 			const T& at(size_type n) const { assert(n < _size); return data()[n]; }
-			T& operator[](size_type n) { return data()[i]; }
-			const T& operator[](size_type n) const { return data()[i]; }
+			T& operator[](size_type n) { return data()[n]; }
+			const T& operator[](size_type n) const { return data()[n]; }
 			T& front() { return at(0); }
 			const T& front() const { return at(0); }
 			T& back() { assert(_size > 0); return at(_size - 1); }
@@ -212,7 +240,7 @@ namespace fixed
 			{
 				assert(_size > 0);
 				_size--;
-				end()->~T();
+				(*end()).~T();
 			}
 
 			iterator insert(const_iterator pos, const T& value)
@@ -222,22 +250,28 @@ namespace fixed
 
 			iterator insert(const_iterator pos, T&& value)
 			{
-				auto pivot_index = _size;
-				auto insert_index = distance(cbegin(), pos);
+				std::size_t pivot_index = _size;
+				std::size_t insert_index = std::distance(cbegin(), pos);
 				push_back(value);
-				std::rotate(begin() + insert_index, begin() + pivot_index, end());
+				if (pos != cend() && pos != const_iterator())
+				{
+					std::rotate(begin() + insert_index, begin() + pivot_index, end());
+				}
 				return begin() + insert_index;
 			}
 
 			iterator insert(const_iterator pos, size_type count, const T& value)
 			{
 				auto pivot_index = _size;
-				auto insert_index = distance(cbegin(), pos);
+				auto insert_index = std::distance(cbegin(), pos);
 				for (size_type i = 0; i < count; i++)
 				{
 					push_back(value);
 				}
-				std::rotate(begin() + insert_index, begin() + pivot_index, end());
+				if (pos != cend() && pos != const_iterator())
+				{
+					std::rotate(begin() + insert_index, begin() + pivot_index, end());
+				}
 				return begin() + insert_index;
 			}
 
@@ -245,13 +279,16 @@ namespace fixed
 			iterator insert(const_iterator pos, InputIt first, InputIt last)
 			{
 				auto pivot_index = _size;
-				auto insert_index = distance(cbegin(), pos);
+				auto insert_index = std::distance(cbegin(), pos);
 				while (first != last)
 				{
 					push_back(*first);
 					first++;
 				}
-				std::rotate(begin() + insert_index, begin() + pivot_index, end());
+				if (pos != cend() && pos != const_iterator())
+				{
+					std::rotate(begin() + insert_index, begin() + pivot_index, end());
+				}
 				return begin() + insert_index;
 			}
 
@@ -263,9 +300,9 @@ namespace fixed
 			iterator erase(const_iterator position)
 			{
 				auto initial_pos = std::distance(cbegin(), position);
-				std::rotate(begin() + position, begin() + position + 1, end());
+				std::rotate(begin() + initial_pos, begin() + initial_pos + 1, end());
 				pop_back();
-				return begin() + position;
+				return begin() + initial_pos;
 			}
 
 			iterator erase(const_iterator first, const_iterator last)
@@ -343,9 +380,11 @@ namespace fixed
 
 
 		private:
+			//datas
 			size_type _size = 0;
 			Allocator _data_container;
 
+			//managing uninitialized memory
 			template <typename It>
 			void uninitialized_assign(It begin, It end)
 			{
@@ -355,7 +394,7 @@ namespace fixed
 
 				for (auto& uninitialized_item : *this)
 				{
-					new (&uninitialized_item)(*begin);
+					new (&uninitialized_item)T(*begin);
 					++begin;
 				}
 			}
@@ -367,7 +406,7 @@ namespace fixed
 
 				for (auto& uninitialized_item : *this)
 				{
-					new (&uninitialized_item)(value);
+					new (&uninitialized_item)T(value);
 				}
 			}
 
@@ -378,13 +417,18 @@ namespace fixed
 
 				for (auto& uninitialized_item : *this)
 				{
-					new (&uninitialized_item)();
+					new (&uninitialized_item)T();
 				}
 			}
 
 		};
-	}
 
+		template <typename T, std::size_t LSIZE, typename LALLOCATOR, typename RALLOCATOR>
+		bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval, const std::vector<T, RALLOCATOR>& rval)
+		{
+			return lval.size() == rval.size() && std::equal(lval.begin(), lval.end(), rval.begin(), rval.end());
+		}
+	}
 }
 
 #endif //!BASIC_HEAPLESS_VECTOR_HPP

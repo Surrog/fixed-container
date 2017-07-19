@@ -22,7 +22,7 @@ namespace fixed
 			pointer data() { return reinterpret_cast<T*>(_data); }
 			const_pointer data() const { return reinterpret_cast<const T*>(_data); }
 			bool valid_pointer(const T* ptr) { return ptr >= data() && ptr < data() + max_size(); }
-			constexpr std::size_t max_size() { return SIZE; }
+			constexpr std::size_t max_size() const { return SIZE; }
 		private:
 			typename std::aligned_storage<sizeof(T), alignof(T)>::type _data[SIZE];
 		};
@@ -40,7 +40,7 @@ namespace fixed
 			pointer data() { return reinterpret_cast<T*>(_data); }
 			const_pointer data() const { return reinterpret_cast<const T*>(_data); }
 			bool valid_pointer(const T* ptr) { return ptr >= data() && ptr < data() + max_size(); }
-			constexpr std::size_t max_size() { return SIZE; }
+			constexpr std::size_t max_size() const { return SIZE; }
 		private:
 			std::unique_ptr<typename std::aligned_storage<sizeof(T), alignof(T)>::type> _data = std::make_unique<std::aligned_storage<sizeof(T), alignof(T)>::type>();
  		};
