@@ -74,12 +74,35 @@ void test_vector_constructor()
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words3.begin(), words3.end(), expected.begin(), expected.end()));
 		}
+	}
+
+	{
+		// c++11 initializer list syntax:
+		fixed::vector<std::string, 5> words1{ "the", "frogurt", "is", "also", "cursed" };
+		{
+			auto expected = { "the", "frogurt", "is", "also", "cursed" };
+			CHECK(std::equal(words1.begin(), words1.end(), expected.begin(), expected.end()));
+		}
+
+		// words2 == words1
+		fixed::vector<std::string, 10> words2(words1.begin(), words1.end());
+		{
+			auto expected = { "the", "frogurt", "is", "also", "cursed" };
+			CHECK(std::equal(words2.begin(), words2.end(), expected.begin(), expected.end()));
+		}
+
+		// words3 == words1
+		fixed::vector<std::string, 10> words3(words1);
+		{
+			auto expected = { "the", "frogurt", "is", "also", "cursed" };
+			CHECK(std::equal(words3.begin(), words3.end(), expected.begin(), expected.end()));
+		}
 
 		// words4 is {"Mo", "Mo", "Mo", "Mo", "Mo"}
 		fixed::vector<std::string, 10> words4(5, "Mo");
 		{
 			auto expected = { "Mo", "Mo", "Mo", "Mo", "Mo" };
-			CHECK(std::equal(words1.begin(), words1.end(), expected.begin(), expected.end()));
+			CHECK(std::equal(words4.begin(), words4.end(), expected.begin(), expected.end()));
 		}
 	}
 
@@ -94,23 +117,21 @@ void test_vector_constructor()
 		// copy assignment copies data from nums1 to nums2
 		nums2 = nums1;
 
+		CHECK(nums1.size() == 6);
 		CHECK(nums2.size() == 6);
-		CHECK(nums2.size() == 6);
-		CHECK(nums2.size() == 0);
+		CHECK(nums3.size() == 0);
 		// move assignment moves data from nums1 to nums3,
 		// modifying both nums1 and nums3
 		nums3 = std::move(nums1);
 
-		CHECK(nums2.size() == 0);
+		CHECK(nums1.size() == 0);
 		CHECK(nums2.size() == 6);
-		CHECK(nums2.size() == 0);
+		CHECK(nums3.size() == 6);
 	}
 }
 
 void basic_testing()
 {
-
-
 	{
 		fixed::vector<char, 5> characters;
 
@@ -139,6 +160,24 @@ void basic_testing()
 	}
 
 	{
+		fixed::vector<int, 10> myvector(5);
+
+		fixed::vector<int, 10>::reverse_iterator rbit = myvector.rbegin();
+		fixed::vector<int, 10>::reverse_iterator reit = myvector.rend();
+		fixed::vector<int, 10>::iterator it = myvector.begin() + (myvector.size() - 1);
+		int i = 0;
+		while (rbit != reit) {
+			CHECK(&*it == &*rbit);
+			--it;
+			++rbit;
+			++i;
+		}
+		CHECK(i == 5);
+
+	}
+
+
+	{
 		fixed::vector<int, 10> myvector(5);  // 5 default-constructed ints
 
 		int i = 0;
@@ -146,8 +185,7 @@ void basic_testing()
 		fixed::vector<int, 10>::reverse_iterator rit = myvector.rbegin();
 		for (; rit != myvector.rend(); ++rit)
 			*rit = ++i;
-
-		i = 5;
+		CHECK(i == 5);
 		for (fixed::vector<int, 10>::iterator it = myvector.begin(); it != myvector.end(); ++it)
 		{
 			CHECK(*it == i);
@@ -209,7 +247,7 @@ void basic_testing()
 void test_vector_modifier()
 {
 	{
-		fixed::vector<int, 10> vec(3, 100);
+		fixed::vector<int, 20> vec(3, 100);
 		std::vector<int> expected = { 100, 100, 100 };
 		CHECK(vec == expected);
 
@@ -230,10 +268,11 @@ void test_vector_modifier()
 		CHECK(vec == expected);
 
 		int arr[] = { 501,502,503 };
-		vec.insert(vec.begin(), arr, arr + 3);
+		CHECK_NOTHROW(vec.insert(vec.begin(), arr, arr + 3));
 		expected = { 501, 502, 503, 300, 300, 400, 400, 200, 100, 100, 100 };
 		CHECK(vec == expected);
 	}
+
 
 	{
 		fixed::vector<int, 10> c{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -241,18 +280,14 @@ void test_vector_modifier()
 		
 
 		c.erase(c.begin());
+		expected.erase(expected.begin());
 
-		for (auto &i : c) {
-			std::cout << i << " ";
-		}
-		std::cout << '\n';
+		CHECK(c == expected);
 
+		expected.erase(expected.begin() + 2, expected.begin() + 5);
 		c.erase(c.begin() + 2, c.begin() + 5);
 
-		for (auto &i : c) {
-			std::cout << i << " ";
-		}
-		std::cout << '\n';
+		CHECK(c == expected);
 	}
 }
 

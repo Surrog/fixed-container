@@ -38,11 +38,12 @@ namespace fixed
 				for (auto& elem : *this)
 				{
 					elem.~T();
-				}
+				}	
 			}
 
-			basic_vector() noexcept(noexcept(Allocator())) : basic_vector(Allocator()) {}
-			explicit basic_vector(const Allocator& alloc) noexcept
+			basic_vector() : basic_vector(Allocator()) {}
+
+			explicit basic_vector(const Allocator& alloc)
 				: _size(0), _data_container(alloc)
 			{}
 
@@ -55,7 +56,7 @@ namespace fixed
 			}
 
 			explicit basic_vector(size_type count, const Allocator& alloc = Allocator())
-				: _size(count), _data_container(alloc)
+				: _size(), _data_container(alloc)
 			{
 				uninitialized_assign(count);
 			}
@@ -68,6 +69,16 @@ namespace fixed
 				: _size(0), _data_container(alloc)
 			{
 				uninitialized_assign(first, last);
+			}
+
+			basic_vector(const basic_vector& orig)
+			{
+				uninitialized_assign(orig.begin(), orig.end());
+			}
+
+			basic_vector(basic_vector&& orig)
+			{
+				operator=(orig);
 			}
 
 			template <std::size_t RSIZE, typename RAllocator>
@@ -85,7 +96,7 @@ namespace fixed
 			}
 
 			template <std::size_t RSIZE>
-			basic_vector(basic_vector<T, RSIZE, Allocator>&& other) noexcept
+			basic_vector(basic_vector<T, RSIZE, Allocator>&& other)
 				: _size(other._size), _data_container(std::move(other._data_container))
 			{}
 
@@ -102,6 +113,48 @@ namespace fixed
 					return operator=<SIZE, Allocator>(rval);
 				}
 				return *this;
+			}
+
+			basic_vector& operator=(basic_vector&& rval) noexcept
+			{
+				if (this != &rval)
+				{
+					return operator=<SIZE, Allocator>(rval);
+				}
+				return *this;
+			}
+
+			template <std::size_t RSIZE, typename RAllocator>
+			basic_vector& operator=(basic_vector<T, RSIZE, RAllocator>&& rval) noexcept
+			{
+				auto rbeg = rval.begin();
+				auto rend = rval.end();
+				auto lbeg = begin();
+				auto lend = end();
+
+				while (rbeg != rend && lbeg != lend)
+				{
+					*lbeg = std::move(*rbeg);
+					++lbeg;
+					++rbeg;
+				}
+
+				while (rbeg != rend)
+				{
+					push_back(std::move(*rbeg));
+					++rbeg;
+				}
+
+				while (lbeg != lend)
+				{
+					(*lbeg).~T();
+					++lbeg;
+					--_size;
+				}
+
+				rval.clear();
+				return *this;
+
 			}
 
 			template <std::size_t RSIZE, typename RAllocator>
@@ -157,12 +210,12 @@ namespace fixed
 			const_iterator end() const { return const_iterator(data() + _size); }
 			const_iterator cend() const { return const_iterator(data() + _size); }
 
-			reverse_iterator rbegin() { return reverse_iterator(data()); }
-			const_reverse_iterator rbegin() const { return const_reverse_iterator(data()); }
-			const_reverse_iterator crbegin() const { return const_reverse_iterator(data()); }
-			reverse_iterator rend() { return reverse_iterator(data() + _size); }
-			const_reverse_iterator rend() const { return const_reverse_iterator(data() + _size); }
-			const_reverse_iterator crend() const { return const_reverse_iterator(data() + _size); }
+			reverse_iterator rbegin() { return reverse_iterator(end()); }
+			const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+			const_reverse_iterator crbegin() const { return const_reverse_iterator(end()); }
+			reverse_iterator rend() { return reverse_iterator(begin()); }
+			const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+			const_reverse_iterator crend() const { return const_reverse_iterator(begin()); }
 
 			//capacity
 			bool empty() const { return _size == 0; }
@@ -300,7 +353,10 @@ namespace fixed
 			iterator erase(const_iterator position)
 			{
 				auto initial_pos = std::distance(cbegin(), position);
-				std::rotate(begin() + initial_pos, begin() + initial_pos + 1, end());
+				if (position != end())
+				{
+					std::rotate(begin() + initial_pos, begin() + initial_pos + 1, end());
+				}
 				pop_back();
 				return begin() + initial_pos;
 			}
@@ -309,7 +365,10 @@ namespace fixed
 			{
 				auto elem_num = std::distance(first, last);
 				auto initial_pos = std::distance(cbegin(), first);
-				std::rotate(iterator(&*first), iterator(&*(last + 1)), end());
+				if (last != end() || last != const_iterator())
+				{
+					std::rotate(iterator(&*first), iterator(&*(last)), end());
+				}
 				for (auto i = 0; i < elem_num; i++)
 				{
 					pop_back();
@@ -385,16 +444,14 @@ namespace fixed
 			Allocator _data_container;
 
 			//managing uninitialized memory
-			template <typename It>
-			void uninitialized_assign(It begin, It end)
+			template< class InputIt,
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
+			>
+			void uninitialized_assign(InputIt begin, InputIt end)
 			{
-				auto new_size = std::distance(begin, end);
-				assert(new_size <= SIZE);
-				_size = new_size;
-
-				for (auto& uninitialized_item : *this)
+				while (begin != end)
 				{
-					new (&uninitialized_item)T(*begin);
+					push_back(*begin);
 					++begin;
 				}
 			}
@@ -402,22 +459,22 @@ namespace fixed
 			void uninitialized_assign(std::size_t count, const T& value)
 			{
 				assert(count <= SIZE);
-				_size = count;
 
-				for (auto& uninitialized_item : *this)
+				for (std::size_t i = 0; i < count; i++)
 				{
-					new (&uninitialized_item)T(value);
+					new (_data_container.data() + i)T(value);
+					_size++;
 				}
 			}
 
 			void uninitialized_assign(std::size_t count)
 			{
 				assert(count <= SIZE);
-				_size = count;
 
-				for (auto& uninitialized_item : *this)
+				for (std::size_t i = 0; i < count; i++)
 				{
-					new (&uninitialized_item)T();
+					new (_data_container.data() + i)T();
+					_size++;
 				}
 			}
 

@@ -172,9 +172,9 @@ static void test_limit()
 
 TEST_CASE("testing hashmap", "[statics]")
 {
-	//test_constructor();
-	//test_capacity();
-	//test_access();
-	//test_modifiers();
-	//test_limit();
+	test_constructor();
+	test_capacity();
+	test_access();
+	test_modifiers();
+	test_limit();
 }
