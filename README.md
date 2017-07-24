@@ -1,2 +1,2 @@
 # heapless
-C++ library dedicate to provide data container that never allocate any heap memory
+ C++ library dedicate to provide data container that work with a fixed amount of memory
