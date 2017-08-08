@@ -11,12 +11,15 @@
 
 #include "fixed/vector.hpp"
 #include "fixed/impl/basic_allocator.hpp"
+#include "fixed/impl/fixed_def.hpp"
 
 namespace fixed
 {
 	namespace _impl
 	{
-		template <typename KEY, typename VALUE, std::size_t SIZE, class HASH = std::hash<KEY>, class PRED = std::equal_to<KEY>, typename Allocator = _impl::basic_stack_allocator<std::pair<KEY, VALUE>, SIZE> >
+		template <typename KEY, typename VALUE, size_type SIZE
+			, class HASH = std::hash<KEY>, class PRED = std::equal_to<KEY>
+			, typename Allocator = basic_stack_allocator<std::pair<KEY, VALUE>, SIZE> >
 		class basic_unordered_map
 		{
 			//typedefs
@@ -32,7 +35,7 @@ namespace fixed
 			typedef value_type* pointer;
 			typedef const value_type* const_pointer;
 
-			typedef std::size_t size_type;
+			typedef size_type size_type;
 			typedef std::ptrdiff_t difference_type;
 
 			//
@@ -90,7 +93,7 @@ namespace fixed
 			};
 
 		private:
-			inline std::size_t get_index(const value_type& pair) const
+			inline size_type get_index(const value_type& pair) const
 			{
 				return bucket(pair.first);
 			}
@@ -162,12 +165,12 @@ namespace fixed
 				return size() == 0;
 			}
 
-			std::size_t size() const
+			size_type size() const
 			{
 				return _data.size();
 			}
 
-			constexpr std::size_t max_size() const
+			constexpr size_type max_size() const
 			{
 				return SIZE;
 			}

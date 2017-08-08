@@ -13,7 +13,7 @@ namespace fixed
 {
 	namespace _impl
 	{
-		template <typename T, std::size_t SIZE, typename Allocator = basic_stack_allocator<T, SIZE> >
+		template <typename T, size_type SIZE, typename Allocator = basic_stack_allocator<T, SIZE> >
 		class basic_vector
 		{
 		public:
@@ -22,7 +22,7 @@ namespace fixed
 			typedef const T* const_pointer;
 			typedef T& reference;
 			typedef const T& const_reference;
-			typedef std::size_t size_type;
+			typedef size_type size_type;
 			typedef std::ptrdiff_t difference_type;
 
 			typedef pointer_iterator<T> iterator;
@@ -81,21 +81,21 @@ namespace fixed
 				operator=(orig);
 			}
 
-			template <std::size_t RSIZE, typename RAllocator>
+			template <size_type RSIZE, typename RAllocator>
 			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig)
 				: _size(0), _data_container()
 			{
 				uninitialized_assign(orig.begin(), orig.end());
 			}
 
-			template <std::size_t RSIZE, typename RAllocator>
+			template <size_type RSIZE, typename RAllocator>
 			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig, const Allocator& alloc)
 				: _size(0), _data_container(alloc)
 			{
 				uninitialized_assign(orig.begin(), orig.end());
 			}
 
-			template <std::size_t RSIZE>
+			template <size_type RSIZE>
 			basic_vector(basic_vector<T, RSIZE, Allocator>&& other)
 				: _size(other._size), _data_container(std::move(other._data_container))
 			{}
@@ -124,7 +124,7 @@ namespace fixed
 				return *this;
 			}
 
-			template <std::size_t RSIZE, typename RAllocator>
+			template <size_type RSIZE, typename RAllocator>
 			basic_vector& operator=(basic_vector<T, RSIZE, RAllocator>&& rval) noexcept
 			{
 				auto rbeg = rval.begin();
@@ -157,7 +157,7 @@ namespace fixed
 
 			}
 
-			template <std::size_t RSIZE, typename RAllocator>
+			template <size_type RSIZE, typename RAllocator>
 			basic_vector& operator=(const basic_vector<T, RSIZE, RAllocator>& rval)
 			{
 				auto rbeg = rval.begin();
@@ -225,7 +225,7 @@ namespace fixed
 			constexpr size_type capacity() const { return max_size(); }
 			constexpr void shrink_to_fit() const {}
 
-			void resize(std::size_t n)
+			void resize(size_type n)
 			{
 				while (_size > n)
 				{
@@ -237,7 +237,7 @@ namespace fixed
 				}
 			}
 
-			void resize(std::size_t n, const T& val)
+			void resize(size_type n, const T& val)
 			{
 				while (_size > n)
 				{
@@ -303,8 +303,8 @@ namespace fixed
 
 			iterator insert(const_iterator pos, T&& value)
 			{
-				std::size_t pivot_index = _size;
-				std::size_t insert_index = std::distance(cbegin(), pos);
+				size_type pivot_index = _size;
+				size_type insert_index = std::distance(cbegin(), pos);
 				push_back(value);
 				if (pos != cend() && pos != const_iterator())
 				{
@@ -376,7 +376,7 @@ namespace fixed
 				return begin() + initial_pos;
 			}
 
-			template <std::size_t RSIZE>
+			template <size_type RSIZE>
 			void swap(basic_vector<T, RSIZE>& rval)
 			{
 				assert(rval.size() < SIZE);
@@ -456,22 +456,22 @@ namespace fixed
 				}
 			}
 
-			void uninitialized_assign(std::size_t count, const T& value)
+			void uninitialized_assign(size_type count, const T& value)
 			{
 				assert(count <= SIZE);
 
-				for (std::size_t i = 0; i < count; i++)
+				for (size_type i = 0; i < count; i++)
 				{
 					new (_data_container.data() + i)T(value);
 					_size++;
 				}
 			}
 
-			void uninitialized_assign(std::size_t count)
+			void uninitialized_assign(size_type count)
 			{
 				assert(count <= SIZE);
 
-				for (std::size_t i = 0; i < count; i++)
+				for (size_type i = 0; i < count; i++)
 				{
 					new (_data_container.data() + i)T();
 					_size++;
@@ -480,7 +480,7 @@ namespace fixed
 
 		};
 
-		template <typename T, std::size_t LSIZE, typename LALLOCATOR, typename RALLOCATOR>
+		template <typename T, size_type LSIZE, typename LALLOCATOR, typename RALLOCATOR>
 		bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval, const std::vector<T, RALLOCATOR>& rval)
 		{
 			return lval.size() == rval.size() && std::equal(lval.begin(), lval.end(), rval.begin(), rval.end());

@@ -130,8 +130,105 @@ void test_vector_constructor()
 	}
 }
 
-void basic_testing()
+void test_vector_iterator()
 {
+	fixed::vector<int, 20> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	using fiterator = fixed::vector<int, 20>::iterator;
+	using fciterator = fixed::vector<int, 20>::const_iterator;
+
+	{
+		fiterator it;
+		fciterator cit(it);
+
+		CHECK(it == fiterator());
+		CHECK(cit == fciterator());
+	}
+
+	{
+		CHECK(std::distance(vec.begin(), vec.end()) == vec.size());
+	}
+
+	{
+		auto beg = vec.begin();
+		auto end = vec.end();
+		std::size_t i = 0;
+
+		CHECK(beg != end);
+
+		while (i < vec.size())
+		{
+			CHECK(beg < end);
+			CHECK(*(beg + i) == vec[i]);
+			CHECK((beg + i) != end);
+			++i;
+		}
+	}
+
+	{
+		auto beg = vec.begin();
+		auto end = vec.end();
+
+		CHECK(beg <= end);
+		++beg;
+		CHECK(beg < end);
+		beg++;
+		CHECK(end > beg);
+		beg = beg + 1;
+		CHECK(end >= beg);
+		CHECK(beg != end);
+
+	}
+}
+
+void test_vector_modifier()
+{
+	{
+		fixed::vector<int, 20> vec(3, 100);
+		std::vector<int> expected = { 100, 100, 100 };
+		CHECK(vec == expected);
+
+
+		auto it = vec.begin();
+		it = vec.insert(it, 200);
+		expected = { 200, 100, 100, 100 };
+		CHECK(vec == expected);
+
+		vec.insert(it, 2u, 300);
+		expected = { 300, 300, 200, 100, 100, 100 };
+		CHECK(vec == expected);
+
+		it = vec.begin();
+		std::vector<int> vec2(2, 400);
+		vec.insert(it + 2, vec2.begin(), vec2.end());
+		expected = { 300, 300, 400, 400, 200, 100, 100, 100 };
+		CHECK(vec == expected);
+
+		int arr[] = { 501,502,503 };
+		CHECK_NOTHROW(vec.insert(vec.begin(), arr, arr + 3));
+		expected = { 501, 502, 503, 300, 300, 400, 400, 200, 100, 100, 100 };
+		CHECK(vec == expected);
+	}
+
+	{
+		fixed::vector<int, 10> c{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		std::vector<int> expected{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		
+		c.erase(c.begin());
+		expected.erase(expected.begin());
+
+		CHECK(c == expected);
+
+		expected.erase(expected.begin() + 2, expected.begin() + 5);
+		c.erase(c.begin() + 2, c.begin() + 5);
+
+		CHECK(c == expected);
+
+		expected.erase(expected.begin() + (expected.size() - 1));
+		c.erase(c.begin() + (c.size() - 1));
+		CHECK(c.size() == expected.size());
+		CHECK(c == expected);
+	}
+
 	{
 		fixed::vector<char, 5> characters;
 
@@ -175,7 +272,6 @@ void basic_testing()
 		CHECK(i == 5);
 
 	}
-
 
 	{
 		fixed::vector<int, 10> myvector(5);  // 5 default-constructed ints
@@ -242,59 +338,14 @@ void basic_testing()
 		CHECK(myvector.capacity() == 10);
 		myvector.shrink_to_fit();
 	}
-}
-
-void test_vector_modifier()
-{
-	{
-		fixed::vector<int, 20> vec(3, 100);
-		std::vector<int> expected = { 100, 100, 100 };
-		CHECK(vec == expected);
 
 
-		auto it = vec.begin();
-		it = vec.insert(it, 200);
-		expected = { 200, 100, 100, 100 };
-		CHECK(vec == expected);
 
-		vec.insert(it, 2u, 300);
-		expected = { 300, 300, 200, 100, 100, 100 };
-		CHECK(vec == expected);
-
-		it = vec.begin();
-		std::vector<int> vec2(2, 400);
-		vec.insert(it + 2, vec2.begin(), vec2.end());
-		expected = { 300, 300, 400, 400, 200, 100, 100, 100 };
-		CHECK(vec == expected);
-
-		int arr[] = { 501,502,503 };
-		CHECK_NOTHROW(vec.insert(vec.begin(), arr, arr + 3));
-		expected = { 501, 502, 503, 300, 300, 400, 400, 200, 100, 100, 100 };
-		CHECK(vec == expected);
-	}
-
-
-	{
-		fixed::vector<int, 10> c{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		std::vector<int> expected{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-		
-
-		c.erase(c.begin());
-		expected.erase(expected.begin());
-
-		CHECK(c == expected);
-
-		expected.erase(expected.begin() + 2, expected.begin() + 5);
-		c.erase(c.begin() + 2, c.begin() + 5);
-
-		CHECK(c == expected);
-	}
 }
 
 TEST_CASE("testing vector", "[linear]")
 {
 	test_vector_constructor();
 	test_vector_modifier();
-	basic_testing();
-
+	test_vector_iterator();
 }
