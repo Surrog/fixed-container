@@ -187,7 +187,6 @@ void test_vector_modifier()
 		std::vector<int> expected = { 100, 100, 100 };
 		CHECK(vec == expected);
 
-
 		auto it = vec.begin();
 		it = vec.insert(it, 200);
 		expected = { 200, 100, 100, 100 };
@@ -371,13 +370,28 @@ void test_vector_modifier()
 			}
 		}
 	}
+}
 
+void test_vector_allocator()
+{
+	{
+		fixed::vector<int, 10, fixed::_impl::basic_stack_allocator> stack;
+		fixed::vector<int, 10, fixed::_impl::basic_heap_allocator> heap;
+	}
+
+	{
+		fixed::_impl::empty_source s;
+
+		fixed::vector<int, 10, fixed::_impl::basic_stack_allocator> stack(s);
+		fixed::vector<int, 10, fixed::_impl::basic_heap_allocator> heap(s);
+	}
 
 }
 
-TEST_CASE("testing vector", "[linear]")
+TEST_CASE("testing basic_vector", "[linear]")
 {
 	test_vector_constructor();
 	test_vector_modifier();
 	test_vector_iterator();
+	test_vector_allocator();
 }

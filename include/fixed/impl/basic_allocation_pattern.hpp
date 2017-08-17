@@ -1,5 +1,5 @@
-#ifndef BASIC_HEAPLESS_ALLOCATOR_HPP
-#define BASIC_HEAPLESS_ALLOCATOR_HPP
+#ifndef FIXED_BASIC_ALLOCATION_PATTERN_HPP
+#define FIXED_BASIC_ALLOCATION_PATTERN_HPP
 
 #include <type_traits>
 #include <memory>
@@ -72,8 +72,8 @@ namespace fixed
 			typedef const T& const_reference;
 			typedef allocation_pattern_tag allocation_pattern;
 
-			pointer data() { return reinterpret_cast<T*>(_data); }
-			const_pointer data() const { return reinterpret_cast<const T*>(_data); }
+			pointer data() { return reinterpret_cast<T*>(_data.get()); }
+			const_pointer data() const { return reinterpret_cast<const T*>(_data.get()); }
 			reference operator[](size_type i) { assert(i < SIZE); return data()[i]; }
 			const_reference operator[](size_type i) const { assert(i < SIZE); return data()[i]; }
 
@@ -85,4 +85,4 @@ namespace fixed
 	}
 }
 
-#endif //!BASIC_HEAPLESS_ALLOCATOR_HPP
+#endif //!FIXED_BASIC_ALLOCATION_PATTERN_HPP

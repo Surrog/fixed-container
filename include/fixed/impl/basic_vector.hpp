@@ -14,7 +14,8 @@ namespace fixed
 	namespace _impl
 	{
 		template <typename T, size_type SIZE, 
-			template <typename, size_type> typename Alloc_pattern = basic_stack_allocator >
+			template <typename, size_type> typename Alloc_pattern = basic_stack_allocator
+		>
 		class basic_vector
 		{
 		public:
