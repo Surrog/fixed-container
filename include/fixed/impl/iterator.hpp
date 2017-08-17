@@ -318,6 +318,156 @@ namespace fixed
 		{
 			return rval + lval;
 		}
+
+		template <typename T>
+		struct wrap_pointer_iterator
+		{
+			typedef typename T::rp_value_type rp_value_type;
+
+		public:
+			typedef typename T::value_type value_type;
+			typedef typename T::pointer pointer;
+			typedef typename T::reference reference;
+			typedef typename T::difference_type difference_type;
+			typedef typename T::iterator_category iterator_category;
+			constexpr static bool is_const = T::is_const;
+
+			bool operator==(const wrap_pointer_iterator& rval) const
+			{
+				return _value == rval._value;
+			}
+
+			bool operator!=(const wrap_pointer_iterator& rval) const
+			{
+				return !operator==(rval);
+			}
+
+			reference get() const
+			{
+				return *_value;
+			}
+
+			reference operator*() const
+			{
+				assert(_value != nullptr);
+				return *_value;
+			}
+
+			pointer operator->() const
+			{
+				return _value;
+			}
+
+			wrap_pointer_iterator() = default;
+
+			wrap_pointer_iterator(const T& val)
+				: _value(val)
+			{}
+
+			wrap_pointer_iterator(const wrap_pointer_iterator&) = default;
+			wrap_pointer_iterator(wrap_pointer_iterator&&) noexcept = default;
+			wrap_pointer_iterator& operator=(const wrap_pointer_iterator&) = default;
+			wrap_pointer_iterator& operator=(wrap_pointer_iterator&&) noexcept = default;
+
+			template <class = std::enable_if_t<is_const>>
+			wrap_pointer_iterator(const wrap_pointer_iterator<value_type>& orig)
+				: _value(&orig.get())
+			{}
+
+			wrap_pointer_iterator& operator++()
+			{
+				assert(_value != nullptr);
+				++_value;
+				return *this;
+			}
+
+			wrap_pointer_iterator operator++(int) const
+			{
+				assert(_value != nullptr);
+				return { _value + 1 };
+			}
+
+
+			wrap_pointer_iterator& operator--()
+			{
+				assert(_value != nullptr);
+				_value--;
+				return *this;
+			}
+
+			wrap_pointer_iterator operator--(int) const
+			{
+				assert(_value != nullptr);
+				return { _value - 1 };
+			}
+
+			wrap_pointer_iterator& operator+=(difference_type n)
+			{
+				assert(_value != nullptr);
+				_value += n;
+				return *this;
+			}
+
+			wrap_pointer_iterator operator+(difference_type n) const
+			{
+				assert(_value != nullptr);
+				return { _value + n };
+			}
+
+			wrap_pointer_iterator& operator-=(difference_type n)
+			{
+				assert(_value != nullptr);
+				_value -= n;
+				return *this;
+			}
+
+			wrap_pointer_iterator operator-(difference_type n) const
+			{
+				assert(_value != nullptr);
+				return { _value - n };
+			}
+
+			difference_type operator-(const wrap_pointer_iterator& rval) const
+			{
+				return _value - rval._value;
+			}
+
+			reference operator[](difference_type n)
+			{
+				assert(_value != nullptr);
+				return _value[n];
+			}
+
+			bool operator<(const wrap_pointer_iterator& rval) const
+			{
+				return _value < rval._value;
+			}
+
+			bool operator>(const wrap_pointer_iterator& rval) const
+			{
+				return _value > rval._value;
+			}
+
+			bool operator<=(const wrap_pointer_iterator& rval) const
+			{
+				return _value <= rval._value;
+			}
+
+			bool operator>=(const wrap_pointer_iterator& rval) const
+			{
+				return _value >= rval._value;
+			}
+
+		private:
+			T _value = T();
+		};
+
+		template <typename T>
+		auto operator+(std::ptrdiff_t lval, const wrap_pointer_iterator<T>& rval)
+		{
+			return rval + lval;
+		}
+
 	}
 }
 

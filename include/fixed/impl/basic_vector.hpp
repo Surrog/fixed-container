@@ -13,7 +13,8 @@ namespace fixed
 {
 	namespace _impl
 	{
-		template <typename T, size_type SIZE, typename Allocator = basic_stack_allocator<T, SIZE> >
+		template <typename T, size_type SIZE, 
+			template <typename, size_type> typename Alloc_pattern = basic_stack_allocator >
 		class basic_vector
 		{
 		public:
@@ -30,43 +31,71 @@ namespace fixed
 			typedef std::reverse_iterator<iterator> reverse_iterator;
 			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-			typedef Allocator allocator_type;
+			template <typename T, size_type S>
+			using allocator_type = Alloc_pattern<T, S>;
 
 			//Basic function
 			~basic_vector()
 			{
-				for (auto& elem : *this)
-				{
-					elem.~T();
-				}	
+				clear();
 			}
 
-			basic_vector() : basic_vector(Allocator()) {}
+			basic_vector() : _size(0), _data_container() {}
 
-			explicit basic_vector(const Allocator& alloc)
+			template <typename Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+			explicit basic_vector(Alloc_source& alloc)
 				: _size(0), _data_container(alloc)
 			{}
 
-			basic_vector(size_type count,
-					const T& value,
-					const Allocator& alloc = Allocator())
-				: _size(0), _data_container(alloc)
+			basic_vector(size_type count, const T& value)
+				: basic_vector()
 			{
 				uninitialized_assign(count, value);
 			}
 
-			explicit basic_vector(size_type count, const Allocator& alloc = Allocator())
-				: _size(), _data_container(alloc)
+			template <typename Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+			basic_vector(size_type count,
+					const T& value,
+					Alloc_source& alloc)
+				: basic_vector(alloc)
+			{
+				uninitialized_assign(count, value);
+			}
+
+			explicit basic_vector(size_type count)
+				: basic_vector()
+			{
+				uninitialized_assign(count);
+			}
+
+			template <typename Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+			explicit basic_vector(size_type count, Alloc_source& alloc)
+				: basic_vector(alloc)
 			{
 				uninitialized_assign(count);
 			}
 
 			template< class InputIt,
-						std::enable_if_t<is_iterator<InputIt>::value, int> = 0
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
 			>
-			basic_vector(InputIt first, InputIt last,
-				const Allocator& alloc = Allocator())
-				: _size(0), _data_container(alloc)
+			basic_vector(InputIt first, InputIt last)
+				: basic_vector()
+			{
+				uninitialized_assign(first, last);
+			}
+
+			template< class InputIt, typename Alloc_source = empty_source,
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+			basic_vector(InputIt first, InputIt last, Alloc_source& alloc)
+				: basic_vector(alloc)
 			{
 				uninitialized_assign(first, last);
 			}
@@ -81,27 +110,39 @@ namespace fixed
 				operator=(orig);
 			}
 
-			template <size_type RSIZE, typename RAllocator>
+			template <size_type RSIZE, template <typename, size_type> typename RAllocator>
 			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig)
-				: _size(0), _data_container()
+				: basic_vector()
 			{
 				uninitialized_assign(orig.begin(), orig.end());
 			}
 
-			template <size_type RSIZE, typename RAllocator>
-			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig, const Allocator& alloc)
-				: _size(0), _data_container(alloc)
+			template <size_type RSIZE, template <typename, size_type> typename RAllocator,
+				class Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+			basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig, Alloc_source& alloc)
+				: basic_vector(alloc)
 			{
 				uninitialized_assign(orig.begin(), orig.end());
 			}
 
 			template <size_type RSIZE>
-			basic_vector(basic_vector<T, RSIZE, Allocator>&& other)
+			basic_vector(basic_vector<T, RSIZE, Alloc_pattern>&& other)
 				: _size(other._size), _data_container(std::move(other._data_container))
 			{}
 
-			basic_vector(std::initializer_list<T> list, const Allocator& alloc = Allocator())
-				: _size(0), _data_container(alloc)
+			basic_vector(std::initializer_list<T> list)
+				: basic_vector()
+			{
+				uninitialized_assign(list.begin(), list.end());
+			}
+
+			template <typename Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+			basic_vector(std::initializer_list<T> list, Alloc_source& alloc = empty_source())
+				: basic_vector(alloc)
 			{
 				uninitialized_assign(list.begin(), list.end());
 			}
@@ -110,7 +151,7 @@ namespace fixed
 			{
 				if (this != &rval)
 				{
-					return operator=<SIZE, Allocator>(rval);
+					return operator=<SIZE, Alloc_pattern>(rval);
 				}
 				return *this;
 			}
@@ -119,12 +160,12 @@ namespace fixed
 			{
 				if (this != &rval)
 				{
-					return operator=<SIZE, Allocator>(rval);
+					return operator=<SIZE, Alloc_pattern>(rval);
 				}
 				return *this;
 			}
 
-			template <size_type RSIZE, typename RAllocator>
+			template <size_type RSIZE, template <typename, size_type> typename RAllocator>
 			basic_vector& operator=(basic_vector<T, RSIZE, RAllocator>&& rval) noexcept
 			{
 				auto rbeg = rval.begin();
@@ -157,7 +198,7 @@ namespace fixed
 
 			}
 
-			template <size_type RSIZE, typename RAllocator>
+			template <size_type RSIZE, template <typename, size_type> typename RAllocator>
 			basic_vector& operator=(const basic_vector<T, RSIZE, RAllocator>& rval)
 			{
 				auto rbeg = rval.begin();
@@ -186,9 +227,6 @@ namespace fixed
 				}
 				return *this;
 			}
-
-
-			const Allocator& get_allocator() const { return _data_container; }
 
 			//element access
 			T& at(size_type n) { assert(n < _size); return data()[n]; }
@@ -227,14 +265,7 @@ namespace fixed
 
 			void resize(size_type n)
 			{
-				while (_size > n)
-				{
-					pop_back();
-				}
-				while (_size < n)
-				{
-					push_back(T());
-				}
+				resize(n, T());
 			}
 
 			void resize(size_type n, const T& val)
@@ -260,8 +291,10 @@ namespace fixed
 				}
 			}
 
-			template <typename InputIt>
-			void assign(InputIt first, InputIt last)
+			template< class InputIt,
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
+			>
+				void assign(InputIt first, InputIt last)
 			{
 				_size = std::distance(first, last);
 				assert(_size <= SIZE);
@@ -328,8 +361,10 @@ namespace fixed
 				return begin() + insert_index;
 			}
 
-			template <class InputIt>
-			iterator insert(const_iterator pos, InputIt first, InputIt last)
+			template< class InputIt,
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
+			>
+				iterator insert(const_iterator pos, InputIt first, InputIt last)
 			{
 				auto pivot_index = _size;
 				auto insert_index = std::distance(cbegin(), pos);
@@ -441,7 +476,7 @@ namespace fixed
 		private:
 			//datas
 			size_type _size = 0;
-			Allocator _data_container;
+			Alloc_pattern<T, SIZE> _data_container;
 
 			//managing uninitialized memory
 			template< class InputIt,
@@ -477,10 +512,11 @@ namespace fixed
 					_size++;
 				}
 			}
-
 		};
 
-		template <typename T, size_type LSIZE, typename LALLOCATOR, typename RALLOCATOR>
+		template <typename T, size_type LSIZE, 
+			template <typename, size_type> typename LALLOCATOR, 
+			template <typename, size_type> typename RALLOCATOR>
 		bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval, const std::vector<T, RALLOCATOR>& rval)
 		{
 			return lval.size() == rval.size() && std::equal(lval.begin(), lval.end(), rval.begin(), rval.end());

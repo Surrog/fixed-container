@@ -3,6 +3,7 @@
 #include "catch.hpp"
 #include <algorithm>
 
+/*
 typedef fixed::unordered_map<std::string, std::string, 10> testing_hm;
 
 static void test_constructor()
@@ -172,9 +173,10 @@ static void test_limit()
 
 TEST_CASE("testing hashmap", "[statics]")
 {
-	//test_constructor();
-	//test_capacity();
-	//test_access();
-	//test_modifiers();
-	//test_limit();
+	test_constructor();
+	test_capacity();
+	test_access();
+	test_modifiers();
+	test_limit();
 }
+*/

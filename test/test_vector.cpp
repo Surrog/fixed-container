@@ -339,6 +339,38 @@ void test_vector_modifier()
 		myvector.shrink_to_fit();
 	}
 
+	{
+		fixed::vector<int, 10> myvector = { 10, 20, 30, 40, 50 };
+		int * ptr = myvector.data();
+
+		{
+			auto beg = myvector.begin();
+			auto end = myvector.end();
+			fixed::vector<int, 10>::size_type i = 0;
+
+			while (beg != end)
+			{
+				CHECK(ptr + i == &*beg);
+				++i;
+				++beg;
+			}
+		}
+
+		myvector.erase(myvector.begin() + 2);
+
+		{
+			auto beg = myvector.begin();
+			auto end = myvector.end();
+			fixed::vector<int, 10>::size_type i = 0;
+
+			while (beg != end)
+			{
+				CHECK(ptr + i == &*beg);
+				++i;
+				++beg;
+			}
+		}
+	}
 
 
 }
