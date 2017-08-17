@@ -3,7 +3,7 @@
 
 #include <array>
 #include <cassert>
-#include "fixed/impl/basic_allocator.hpp"
+#include "fixed/impl/basic_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
 #include "iterator.hpp"
 #include <utility>

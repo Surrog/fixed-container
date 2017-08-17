@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "fixed/impl/iterator.hpp"
-#include "fixed/impl/basic_allocator.hpp"
+#include "fixed/impl/basic_allocation_pattern.hpp"
 
 namespace fixed
 {

@@ -4,27 +4,12 @@
 #include <type_traits>
 #include <memory>
 #include "fixed_def.hpp"
+#include "basic_allocation_sources.hpp"
 
 namespace fixed
 {
 	namespace _impl
 	{
-		template <typename T, class = void>
-		struct is_allocator_source : public std::bool_constant<false>
-		{};
-
-		template <typename T>
-		struct is_allocator_source<T, std::void_t<typename T::allocator_source>> : public std::bool_constant<true>
-		{};
-
-		struct allocator_source_tag
-		{};
-
-		struct empty_source
-		{
-			typedef allocator_source_tag allocator_source;
-		};
-
 		struct allocation_pattern_tag
 		{};
 
