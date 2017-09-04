@@ -16,7 +16,7 @@ namespace fixed
 			, const unordered_map<Key, T, SIZE2, HASHER2, EQUAL2>& rval)
 	{
 		auto result = lval.size() == rval.size() &&
-			std::all(lval.begin(), lval.end(), [&rval](const auto& lval_pair)
+			std::all_of(lval.begin(), lval.end(), [&rval](const auto& lval_pair)
 		{
 			return std::find(rval.begin(), rval.end(), lval_pair) != rval.end();
 		});
