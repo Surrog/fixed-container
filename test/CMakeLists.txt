@@ -7,7 +7,11 @@ endif()
 project (fixed_test)
 
 #compiler requirement
-set (CMAKE_CXX_STANDARD 14)
+if (MSVC)
+	set (CMAKE_CXX_STANDARD 14)
+else ()
+	add_compile_options(-Wall -Wextra -Wpedantic -std=c++17)
+endif()
 
 set(INCLUDE_DIRS 
 	"${PROJECT_SOURCE_DIR}/../include/")
