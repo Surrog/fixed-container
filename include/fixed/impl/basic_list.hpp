@@ -219,6 +219,7 @@ namespace fixed
 				assign(ilist.begin(), ilist.end());
 			}
 
+			//Element access
 			reference front()
 			{
 				assert(_size > 0);
@@ -243,6 +244,7 @@ namespace fixed
 				return *_ptrs[_size - 1];
 			}
 
+			//Iterators
 			iterator begin() noexcept
 			{
 				if (_size > 0)
@@ -311,6 +313,7 @@ namespace fixed
 				return const_reverse_iterator(cend());
 			}
 
+			//Capacity
 			bool empty() const noexcept
 			{
 				return _size == 0;
@@ -326,6 +329,7 @@ namespace fixed
 				return SIZE;
 			}
 
+			//Modifiers
 			void clear()
 			{
 				for (size_type i = 0; i < _size; i++)
@@ -525,6 +529,9 @@ namespace fixed
 
 				std::swap(_size, other._size);
 			}
+
+			//Operations
+
 		};
 	}
 }

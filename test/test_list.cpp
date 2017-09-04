@@ -2,13 +2,12 @@
 #include "catch.hpp"
 #include "fixed/list.hpp"
 
-template <typename LIST, typename T>
 void test_list()
 {
-
+	fixed::list<int, 20> l;
 }
 
 TEST_CASE("testing lists", "[linear]")
 {
-	test_list<fixed::list<int, 20>, int>();
+	test_list();
 }
