@@ -6,5 +6,5 @@ compiler:
   - gcc
 
 script:
-  - cmake ./bin
+  - cmake ./test
   - cmake --build ./bin -- -j2

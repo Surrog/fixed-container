@@ -23,15 +23,19 @@ set(SOURCES
 	"${PROJECT_SOURCE_DIR}/test_unordered_map.cpp"
 	"${PROJECT_SOURCE_DIR}/test_vector.cpp"
 	
+	"${FIXED_EXPOSED_SOURCE_DIR}/list.hpp"
 	"${FIXED_EXPOSED_SOURCE_DIR}/string.hpp"
 	"${FIXED_EXPOSED_SOURCE_DIR}/unordered_map.hpp"
 	"${FIXED_EXPOSED_SOURCE_DIR}/vector.hpp"
 	
-	"${FIXED_IMPL_SOURCE_DIR}/basic_allocator.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_allocation_pattern.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_allocation_sources.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_list.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_small_string.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_string.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_unordered_map.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_vector.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/fixed_def.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/iterator.hpp"
 	)
 
