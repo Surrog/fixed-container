@@ -24,8 +24,8 @@ namespace fixed
 
 		public:
 			typedef typename std::remove_const<rp_value_type>::type value_type;
-			typedef typename rp_value_type* pointer;
-			typedef typename rp_value_type& reference;
+			typedef rp_value_type* pointer;
+			typedef rp_value_type& reference;
 			typedef std::ptrdiff_t difference_type;
 			typedef std::random_access_iterator_tag iterator_category;
 			constexpr static bool is_const = std::is_const_v<rp_value_type>;
