@@ -7,4 +7,4 @@ compiler:
 
 script:
   - cmake ./test
-  - cmake --build ./bin -- -j2
+  - cmake --build . -- -j2
