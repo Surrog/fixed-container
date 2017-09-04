@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <memory>
+#include <cassert>
 #include "fixed_def.hpp"
 #include "basic_allocation_sources.hpp"
 
