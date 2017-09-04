@@ -10,7 +10,7 @@ project (fixed_test)
 if (MSVC)
 	set (CMAKE_CXX_STANDARD 14)
 else ()
-	add_compile_options(-Wall -Wextra -Wpedantic -std=c++17)
+	add_compile_options(-Wall -Wextra -Wpedantic -std=c++1z)
 endif()
 
 set(INCLUDE_DIRS 
