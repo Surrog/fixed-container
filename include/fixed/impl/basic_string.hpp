@@ -11,7 +11,7 @@ namespace fixed
 	namespace _impl
 	{
 		template <class CHAR_T
-			, size_type SIZE
+			, container_size_type SIZE
 			, class Traits = std::char_traits<CHAR_T>>
 			class basic_string
 		{

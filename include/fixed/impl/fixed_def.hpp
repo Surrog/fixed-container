@@ -9,9 +9,9 @@ namespace fixed
 	namespace _impl
 	{
 #ifdef SIGNED_INT_SIZE_TYPE
-		using size_type = std::int32_t;
+		using container_size_type = std::int32_t;
 #else
-		using size_type = std::size_t;
+		using container_size_type = std::size_t;
 #endif
 	}
 }

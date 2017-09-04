@@ -13,13 +13,13 @@ namespace fixed
 {
 	namespace _impl
 	{
-		template <typename T, size_type SIZE,
-			template <typename, size_type> typename Alloc_pattern = basic_stack_allocator >
+		template <typename T, container_size_type SIZE,
+			template <typename, container_size_type> typename Alloc_pattern = basic_stack_allocator >
 		class basic_list
 		{
 		public:
 			typedef T value_type;
-			typedef size_type size_type;
+			typedef container_size_type size_type;
 			typedef std::ptrdiff_t difference_type;
 			typedef value_type& reference;
 			typedef const value_type& const_reference;

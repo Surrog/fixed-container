@@ -23,7 +23,7 @@ namespace fixed
 		{};
 
 		//Allocate your container on the stack
-		template <typename T, size_type SIZE>
+		template <typename T, container_size_type SIZE>
 		struct basic_stack_allocator
 		{
 			static_assert(SIZE > 0, "zero sized container not allowed !");
@@ -45,17 +45,17 @@ namespace fixed
 
 			pointer data() { return reinterpret_cast<T*>(_data); }
 			const_pointer data() const { return reinterpret_cast<const T*>(_data); }
-			reference operator[](size_type i) { assert(i < SIZE); return data()[i]; }
-			const_reference operator[](size_type i) const { assert(i < SIZE); return data()[i]; }
+			reference operator[](container_size_type i) { assert(i < SIZE); return data()[i]; }
+			const_reference operator[](container_size_type i) const { assert(i < SIZE); return data()[i]; }
 
 			bool valid_pointer(const T* ptr) { return ptr >= data() && ptr < data() + max_size(); }
-			constexpr size_type max_size() const { return SIZE; }
+			constexpr container_size_type max_size() const { return SIZE; }
 		private:
 			typename std::aligned_storage<sizeof(T), alignof(T)>::type _data[SIZE];
 		};
 
 		//When your size is too big to being correctly stored on the stack
-		template <typename T, size_type SIZE>
+		template <typename T, container_size_type SIZE>
 		struct basic_heap_allocator
 		{
 			static_assert(SIZE > 0, "zero sized container not allowed !");
@@ -75,11 +75,11 @@ namespace fixed
 
 			pointer data() { return reinterpret_cast<T*>(_data.get()); }
 			const_pointer data() const { return reinterpret_cast<const T*>(_data.get()); }
-			reference operator[](size_type i) { assert(i < SIZE); return data()[i]; }
-			const_reference operator[](size_type i) const { assert(i < SIZE); return data()[i]; }
+			reference operator[](container_size_type i) { assert(i < SIZE); return data()[i]; }
+			const_reference operator[](container_size_type i) const { assert(i < SIZE); return data()[i]; }
 
 			bool valid_pointer(const T* ptr) { return ptr >= data() && ptr < data() + max_size(); }
-			constexpr size_type max_size() const { return SIZE; }
+			constexpr container_size_type max_size() const { return SIZE; }
 		private:
 			std::unique_ptr<typename std::aligned_storage<sizeof(T), alignof(T)>::type[]> _data = std::make_unique<typename std::aligned_storage<sizeof(T), alignof(T)>::type[]>(SIZE);
  		};

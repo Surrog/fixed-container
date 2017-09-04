@@ -13,8 +13,8 @@ namespace fixed
 {
 	namespace _impl
 	{
-		template <typename T, size_type SIZE, 
-			template <typename, size_type> typename Alloc_pattern = basic_stack_allocator
+		template <typename T, container_size_type SIZE,
+			template <typename, container_size_type> typename Alloc_pattern = basic_stack_allocator
 		>
 		class basic_vector
 		{
@@ -24,7 +24,7 @@ namespace fixed
 			typedef const T* const_pointer;
 			typedef T& reference;
 			typedef const T& const_reference;
-			typedef size_type size_type;
+			typedef container_size_type size_type;
 			typedef std::ptrdiff_t difference_type;
 
 			typedef pointer_iterator<T> iterator;
@@ -515,9 +515,9 @@ namespace fixed
 			}
 		};
 
-		template <typename T, size_type LSIZE, 
-			template <typename, size_type> typename LALLOCATOR, 
-			template <typename, size_type> typename RALLOCATOR>
+		template <typename T, container_size_type LSIZE,
+			template <typename, container_size_type> typename LALLOCATOR,
+			template <typename, container_size_type> typename RALLOCATOR>
 		bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval, const std::vector<T, RALLOCATOR>& rval)
 		{
 			return lval.size() == rval.size() && std::equal(lval.begin(), lval.end(), rval.begin(), rval.end());

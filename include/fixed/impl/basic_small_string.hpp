@@ -10,7 +10,7 @@ namespace fixed
 	{
 		//will use the last char to hold the size of the string
 		template <class CHAR_T
-			, size_type SIZE
+			, container_size_type SIZE
 			, class Traits = std::char_traits<CHAR_T>>
 			class basic_small_string
 		{

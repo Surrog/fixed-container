@@ -6,8 +6,8 @@
 
 namespace fixed
 {
-	template <typename T, _impl::size_type SIZE,
-		template <typename, _impl::size_type> typename Alloc_pattern = _impl::basic_stack_allocator>
+	template <typename T, _impl::container_size_type SIZE,
+		template <typename, _impl::container_size_type> typename Alloc_pattern = _impl::basic_stack_allocator>
 	using vector = _impl::basic_vector<T, SIZE, Alloc_pattern>;
 }
 
