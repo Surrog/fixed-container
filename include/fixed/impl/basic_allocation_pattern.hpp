@@ -15,11 +15,11 @@ namespace fixed
 		{};
 
 		template <typename T, class = void>
-		struct is_allocation_pattern : public std::bool_constant<false>
+		struct is_allocation_pattern : public std::false_type
 		{};
 
 		template <typename T>
-		struct is_allocation_pattern<T, std::void_t<typename T::allocation_pattern>> : public std::bool_constant<true>
+		struct is_allocation_pattern<T, std::void_t<typename T::allocation_pattern>> : public std::true_type
 		{};
 
 		//Allocate your container on the stack
