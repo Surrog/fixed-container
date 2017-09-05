@@ -28,7 +28,7 @@ namespace fixed
 			typedef std::ptrdiff_t difference_type;
 
 			typedef pointer_iterator<T> iterator;
-			typedef pointer_iterator<const T> const_iterator;
+			typedef const_pointer_iterator<T> const_iterator;
 			typedef std::reverse_iterator<iterator> reverse_iterator;
 			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
