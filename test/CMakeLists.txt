@@ -7,10 +7,10 @@ endif()
 project (fixed_test)
 
 
-set (CMAKE_CXX_STANDARD 14)
 #compiler requirement
 if (MSVC)
 	add_compile_options(/W4)
+	set (CMAKE_CXX_STANDARD 14)
 else ()
 	add_compile_options(-Wall -Wextra -Wpedantic -std=c++1z)
 endif()
