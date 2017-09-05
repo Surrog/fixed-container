@@ -23,4 +23,4 @@ script:
   - cmake ./test
   - cmake --build . -- -j2
   - ./fixed_test
-  - cppcheck --help
+  - cppcheck -I include ./test/*.cpp
