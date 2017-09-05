@@ -161,7 +161,7 @@ namespace fixed
 			typedef typename std::remove_pointer<T>::type rp_value_type;
 
 		public:
-			typedef typename rp_value_type value_type;
+			typedef rp_value_type value_type;
 			typedef const rp_value_type* pointer;
 			typedef const rp_value_type& reference;
 			typedef std::ptrdiff_t difference_type;
