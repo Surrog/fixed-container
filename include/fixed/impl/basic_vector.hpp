@@ -451,7 +451,7 @@ namespace fixed
 			template <class... Args>
 			iterator emplace(iterator position, Args&&... args)
 			{
-				emplace_back(args);
+				emplace_back(args...);
 				std::rotate(position, end() - 1, end());
 			}
 
@@ -517,8 +517,8 @@ namespace fixed
 
 		template <typename T, container_size_type LSIZE,
 			template <typename, container_size_type> typename LALLOCATOR,
-			template <typename, container_size_type> typename RALLOCATOR>
-		bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval, const std::vector<T, RALLOCATOR>& rval)
+			typename STDALLOC>
+		bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval, const std::vector<T, STDALLOC>& rval)
 		{
 			return lval.size() == rval.size() && std::equal(lval.begin(), lval.end(), rval.begin(), rval.end());
 		}
