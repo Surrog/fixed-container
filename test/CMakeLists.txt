@@ -8,9 +8,10 @@ project (fixed_test)
 
 #compiler requirement
 if (MSVC)
-	set (CMAKE_CXX_STANDARD 14)
+	set (CMAKE_CXX_STANDARD 17)
+	add_compile_options(/W4)
 else ()
-	add_compile_options(-Wall -Wextra -Wpedantic -std=c++1z)
+	add_compile_options(-Wall -Wextra -Wpedantic -std=c++17)
 endif()
 
 set(INCLUDE_DIRS 
@@ -40,6 +41,7 @@ set(SOURCES
 	"${FIXED_IMPL_SOURCE_DIR}/basic_unordered_map.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_vector.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/fixed_def.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/fixed_type_traits.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/iterator.hpp"
 	)
 

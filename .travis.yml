@@ -12,6 +12,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-6
+            - cppcheck
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
     # works on Trusty
@@ -22,6 +23,7 @@ matrix:
             - llvm-toolchain-trusty-4.0
           packages:
             - clang-4.0
+            - cppcheck
       env:
         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"    
 
@@ -31,3 +33,5 @@ before_install:
 script:
   - cmake ./test
   - cmake --build . -- -j2
+  - ./Debug/*
+  - cppcheck --quiet --error-exitcode=1

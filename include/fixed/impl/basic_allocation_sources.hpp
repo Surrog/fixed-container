@@ -2,6 +2,7 @@
 #define FIXED_BASIC_ALLOCATION_SOURCES
 
 #include <type_traits>
+#include "fixed_type_traits.hpp"
 
 namespace fixed
 {
@@ -12,7 +13,7 @@ namespace fixed
 		{};
 
 		template <typename T>
-		struct is_allocator_source<T, std::void_t<typename T::allocator_source>> : public std::true_type
+		struct is_allocator_source<T, astd::void_t<typename T::allocator_source>> : public std::true_type
 		{};
 
 		struct allocator_source_tag

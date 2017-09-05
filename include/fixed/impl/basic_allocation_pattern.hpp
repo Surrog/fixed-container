@@ -6,6 +6,8 @@
 #include <cassert>
 #include "fixed_def.hpp"
 #include "basic_allocation_sources.hpp"
+#include "fixed_type_traits.hpp"
+
 
 namespace fixed
 {
@@ -19,7 +21,7 @@ namespace fixed
 		{};
 
 		template <typename T>
-		struct is_allocation_pattern<T, std::void_t<typename T::allocation_pattern>> : public std::true_type
+		struct is_allocation_pattern<T, astd::void_t<typename T::allocation_pattern>> : public std::true_type
 		{};
 
 		//Allocate your container on the stack

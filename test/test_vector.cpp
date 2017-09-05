@@ -145,7 +145,7 @@ void test_vector_iterator()
 	}
 
 	{
-		CHECK(std::distance(vec.begin(), vec.end()) == vec.size());
+		CHECK(static_cast<std::size_t>(std::distance(vec.begin(), vec.end())) == vec.size());
 	}
 
 	{

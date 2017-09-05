@@ -20,6 +20,7 @@ namespace fixed
 		{
 			return std::find(rval.begin(), rval.end(), lval_pair) != rval.end();
 		});
+		return result;
 	}
 
 	template <typename Key, typename T
