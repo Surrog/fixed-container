@@ -22,7 +22,6 @@ namespace fixed
 		{
 			typedef allocator_source_tag allocator_source;
 		};
-
 	}
 }
 

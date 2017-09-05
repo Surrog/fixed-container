@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 sudo: false
 language: cpp
 
@@ -30,7 +30,7 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-4.0
+            - llvm-toolchain-xenial-4.0
           packages:
             - clang-4.0
       env:
