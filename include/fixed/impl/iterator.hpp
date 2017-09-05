@@ -15,7 +15,7 @@ namespace fixed
 		{};
 
 		template <typename T>
-		struct is_iterator<T, astd::void_t<typename std::iterator_traits<T>::iterator_category>> : public std::bool_constant<true>
+		struct is_iterator<T, fixed::astd::void_t<typename std::iterator_traits<T>::iterator_category>> : public std::bool_constant<true>
 		{};
 
 		template <typename T>
@@ -29,7 +29,7 @@ namespace fixed
 			typedef rp_value_type& reference;
 			typedef std::ptrdiff_t difference_type;
 			typedef std::random_access_iterator_tag iterator_category;
-			constexpr static bool is_const = astd::is_const_v<rp_value_type>;
+			constexpr static bool is_const = fixed::astd::is_const_v<rp_value_type>;
 
 			bool operator==(const pointer_iterator& rval) const
 			{

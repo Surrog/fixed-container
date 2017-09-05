@@ -6,12 +6,13 @@ endif()
 
 project (fixed_test)
 
+
+set (CMAKE_CXX_STANDARD 14)
 #compiler requirement
 if (MSVC)
-	set (CMAKE_CXX_STANDARD 17)
 	add_compile_options(/W4)
 else ()
-	add_compile_options(-Wall -Wextra -Wpedantic -std=c++17)
+	add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 set(INCLUDE_DIRS 

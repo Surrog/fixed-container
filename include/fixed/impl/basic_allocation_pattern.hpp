@@ -21,7 +21,7 @@ namespace fixed
 		{};
 
 		template <typename T>
-		struct is_allocation_pattern<T, astd::void_t<typename T::allocation_pattern>> : public std::true_type
+		struct is_allocation_pattern<T, fixed::astd::void_t<typename T::allocation_pattern>> : public std::true_type
 		{};
 
 		//Allocate your container on the stack

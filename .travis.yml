@@ -33,5 +33,4 @@ before_install:
 script:
   - cmake ./test
   - cmake --build . -- -j2
-  - ./Debug/*
   - cppcheck --quiet --error-exitcode=1

@@ -32,8 +32,8 @@ namespace fixed
 			typedef std::reverse_iterator<iterator> reverse_iterator;
 			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-			template <typename T, size_type S>
-			using allocator_type = Alloc_pattern<T, S>;
+			template <typename Types, size_type ALLOC_SIZE>
+			using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
 
 			//Basic function
 			~basic_vector()
@@ -299,7 +299,7 @@ namespace fixed
 			{
 				_size = std::distance(first, last);
 				assert(_size <= SIZE);
-				std::transform(first, last, begin(), [](const auto& value) { return value; })
+				std::transform(first, last, begin(), [](const auto& value) { return value; });
 			}
 
 			void assign(std::initializer_list<T> list)
