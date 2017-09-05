@@ -22,6 +22,4 @@ before_install:
 script:
   - cmake ./test
   - cmake --build . -- -j2
-  - ./Debug/fixed_test
-  - cppcheck --quiet --error-exitcode=1 ./include/fixed
-  - cppcheck --quiet --error-exitcode=1 ./include/fixed/impl
+  - ls
