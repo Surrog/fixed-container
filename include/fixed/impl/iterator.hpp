@@ -68,7 +68,7 @@ namespace fixed
 			pointer_iterator& operator=(const pointer_iterator&) = default;
 			pointer_iterator& operator=(pointer_iterator&&) noexcept = default;
 
-			template <class = std::enable_if_t<is_const>>
+			template <class = std::enable_if_t<is_const, void>>
 			pointer_iterator(const pointer_iterator<value_type>& orig)
 				: _value(&orig.get())
 			{}
