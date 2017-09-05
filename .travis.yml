@@ -23,4 +23,4 @@ script:
   - cmake ./test
   - cmake --build . -- -j2
   - ./fixed_test
-  - cppcheck --quiet --error-exitcode=1 -I include/ ./test/*.cpp
+  - cppcheck --quiet --error-exitcode=1 -f -I include/ ./test/*.cpp

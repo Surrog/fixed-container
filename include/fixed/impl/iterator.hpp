@@ -302,12 +302,11 @@ namespace fixed
 			return rval + lval;
 		}
 
-				template <typename T>
+		template <typename T>
 		auto operator+(std::ptrdiff_t lval, const const_pointer_iterator<T>& rval)
 		{
 			return rval + lval;
 		}
-
 
 		template <typename T>
 		struct wrap_pointer_iterator
@@ -587,20 +586,17 @@ namespace fixed
 			T _value = T();
 		};
 
-
 		template <typename T>
 		auto operator+(std::ptrdiff_t lval, const wrap_pointer_iterator<T>& rval)
 		{
 			return rval + lval;
 		}
 
-
 		template <typename T>
 		auto operator+(std::ptrdiff_t lval, const const_wrap_pointer_iterator<T>& rval)
 		{
 			return rval + lval;
 		}
-
 	}
 }
 
