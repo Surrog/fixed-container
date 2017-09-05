@@ -11,11 +11,11 @@ namespace fixed
 	namespace _impl
 	{
 		template <typename T, class = void>
-		struct is_iterator : public std::bool_constant<false>
+		struct is_iterator : public std::false_type
 		{};
 
 		template <typename T>
-		struct is_iterator<T, fixed::astd::void_t<typename std::iterator_traits<T>::iterator_category>> : public std::bool_constant<true>
+		struct is_iterator<T, fixed::astd::void_t<typename std::iterator_traits<T>::iterator_category>> : public std::true_type
 		{};
 
 		template <typename T>
