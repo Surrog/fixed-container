@@ -22,4 +22,5 @@ before_install:
 script:
   - cmake ./test
   - cmake --build . -- -j2
-  - ls
+  - ./fixed_test
+  - cppcheck --help
