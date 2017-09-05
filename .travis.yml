@@ -21,12 +21,12 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-5.0
+            - llvm-toolchain-trusty-4.0
           packages:
-            - clang-5.0
+            - clang-4.0
             - cppcheck
       env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
 
 before_install:
     - eval "${MATRIX_EVAL}"
