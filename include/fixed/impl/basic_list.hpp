@@ -117,17 +117,45 @@ namespace fixed
 				: basic_list(other.begin(), other.end())
 			{}
 
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			basic_list(const basic_list<T, RSIZE, RALLOC>& other)
+				: basic_list(other.begin(), other.end())
+			{}
+
+
 			template <class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-			basic_list(const basic_list& other, const Alloc_source& alloc)
+				basic_list(const basic_list& other, const Alloc_source& alloc)
 				: basic_list(other.begin(), other.end(), alloc)
 			{}
+
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC,
+				class Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+				basic_list(const basic_list<T, RSIZE, RALLOC>& other, const Alloc_source& alloc)
+				: basic_list(other.begin(), other.end(), alloc)
+			{}
+
 
 			template < class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-			basic_list(basic_list&& other, const Alloc_source& alloc)
+				basic_list(basic_list&& other, const Alloc_source& alloc)
+				: basic_list(alloc)
+			{
+				for (auto& elem : other)
+				{
+					push_back(std::move(elem));
+				}
+			}
+
+			template < container_size_type RSIZE, template <typename, container_size_type> typename RALLOC,
+				class Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
+			>
+				basic_list(basic_list<RSIZE, RALLOC>&& other, const Alloc_source& alloc)
 				: basic_list(alloc)
 			{
 				for (auto& elem : other)
@@ -140,10 +168,16 @@ namespace fixed
 				: basic_list(other, allocator_type())
 			{}
 
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			basic_list(basic_list<T, RSIZE, RALLOC> && other)
+				: basic_list(other, allocator_type())
+			{}
+
+
 			template < class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-			basic_list(std::initializer_list<T> init, const Alloc_source& alloc = Alloc_source())
+				basic_list(std::initializer_list<T> init, const Alloc_source& alloc = Alloc_source())
 				: basic_list(init.begin(), init.end(), alloc)
 			{}
 
@@ -153,6 +187,21 @@ namespace fixed
 			}
 
 			basic_list& operator=(const basic_list& other)
+			{
+				if (this != &other)
+				{
+					size_type i = 0;
+					for (auto& val : other)
+					{
+						set_at(i, val);
+						++i;
+					}
+				}
+				return *this;
+			}
+
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			basic_list& operator=(const basic_list<T, RSIZE, RALLOC>& other)
 			{
 				if (this != &other)
 				{
@@ -181,6 +230,23 @@ namespace fixed
 				return *this;
 			}
 
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			basic_list& operator=(basic_list<T, RSIZE, RALLOC>&& other) noexcept
+			{
+				if (this != &other)
+				{
+					size_type i = 0;
+
+					for (auto& val : other)
+					{
+						set_at(i, std::move(val));
+						++i;
+					}
+				}
+				return *this;
+			}
+
+
 			basic_list& operator=(std::initializer_list<T> ilist)
 			{
 				size_type i = 0;
@@ -203,7 +269,7 @@ namespace fixed
 			template< class InputIt,
 				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
 			>
-			void assign(InputIt first, InputIt last)
+				void assign(InputIt first, InputIt last)
 			{
 				size_type i = 0;
 				while (first != last)
@@ -370,7 +436,7 @@ namespace fixed
 			template< class InputIt,
 				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
 			>
-			void insert(const_iterator pos, InputIt first, InputIt last)
+				void insert(const_iterator pos, InputIt first, InputIt last)
 			{
 				auto index = pos - begin();
 				assert(index <= _size);
@@ -506,7 +572,8 @@ namespace fixed
 				resize(count, value_type());
 			}
 
-			void swap(basic_list& other)
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			void swap(basic_list<T, RSIZE, RALLOC>& other)
 			{
 				size_type i = 0;
 				while (i < _size && i < other._size)
@@ -531,7 +598,133 @@ namespace fixed
 			}
 
 			//Operations
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			void merge(basic_list<T, RSIZE, RALLOC>&& other)
+			{
+				merge(other, std::less<T>());
+			}
 
+			template <class Compare, container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			void merge(basic_list<RSIZE, RALLOC>&& other, Compare comp)
+			{
+				assert(size() + other.size() <= max_size());
+				assert(&other != this);
+				for (auto& item : other)
+				{
+					insert(std::lower_bound(begin(), end(), item, comp), std::move(item));
+				}
+				other.clear();
+			}
+
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			void splice(const_iterator pos, basic_list<T, RSIZE, RALLOX>&& other)
+			{
+				splice(pos, other, other.begin(), other.end());
+			}
+
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other, const_iterator it)
+			{
+				assert(this != &other);
+				insert(pos, std::move(it));
+				other.erase(it);
+			}
+
+			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
+			void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other, const_iterator first, const_iterator last)
+			{
+				assert(this != &other);
+				auto index = pos - begin();
+				assert(index <= _size);
+				auto old_size = _size;
+				size_type size_inserted = 0;
+				while (first != last)
+				{
+					push_back(std::move(*first));
+					++size_inserted;
+					++first;
+				}
+				if (index != _size && size_inserted != 0)
+				{
+					std::rotate(_ptrs + index, _ptrs + old_size, _ptrs + old_size + size_inserted);
+				}
+				other.erase(first, last);
+			}
+
+			void remove(const T& value)
+			{
+				remove_if([&value](const auto& v) { return v == value; })
+			}
+
+			template <class UnaryPredicate>
+			void remove_if(UnaryPredicate p)
+			{
+				auto it_ptr = std::find_if(_ptrs.data(), _ptrs.data() + _size, [&p](const auto& ptr) { return p(*ptr); });
+				if (it_ptr != _ptrs.data())
+				{
+					it_ptr->~T();
+					if (it_ptr != _ptrs.data() + _size - 1)
+					{
+						std::rotate(it_ptr, it_ptr + 1, _ptrs.data() + _size);
+					}
+					_size--;
+				}
+			}
+
+			void reverse() noexcept
+			{
+				std::reverse(_ptrs.data(), _ptrs.data() + _size);
+			}
+
+			void unique()
+			{
+				unique(std::equal_to());
+			}
+
+			template <class BinaryPredicate>
+			void unique(BinaryPredicate p)
+			{
+				if (_size > 1)
+				{
+					auto beg = _ptrs.data();
+					auto end = _ptrs.data() + _size;
+					while (beg < end - 2)
+					{
+						while (p(*beg, (*beg + 1)))
+						{
+							erase_local_ptr(beg + 1);
+							end--;
+						}
+						beg++;
+					}
+				}
+			}
+
+			void sort()
+			{
+				sort(std::less<T>());
+			}
+
+			template <class Compare>
+			void sort(Compare comp)
+			{
+				std::sort(_ptrs.data(), _ptrs.data() + _size, [&comp](auto& lval, auto& rval)
+				{
+					return comp(*lval, *rval);
+				});
+			}
+
+		private:
+			void erase_local_ptr(T** ptr)
+			{
+				assert(_size > 0);
+				(*ptr)->~T();
+				if (ptr != _ptrs.data() + _size - 1)
+				{
+					std::rotate(ptr, ptr + 1, _ptrs.data() + _size - 1);
+				}
+				_size--;
+			}
 		};
 	}
 }
