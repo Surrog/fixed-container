@@ -11,5 +11,6 @@ build_script:
     
     cmake --build .
     
-    dir
+    C:\project\fixed-container\build\Debug\fixed_test.exe
+
 
