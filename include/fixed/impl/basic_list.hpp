@@ -561,7 +561,8 @@ namespace fixed
 			void swap(basic_list<T, RSIZE, RALLOC>& other)
 			{
 				size_type i = 0;
-				while (i < _size && i < other._size)
+				size_type other_size = other._size;
+				while (i < _size && i < other_size)
 				{
 					std::swap(*_ptrs[i], *other._ptrs[i]);
 					++i;
@@ -663,7 +664,7 @@ namespace fixed
 
 			void unique()
 			{
-				unique(std::equal_to());
+				unique(std::equal_to<T>());
 			}
 
 			template <class BinaryPredicate>
