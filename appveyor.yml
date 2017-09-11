@@ -1,13 +1,13 @@
 image:
 - Visual Studio 2017
-clone_folder: C:\project\fixed-container_test
+clone_folder: C:\project\fixed-container
 build_script:
 - cmd: >-
     mkdir build
 
     cd build
     
-    cmake c:\project\fixed-container_test -G "Visual Studio 15"
+    cmake C:\project\fixed-container\test -G "Visual Studio 15"
     
     cmake --build .
     
