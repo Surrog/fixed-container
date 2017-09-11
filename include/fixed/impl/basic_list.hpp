@@ -639,7 +639,7 @@ namespace fixed
 
 			void remove(const T& value)
 			{
-				remove_if([&value](const auto& v) { return v == value; })
+				remove_if([&value](const auto& v) { return v == value; });
 			}
 
 			template <class UnaryPredicate>
