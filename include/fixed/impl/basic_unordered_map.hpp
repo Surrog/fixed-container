@@ -37,6 +37,10 @@ namespace fixed
 			typedef pointer_iterator<const T> const_iterator;
 			typedef std::reverse_iterator<iterator> reverse_iterator;
 			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+			template <typename Types, size_type ALLOC_SIZE>
+			using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
+
 		private:
 			struct node {
 				value_type* item;

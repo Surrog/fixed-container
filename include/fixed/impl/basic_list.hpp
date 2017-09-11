@@ -25,10 +25,13 @@ namespace fixed
 			typedef const value_type& const_reference;
 			typedef value_type* pointer;
 			typedef const value_type* const_pointer;
-			typedef wrap_pointer_iterator<pointer_iterator<T>> iterator;
-			typedef const_wrap_pointer_iterator<const_pointer_iterator<T>> const_iterator;
+			typedef wrap_pointer_iterator<T, pointer_iterator<T*>> iterator;
+			typedef const_wrap_pointer_iterator<T, const_pointer_iterator<T*>> const_iterator;
 			typedef std::reverse_iterator<iterator> reverse_iterator;
 			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+			template <typename Types, size_type ALLOC_SIZE>
+			using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
 
 		private:
 			Alloc_pattern<T, SIZE> _data_holder;
@@ -155,7 +158,7 @@ namespace fixed
 				class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-				basic_list(basic_list<RSIZE, RALLOC>&& other, const Alloc_source& alloc)
+				basic_list(basic_list<T, RSIZE, RALLOC>&& other, const Alloc_source& alloc)
 				: basic_list(alloc)
 			{
 				for (auto& elem : other)
@@ -165,12 +168,12 @@ namespace fixed
 			}
 
 			basic_list(basic_list&& other)
-				: basic_list(other, allocator_type())
+				: basic_list(other, empty_source())
 			{}
 
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
 			basic_list(basic_list<T, RSIZE, RALLOC> && other)
-				: basic_list(other, allocator_type())
+				: basic_list(other, empty_source())
 			{}
 
 
@@ -314,7 +317,7 @@ namespace fixed
 			iterator begin() noexcept
 			{
 				if (_size > 0)
-					return iterator(_ptrs);
+					return iterator(_ptrs.data());
 				return end();
 			}
 
@@ -326,14 +329,14 @@ namespace fixed
 			const_iterator cbegin() const noexcept
 			{
 				if (_size > 0)
-					return const_iterator(_ptrs);
+					return const_iterator(_ptrs.data());
 				return end();
 			}
 
 			iterator end() noexcept
 			{
 				if (_size > 0)
-					return iterator(_ptrs + _size);
+					return iterator(_ptrs.data() + _size);
 				return iterator();
 			}
 
@@ -605,7 +608,7 @@ namespace fixed
 			}
 
 			template <class Compare, container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
-			void merge(basic_list<RSIZE, RALLOC>&& other, Compare comp)
+			void merge(basic_list<T, RSIZE, RALLOC>&& other, Compare comp)
 			{
 				assert(size() + other.size() <= max_size());
 				assert(&other != this);
@@ -617,7 +620,7 @@ namespace fixed
 			}
 
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
-			void splice(const_iterator pos, basic_list<T, RSIZE, RALLOX>&& other)
+			void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other)
 			{
 				splice(pos, other, other.begin(), other.end());
 			}

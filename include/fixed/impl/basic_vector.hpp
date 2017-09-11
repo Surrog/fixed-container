@@ -403,7 +403,7 @@ namespace fixed
 				auto initial_pos = std::distance(cbegin(), first);
 				if (last != end() || last != const_iterator())
 				{
-					std::rotate(iterator(&*first), iterator(&*(last)), end());
+					std::rotate(begin() + initial_pos, begin() + initial_pos + elem_num, end());
 				}
 				for (auto i = 0; i < elem_num; i++)
 				{

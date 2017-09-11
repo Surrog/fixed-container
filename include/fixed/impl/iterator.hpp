@@ -21,12 +21,10 @@ namespace fixed
 		template <typename T>
 		struct pointer_iterator
 		{
-			typedef typename std::remove_pointer<T>::type rp_value_type;
-
 		public:
-			typedef typename std::remove_const<rp_value_type>::type value_type;
-			typedef rp_value_type* pointer;
-			typedef rp_value_type& reference;
+			typedef T value_type;
+			typedef value_type* pointer;
+			typedef value_type& reference;
 			typedef std::ptrdiff_t difference_type;
 			typedef std::random_access_iterator_tag iterator_category;
 
@@ -58,8 +56,8 @@ namespace fixed
 
 			pointer_iterator() = default;
 
-			pointer_iterator(const T* val) 
-				: _value(const_cast<value_type*>(val))
+			pointer_iterator(T* val) 
+				: _value(val)
 			{}
 
 			pointer_iterator(const pointer_iterator&) = default;
@@ -158,12 +156,10 @@ namespace fixed
 		template <typename T>
 		struct const_pointer_iterator
 		{
-			typedef typename std::remove_pointer<T>::type rp_value_type;
-
 		public:
-			typedef rp_value_type value_type;
-			typedef const rp_value_type* pointer;
-			typedef const rp_value_type& reference;
+			typedef T value_type;
+			typedef const T* pointer;
+			typedef const T& reference;
 			typedef std::ptrdiff_t difference_type;
 			typedef std::random_access_iterator_tag iterator_category;
 
@@ -308,17 +304,15 @@ namespace fixed
 			return rval + lval;
 		}
 
-		template <typename T>
+		template <typename T, typename STORAGE>
 		struct wrap_pointer_iterator
 		{
-			typedef typename T::rp_value_type rp_value_type;
-
 		public:
-			typedef typename T::value_type value_type;
-			typedef typename T::pointer pointer;
-			typedef typename T::reference reference;
-			typedef typename T::difference_type difference_type;
-			typedef typename T::iterator_category iterator_category;
+			typedef T value_type;
+			typedef T* pointer;
+			typedef T& reference;
+			typedef std::ptrdiff_t difference_type;
+			typedef std::random_access_iterator_tag iterator_category;
 
 			bool operator==(const wrap_pointer_iterator& rval) const
 			{
@@ -338,17 +332,17 @@ namespace fixed
 			reference operator*() const
 			{
 				assert(_value != nullptr);
-				return *_value;
+				return **_value;
 			}
 
 			pointer operator->() const
 			{
-				return _value;
+				return *_value;
 			}
 
 			wrap_pointer_iterator() = default;
 
-			wrap_pointer_iterator(const T& val)
+			wrap_pointer_iterator(const STORAGE& val)
 				: _value(val)
 			{}
 
@@ -442,20 +436,18 @@ namespace fixed
 			}
 
 		private:
-			T _value = T();
+			STORAGE _value = T();
 		};
 
-		template <typename T>
+		template <typename T, typename STORAGE>
 		struct const_wrap_pointer_iterator
 		{
-			typedef typename T::rp_value_type rp_value_type;
-
 		public:
-			typedef typename T::value_type value_type;
-			typedef typename T::pointer pointer;
-			typedef typename T::reference reference;
-			typedef typename T::difference_type difference_type;
-			typedef typename T::iterator_category iterator_category;
+			typedef T value_type;
+			typedef const T* pointer;
+			typedef const T& reference;
+			typedef std::ptrdiff_t difference_type;
+			typedef std::random_access_iterator_tag iterator_category;
 
 			bool operator==(const const_wrap_pointer_iterator& rval) const
 			{
@@ -469,23 +461,23 @@ namespace fixed
 
 			reference get() const
 			{
-				return *_value;
+				return **_value;
 			}
 
 			reference operator*() const
 			{
 				assert(_value != nullptr);
-				return *_value;
+				return **_value;
 			}
 
 			pointer operator->() const
 			{
-				return _value;
+				return *_value;
 			}
 
 			const_wrap_pointer_iterator() = default;
 
-			const_wrap_pointer_iterator(const T& val)
+			const_wrap_pointer_iterator(const STORAGE& val)
 				: _value(val)
 			{}
 
@@ -494,8 +486,9 @@ namespace fixed
 			const_wrap_pointer_iterator& operator=(const const_wrap_pointer_iterator&) = default;
 			const_wrap_pointer_iterator& operator=(const_wrap_pointer_iterator&&) noexcept = default;
 
-			const_wrap_pointer_iterator(const wrap_pointer_iterator<value_type>& orig)
-				: _value(&orig.get())
+			template <typename RSTORAGE>
+			const_wrap_pointer_iterator(const wrap_pointer_iterator<value_type, RSTORAGE>& orig)
+				: _value(orig)
 			{}
 
 			const_wrap_pointer_iterator& operator++()
@@ -583,17 +576,17 @@ namespace fixed
 			}
 
 		private:
-			T _value = T();
+			STORAGE _value = T();
 		};
 
-		template <typename T>
-		auto operator+(std::ptrdiff_t lval, const wrap_pointer_iterator<T>& rval)
+		template <typename T, typename STO>
+		auto operator+(std::ptrdiff_t lval, const wrap_pointer_iterator<T, STO>& rval)
 		{
 			return rval + lval;
 		}
 
-		template <typename T>
-		auto operator+(std::ptrdiff_t lval, const const_wrap_pointer_iterator<T>& rval)
+		template <typename T, typename STO>
+		auto operator+(std::ptrdiff_t lval, const const_wrap_pointer_iterator<T, STO>& rval)
 		{
 			return rval + lval;
 		}

@@ -26,6 +26,7 @@ include_directories(${INCLUDE_DIRS})
 set(SOURCES
 	"${PROJECT_SOURCE_DIR}/catch.hpp"
 	"${PROJECT_SOURCE_DIR}/main.cpp"
+	"${PROJECT_SOURCE_DIR}/test_list.cpp"
 	"${PROJECT_SOURCE_DIR}/test_unordered_map.cpp"
 	"${PROJECT_SOURCE_DIR}/test_vector.cpp"
 	
