@@ -162,32 +162,38 @@ namespace fixed
 				: basic_list(other.begin(), other.end())
 			{}
 
+			template <class Alloc_source = empty_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+				basic_list(const basic_list& other, Alloc_source& alloc)
+				: basic_list(other.begin(), other.end(), alloc)
+			{}
+
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
 			basic_list(const basic_list<T, RSIZE, RALLOC>& other)
 				: basic_list(other.begin(), other.end())
 			{}
 
-
-			template <class Alloc_source = empty_source,
-				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
-			>
-				basic_list(const basic_list& other, Alloc_source& alloc)
-				: basic_list(other.begin(), other.end(), alloc)
-			{}
-
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC,
 				class Alloc_source = empty_source,
-				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
-			>
-				basic_list(const basic_list<T, RSIZE, RALLOC>& other, const Alloc_source& alloc)
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+			basic_list(const basic_list<T, RSIZE, RALLOC>& other, Alloc_source& alloc)
 				: basic_list(other.begin(), other.end(), alloc)
 			{}
 
+			basic_list(basic_list&& other)
+				: basic_list()
+			{
+				for (auto& elem : other)
+				{
+					push_back(std::move(elem));
+				}
+				other.clear();
+			}
 
 			template < class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-				basic_list(basic_list&& other, const Alloc_source& alloc)
+				basic_list(basic_list&& other, Alloc_source& alloc)
 				: basic_list(alloc)
 			{
 				for (auto& elem : other)
@@ -201,18 +207,8 @@ namespace fixed
 				class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-				basic_list(basic_list<T, RSIZE, RALLOC>&& other, const Alloc_source& alloc)
+				basic_list(basic_list<T, RSIZE, RALLOC>&& other, Alloc_source& alloc)
 				: basic_list(alloc)
-			{
-				for (auto& elem : other)
-				{
-					push_back(std::move(elem));
-				}
-				other.clear();
-			}
-
-			basic_list(basic_list&& other)
-				: basic_list()
 			{
 				for (auto& elem : other)
 				{
@@ -228,9 +224,8 @@ namespace fixed
 
 
 			template < class Alloc_source = empty_source,
-				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
-			>
-				basic_list(std::initializer_list<T> init, const Alloc_source& alloc = Alloc_source())
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+			basic_list(std::initializer_list<T> init, const Alloc_source& alloc = Alloc_source())
 				: basic_list(init.begin(), init.end(), alloc)
 			{}
 
