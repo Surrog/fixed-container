@@ -36,7 +36,7 @@ namespace fixed
 		private:
 			Alloc_pattern<T, SIZE> _data_holder;
 			Alloc_pattern<T*, SIZE> _ptrs;
-			size_type _size;
+			size_type _size = 0;
 
 			void push_back()
 			{
@@ -70,10 +70,18 @@ namespace fixed
 			}
 
 		public:
-			basic_list() : basic_list(empty_source()) {}
+			basic_list() 
+				: _data_holder(), _ptrs(), _size(0)
+			{
+				for (size_type i = 0; i < SIZE; i++)
+				{
+					_ptrs[i] = _data_holder.data() + i;
+				}
+			}
 
-			template <typename Alloc_source>
-			explicit basic_list(const Alloc_source& alloc)
+			template <typename Alloc_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+			explicit basic_list(Alloc_source& alloc)
 				: _data_holder(alloc), _ptrs(), _size(0)
 			{
 				for (size_type i = 0; i < SIZE; i++)
@@ -82,18 +90,18 @@ namespace fixed
 				}
 			}
 
-			template <typename Alloc_source = empty_source>
-			basic_list(size_type count, const T& value = T(), const Alloc_source& alloc = Alloc_source())
-				: basic_list(alloc)
+			explicit basic_list(size_type count)
+				: basic_list()
 			{
 				for (size_type i = 0; i < count; i++)
 				{
-					push_back(value);
+					push_back();
 				}
 			}
 
-			template <typename Alloc_source = empty_source>
-			explicit basic_list(size_type count, const Alloc_source& alloc = Alloc_source())
+			template <typename Alloc_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+				explicit basic_list(size_type count, Alloc_source& alloc)
 				: basic_list(alloc)
 			{
 				for (size_type i = 0; i < count; i++)
@@ -102,11 +110,45 @@ namespace fixed
 				}
 			}
 
+			basic_list(size_type count, const T& value)
+				: basic_list()
+			{
+				for (size_type i = 0; i < count; i++)
+				{
+					push_back(value);
+				}
+			}
+
+			template <typename Alloc_source,
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+			basic_list(size_type count, const T& value, Alloc_source& alloc)
+				: basic_list(alloc)
+			{
+				for (size_type i = 0; i < count; i++)
+				{
+					push_back(value);
+				}
+			}
+
+			template< class InputIt,
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
+			>
+				basic_list(InputIt first, InputIt last)
+				: basic_list()
+			{
+				while (first != last)
+				{
+					push_back(*first);
+					++first;
+				}
+			}
+
+
 			template< class InputIt, class Alloc_source = empty_source,
 				std::enable_if_t<is_iterator<InputIt>::value, int> = 0,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-				basic_list(InputIt first, InputIt last, const Alloc_source& alloc = Alloc_source())
+				basic_list(InputIt first, InputIt last, Alloc_source& alloc)
 				: basic_list(alloc)
 			{
 				while (first != last)
@@ -129,7 +171,7 @@ namespace fixed
 			template <class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-				basic_list(const basic_list& other, const Alloc_source& alloc)
+				basic_list(const basic_list& other, Alloc_source& alloc)
 				: basic_list(other.begin(), other.end(), alloc)
 			{}
 
@@ -152,6 +194,7 @@ namespace fixed
 				{
 					push_back(std::move(elem));
 				}
+				other.clear();
 			}
 
 			template < container_size_type RSIZE, template <typename, container_size_type> typename RALLOC,
@@ -165,11 +208,18 @@ namespace fixed
 				{
 					push_back(std::move(elem));
 				}
+				other.clear();
 			}
 
 			basic_list(basic_list&& other)
-				: basic_list(other, empty_source())
-			{}
+				: basic_list()
+			{
+				for (auto& elem : other)
+				{
+					push_back(std::move(elem));
+				}
+				other.clear();
+			}
 
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
 			basic_list(basic_list<T, RSIZE, RALLOC> && other)
@@ -348,7 +398,7 @@ namespace fixed
 			const_iterator cend() const noexcept
 			{
 				if (_size > 0)
-					return const_iterator(_ptrs + _size);
+					return const_iterator(_ptrs.data() + _size);
 				return const_iterator();
 			}
 
@@ -493,7 +543,7 @@ namespace fixed
 
 			void push_back(T&& value)
 			{
-				assert(_size + 1 < SIZE);
+				assert(_size + 1 < max_size());
 				new (_ptrs[_size]) T(value);
 				++_size;
 			}
