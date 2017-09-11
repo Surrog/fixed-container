@@ -468,7 +468,7 @@ namespace fixed
 				auto index = pos - begin();
 				assert(index <= _size);
 				auto old_size = _size;
-				emplace_back(args);
+				emplace_back(args...);
 				if (index != _size)
 					std::rotate(_ptrs + index, _ptrs + old_size, _ptrs + old_size + 1);
 				return iterator(_ptrs + index);
@@ -476,30 +476,12 @@ namespace fixed
 
 			iterator erase(const_iterator pos)
 			{
-				auto index = pos - begin();
-				assert(index <= _size);
-				if (index == _size) index--;
-				_ptrs[index]->~T();
-				if (index != (_size - 1))
-					std::rotate(_ptrs + index, _ptrs + index + 1, _ptrs + _size);
-				--_size;
+				assert(false);//TODO: implement this
 			}
 
 			iterator erase(const_iterator first, const_iterator last)
 			{
-				auto index = pos - first;
-				assert(index <= _size);
-				if (index == _size) index--;
-				size_type size_to_delete = 0;
-				while (first != last)
-				{
-					first->~T();
-					++size_to_delete;
-					++first;
-				}
-				if (index + size_to_delete != _size)
-					std::rotate(_ptrs + index, _ptrs + index + size_to_delete, _ptrs + _size);
-				_size -= size_to_delete;
+				assert(false);//TODO: implement this
 			}
 
 			void push_back(const T& value)
