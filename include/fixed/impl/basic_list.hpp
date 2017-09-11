@@ -342,7 +342,7 @@ namespace fixed
 
 			const_iterator end() const noexcept
 			{
-				return cbegin();
+				return cend();
 			}
 
 			const_iterator cend() const noexcept
