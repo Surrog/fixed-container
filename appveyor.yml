@@ -1,4 +1,4 @@
-images:
+image:
   - Visual Studio 2017
 clone_folder: C:\project\fixed-container_test
 build_script:
