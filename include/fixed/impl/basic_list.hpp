@@ -70,7 +70,7 @@ namespace fixed
 			}
 
 		public:
-			basic_list() 
+			basic_list()
 				: _data_holder(), _ptrs(), _size(0)
 			{
 				for (size_type i = 0; i < SIZE; i++)
@@ -101,7 +101,7 @@ namespace fixed
 
 			template <typename Alloc_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-				explicit basic_list(size_type count, Alloc_source& alloc)
+			explicit basic_list(size_type count, Alloc_source& alloc)
 				: basic_list(alloc)
 			{
 				for (size_type i = 0; i < count; i++)
@@ -131,9 +131,8 @@ namespace fixed
 			}
 
 			template< class InputIt,
-				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
-			>
-				basic_list(InputIt first, InputIt last)
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+			basic_list(InputIt first, InputIt last)
 				: basic_list()
 			{
 				while (first != last)
@@ -146,9 +145,8 @@ namespace fixed
 
 			template< class InputIt, class Alloc_source = empty_source,
 				std::enable_if_t<is_iterator<InputIt>::value, int> = 0,
-				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
-			>
-				basic_list(InputIt first, InputIt last, Alloc_source& alloc)
+				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+			basic_list(InputIt first, InputIt last, Alloc_source& alloc)
 				: basic_list(alloc)
 			{
 				while (first != last)
@@ -164,7 +162,7 @@ namespace fixed
 
 			template <class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-				basic_list(const basic_list& other, Alloc_source& alloc)
+			basic_list(const basic_list& other, Alloc_source& alloc)
 				: basic_list(other.begin(), other.end(), alloc)
 			{}
 
@@ -225,7 +223,7 @@ namespace fixed
 
 			template < class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-			basic_list(std::initializer_list<T> init, const Alloc_source& alloc = Alloc_source())
+				basic_list(std::initializer_list<T> init, const Alloc_source& alloc = Alloc_source())
 				: basic_list(init.begin(), init.end(), alloc)
 			{}
 
@@ -251,14 +249,11 @@ namespace fixed
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
 			basic_list& operator=(const basic_list<T, RSIZE, RALLOC>& other)
 			{
-				if (this != &other)
+				size_type i = 0;
+				for (auto& val : other)
 				{
-					size_type i = 0;
-					for (auto& val : other)
-					{
-						set_at(i, val);
-						++i;
-					}
+					set_at(i, val);
+					++i;
 				}
 				return *this;
 			}
