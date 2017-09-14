@@ -310,9 +310,8 @@ namespace fixed
 			}
 
 			template< class InputIt,
-				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
-			>
-				void assign(InputIt first, InputIt last)
+				std::enable_if_t<is_iterator<InputIt>::value, int> = 0			>
+			void assign(InputIt first, InputIt last)
 			{
 				size_type i = 0;
 				while (first != last)

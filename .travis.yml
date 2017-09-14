@@ -21,6 +21,6 @@ before_install:
 
 script:
   - cmake ./test
-  - cmake --build . -- -j2
+  - scan-build cmake --build . -- -j2
   - ./fixed_test
   - cppcheck --quiet --error-exitcode=1 -f -I include/ ./test/*.cpp
