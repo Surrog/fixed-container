@@ -370,6 +370,15 @@ void test_vector_modifier()
 			}
 		}
 	}
+
+	{
+		fixed::vector<int, 20, fixed::_impl::basic_stack_allocator> stack = { 1, 2, 3, 4, 5 };
+		fixed::vector<int, 30, fixed::_impl::basic_heap_allocator> heap = { 1, 2, 3, 4, 5 };
+
+		CHECK(stack == heap);
+		heap = { 5, 6, 7, 8, 9};
+		CHECK(stack != heap);
+	}
 }
 
 void test_vector_allocator()
