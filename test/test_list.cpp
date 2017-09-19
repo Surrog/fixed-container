@@ -135,12 +135,12 @@ void test_modifiers()
 
 		l.insert(l.end(), 6);
 		auto exp2 = { 0, 1, 2, 3, 4, 5, 6 };
-		CHECK(l.size() == exp1.size());
+		CHECK(l.size() == exp2.size());
 		CHECK(std::equal(l.begin(), l.end(), exp2.begin(), exp2.end()));
 
 		l.insert(l.begin() + 1, 10);
 		auto exp3 = { 0, 10, 1, 2, 3, 4, 5, 6 };
-		CHECK(l.size() == exp1.size());
+		CHECK(l.size() == exp3.size());
 		CHECK(std::equal(l.begin(), l.end(), exp3.begin(), exp3.end()));
 	}
 
