@@ -85,6 +85,22 @@ void test_pointer_iterator()
 	}
 }
 
+void test_wrap_iterator()
+{
+	{
+		fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char*>> it1;
+		fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char*>> it2;
+		CHECK(it1 == it2);
+		CHECK(!(it1 != it2));
+	}
+
+	{
+		char test[5] = "1234";
+		char* ref_test[5] = { test + 0, test + 1, test + 2, test + 3, test + 4 };
+
+
+	}
+}
 
 template <typename ITERATOR_TYPE>
 void test_not_const()
@@ -122,4 +138,12 @@ TEST_CASE("testing allocator", "[utility]")
 
 	test_pointer_iterator<fixed::_impl::pointer_iterator>();
 	test_pointer_iterator<fixed::_impl::const_pointer_iterator>();
+
+	test_not_const<fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char>>>();
+	test_not_const<fixed::_impl::const_wrap_pointer_iterator<char, fixed::_impl::const_pointer_iterator<char>>>();
+
+	test_assign<fixed::_impl::const_wrap_pointer_iterator<char, fixed::_impl::const_pointer_iterator<char>>
+		, fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char>>>();
+
+	test_wrap_iterator();
 }

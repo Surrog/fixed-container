@@ -315,9 +315,9 @@ namespace fixed
 		struct wrap_pointer_iterator
 		{
 		public:
-			typedef T value_type;
-			typedef T* pointer;
-			typedef T& reference;
+			typedef typename std::remove_pointer<typename STORAGE::value_type>::type value_type;
+			typedef value_type* pointer;
+			typedef value_type& reference;
 			typedef std::ptrdiff_t difference_type;
 			typedef std::random_access_iterator_tag iterator_category;
 
@@ -450,7 +450,7 @@ namespace fixed
 		struct const_wrap_pointer_iterator
 		{
 		public:
-			typedef T value_type;
+			typedef typename std::remove_pointer<typename STORAGE::value_type>::type value_type;
 			typedef const T* pointer;
 			typedef const T& reference;
 			typedef std::ptrdiff_t difference_type;
