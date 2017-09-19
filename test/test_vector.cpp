@@ -145,6 +145,11 @@ void test_vector_iterator()
 	}
 
 	{
+		auto reverse = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+		CHECK(std::equal(vec.rbegin(), vec.rend(), reverse.begin(), reverse.end()));
+	}
+
+	{
 		CHECK(static_cast<std::size_t>(std::distance(vec.begin(), vec.end())) == vec.size());
 	}
 
