@@ -56,7 +56,7 @@ namespace fixed
 
 			pointer_iterator() = default;
 
-			pointer_iterator(T* val) 
+			pointer_iterator(pointer val) 
 				: _value(val)
 			{}
 
@@ -191,8 +191,8 @@ namespace fixed
 
 			const_pointer_iterator() = default;
 
-			const_pointer_iterator(const T* val)
-				: _value(const_cast<value_type*>(val))
+			const_pointer_iterator(pointer val)
+				: _value(val)
 			{}
 
 			const_pointer_iterator(const const_pointer_iterator&) = default;
@@ -289,7 +289,7 @@ namespace fixed
 			}
 
 		private:
-			value_type* _value = nullptr;
+			const value_type* _value = nullptr;
 		};
 
 		template <typename T>
@@ -308,9 +308,9 @@ namespace fixed
 		struct wrap_pointer_iterator
 		{
 		public:
-			typedef T value_type;
-			typedef T* pointer;
-			typedef T& reference;
+			typedef typename STORAGE::value_type value_type;
+			typedef typename STORAGE::pointer pointer;
+			typedef typename STORAGE::reference reference;
 			typedef std::ptrdiff_t difference_type;
 			typedef std::random_access_iterator_tag iterator_category;
 

@@ -181,7 +181,7 @@ namespace fixed
 			basic_list(basic_list&& other)
 				: basic_list()
 			{
-				for (auto& elem : other)
+				for (T& elem : other)
 				{
 					push_back(std::move(elem));
 				}
@@ -454,25 +454,25 @@ namespace fixed
 
 			iterator insert(const_iterator pos, T&& value)
 			{
-				auto index = pos - begin();
+				container_size_type index = pos - begin();
 				assert(index <= _size);
 				auto old_size = _size;
 				push_back(value);
 				if (index != _size)
-					std::rotate(_ptrs + index, _ptrs + old_size, _ptrs + old_size + 1);
-				return iterator(_ptrs + index);
+					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + 1);
+				return iterator(_ptrs.data() + index);
 			}
 
 			iterator insert(const_iterator pos, size_type count, const T& value)
 			{
-				auto index = pos - begin();
+				container_size_type index = pos - begin();
 				assert(index <= _size);
 				auto old_size = _size;
 				for (size_type i = 0; i < count; i++)
 					push_back(value);
 				if (index != _size && count != 0)
-					std::rotate(_ptrs + index, _ptrs + old_size, _ptrs + old_size + count);
-				return iterator(_ptrs + index);
+					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + count);
+				return iterator(_ptrs.data() + index);
 			}
 
 			template< class InputIt,

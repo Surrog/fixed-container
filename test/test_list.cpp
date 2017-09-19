@@ -74,9 +74,82 @@ void test_list()
 		fixed::list<int, 30> l4 = l1;
 	}
 
+	{
+		fixed::list<int, 30> l;
+		auto expected = { 1, 1, 1, 1, 1 };
+		l.assign(5, 1);
+		CHECK(l.size() == 5);
+		CHECK(std::equal(l.begin(), l.end(), expected.begin(), expected.end()));
+	}
+
+	{
+		fixed::list<int, 30> l;
+		auto expected = { 1, 1, 1, 1, 1 };
+		l.assign(expected.begin(), expected.end());
+		CHECK(l.size() == 5);
+		CHECK(std::equal(l.begin(), l.end(), expected.begin(), expected.end()));
+	}
+
+	{
+		fixed::list<int, 30> l;
+		auto expected = { 1, 1, 1, 1, 1 };
+		l.assign(expected);
+		CHECK(l.size() == 5);
+		CHECK(std::equal(l.begin(), l.end(), expected.begin(), expected.end()));
+	}
+
+	{
+		fixed::list<int, 30> l;
+		auto expected = { 1, 2, 3, 4, 5 };
+		l.assign(expected.begin(), expected.end());
+		CHECK(l.size() == 5);
+		CHECK(std::equal(l.begin(), l.end(), expected.begin(), expected.end()));
+		CHECK(l.front() == 1);
+		CHECK(l.back() == 5);
+		auto reverse_expected = { 5, 4, 3, 2, 1 };
+		CHECK(std::equal(l.rbegin(), l.rend(), reverse_expected.begin(), reverse_expected.end()));
+	}
+}
+
+void test_modifiers()
+{
+	{
+		fixed::list<int, 30> l;
+		CHECK(l.empty());
+		auto expected = { 1, 2, 3, 4, 5 };
+		l.assign(expected.begin(), expected.end());
+		CHECK(!l.empty());
+		l.clear();
+		CHECK(l.empty());
+	}
+
+	{
+		fixed::list<int, 30> l;
+		auto expected = { 1, 2, 3, 4, 5 };
+		l.assign(expected);
+
+		l.insert(l.begin(), 0);
+		auto exp1 = { 0, 1, 2, 3, 4, 5 };
+		CHECK(l.size() == exp1.size());
+		CHECK(std::equal(l.begin(), l.end(), exp1.begin(), exp1.end()));
+
+		l.insert(l.end(), 6);
+		auto exp2 = { 0, 1, 2, 3, 4, 5, 6 };
+		CHECK(l.size() == exp1.size());
+		CHECK(std::equal(l.begin(), l.end(), exp2.begin(), exp2.end()));
+
+		l.insert(l.begin() + 1, 10);
+		auto exp3 = { 0, 10, 1, 2, 3, 4, 5, 6 };
+		CHECK(l.size() == exp1.size());
+		CHECK(std::equal(l.begin(), l.end(), exp3.begin(), exp3.end()));
+	}
+
+	{
+	}
 }
 
 TEST_CASE("testing lists", "[linear]")
 {
 	test_list();
+	test_modifiers();
 }
