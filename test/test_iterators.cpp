@@ -105,19 +105,19 @@ void test_wrap_iterator()
 template <typename ITERATOR_TYPE>
 void test_not_const()
 {
-	CHECK(fixed::_impl::is_iterator<ITERATOR_TYPE>::value);
-	CHECK(!std::is_const<ITERATOR_TYPE::value_type>::value);
-	CHECK(!std::is_const<ITERATOR_TYPE::pointer>::value);
-	CHECK(!std::is_const<ITERATOR_TYPE::reference>::value);
+	static_assert(fixed::_impl::is_iterator<ITERATOR_TYPE>::value, "supposed to be an iterator");
+	static_assert(!std::is_const<typename ITERATOR_TYPE::value_type>::value, "supposed to be not const");
+	static_assert(!std::is_const<typename ITERATOR_TYPE::pointer>::value, "supposed to be not const");
+	static_assert(!std::is_const<typename ITERATOR_TYPE::reference>::value, "supposed to be not const");
 }
 
 template <typename ITERATOR_TYPE>
 void test_is_const()
 {
-	CHECK(fixed::_impl::is_iterator<ITERATOR_TYPE>::value);
-	CHECK(std::is_const<ITERATOR_TYPE::value_type>::value);
-	CHECK(std::is_const<ITERATOR_TYPE::pointer>::value);
-	CHECK(std::is_const<ITERATOR_TYPE::reference>::value);
+	static_assert(fixed::_impl::is_iterator<ITERATOR_TYPE>::value, "supposed to be an iterator");
+	static_assert(!std::is_const<typename ITERATOR_TYPE::value_type>::value, "supposed to be const");
+	static_assert(std::is_const<typename ITERATOR_TYPE::pointer>::value, "supposed to be const");
+	static_assert(std::is_const<typename ITERATOR_TYPE::reference>::value, "supposed to be const");
 }
 
 template <typename LIT_T, typename RIT_T>
