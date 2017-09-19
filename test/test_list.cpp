@@ -1,6 +1,7 @@
 
 #include "catch.hpp"
 #include "fixed/list.hpp"
+#include <string>
 
 void test_list()
 {
@@ -128,20 +129,23 @@ void test_modifiers()
 		auto expected = { 1, 2, 3, 4, 5 };
 		l.assign(expected);
 
-		l.insert(l.begin(), 0);
+		auto result = l.insert(l.begin(), 0);
 		auto exp1 = { 0, 1, 2, 3, 4, 5 };
 		CHECK(l.size() == exp1.size());
 		CHECK(std::equal(l.begin(), l.end(), exp1.begin(), exp1.end()));
+		CHECK(*result == 0);
 
-		l.insert(l.end(), 6);
+		auto result2 = l.insert(l.end(), 6);
 		auto exp2 = { 0, 1, 2, 3, 4, 5, 6 };
 		CHECK(l.size() == exp2.size());
 		CHECK(std::equal(l.begin(), l.end(), exp2.begin(), exp2.end()));
+		CHECK(*result2 == 6);
 
-		l.insert(l.begin() + 1, 10);
+		auto result3 = l.insert(l.begin() + 1, 10);
 		auto exp3 = { 0, 10, 1, 2, 3, 4, 5, 6 };
 		CHECK(l.size() == exp3.size());
 		CHECK(std::equal(l.begin(), l.end(), exp3.begin(), exp3.end()));
+		CHECK(*result3 == 10);
 	}
 
 	{
@@ -153,7 +157,7 @@ void test_modifiers()
 		auto& next = *(l.begin() + 1);
 		CHECK(front == 1);
 		CHECK(next == 2);
-		l.insert(l.begin() + 1, 2, 10);
+		auto result = l.insert(l.begin() + 1, 2, 10);
 		auto exp = { 1, 10, 10, 2, 3, 4, 5 };
 		CHECK(l.size() == exp.size());
 		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
@@ -161,6 +165,7 @@ void test_modifiers()
 		CHECK(next == 2);
 		auto& new_next = *(l.begin() + 1);
 		CHECK(new_next == 10);
+		CHECK(*result == 10);
 	}
 
 	{
@@ -177,7 +182,7 @@ void test_modifiers()
 		CHECK(pos3 == 4);
 
 		auto to_insert = { 10, 11, 12 };
-		l.insert(l.begin() + 2, to_insert.begin(), to_insert.end());
+		auto result = l.insert(l.begin() + 2, to_insert.begin(), to_insert.end());
 		auto exp = { 1, 2, 10, 11, 12, 3, 4, 5 };
 		CHECK(l.size() == exp.size());
 		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
@@ -186,7 +191,61 @@ void test_modifiers()
 		CHECK(pos1 == 2);
 		CHECK(pos2 == 3);
 		CHECK(pos3 == 4);
+		CHECK(*result == 10);
 	}
+
+	{
+		fixed::list<int, 30> l = { 1, 2, 3, 4, 5 };
+
+		auto to_insert = { 10, 11, 12 };
+		auto result = l.insert(l.end(), to_insert.begin(), to_insert.end());
+		auto exp = { 1, 2, 3, 4, 5, 10, 11, 12 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+		CHECK(*result == 10);
+	}
+
+	{
+		fixed::list<int, 30> l = { 1, 2, 3, 4, 5 };
+
+		auto to_insert = { 10, 11, 12 };
+		auto result = l.insert(l.end(), to_insert);
+		auto exp = { 1, 2, 3, 4, 5, 10, 11, 12 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+		CHECK(*result == 10);
+	}
+
+	struct test {
+		test(const char* val) : _val(val) {}
+		const char * _val = nullptr;
+		bool operator==(const test& rval)
+		{
+			return std::equal(_val, _val + std::strlen(_val),
+				rval._val, rval._val + std::strlen(rval._val));
+		}
+	};
+
+	{
+		fixed::list<test, 30> l;
+		const char* exp = "test";
+		l.emplace_back("test");
+		CHECK(std::equal(l.front()._val, l.front()._val + 4, exp, exp + 4));
+	}
+
+	{
+		fixed::list<test, 5> l = {
+			test{"toto"}, test{"titi"}, test{"tata"}
+		};
+
+		l.emplace(l.begin() + 1, "test");
+		auto exp = {
+			test{ "toto" }, test{"test"}, test{ "titi" }, test{ "tata" }
+		};
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+	}
+
+
 }
 
 TEST_CASE("testing lists", "[linear]")

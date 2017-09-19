@@ -475,10 +475,8 @@ namespace fixed
 				return iterator(_ptrs.data() + index);
 			}
 
-			template< class InputIt,
-				std::enable_if_t<is_iterator<InputIt>::value, int> = 0
-			>
-				void insert(const_iterator pos, InputIt first, InputIt last)
+			template< class InputIt, std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+			iterator insert(const_iterator pos, InputIt first, InputIt last)
 			{
 				container_size_type index = pos - begin();
 				assert(index <= _size);
@@ -494,6 +492,7 @@ namespace fixed
 				{
 					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + size_inserted);
 				}
+				return iterator(_ptrs.data() + index);
 			}
 
 			iterator insert(const_iterator pos, std::initializer_list<T> ilist)
@@ -510,7 +509,7 @@ namespace fixed
 				emplace_back(args...);
 				if (index != _size)
 					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + 1);
-				return iterator(_ptrs + index);
+				return iterator(_ptrs.data() + index);
 			}
 
 			iterator erase(const_iterator pos)
