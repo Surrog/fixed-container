@@ -480,7 +480,7 @@ namespace fixed
 			>
 				void insert(const_iterator pos, InputIt first, InputIt last)
 			{
-				auto index = pos - begin();
+				container_size_type index = pos - begin();
 				assert(index <= _size);
 				auto old_size = _size;
 				size_type size_inserted = 0;
@@ -492,7 +492,7 @@ namespace fixed
 				}
 				if (index != _size && size_inserted != 0)
 				{
-					std::rotate(_ptrs + index, _ptrs + old_size, _ptrs + old_size + size_inserted);
+					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + size_inserted);
 				}
 			}
 
@@ -504,12 +504,12 @@ namespace fixed
 			template <class... Args>
 			iterator emplace(const_iterator pos, Args&&... args)
 			{
-				auto index = pos - begin();
+				container_size_type index = pos - begin();
 				assert(index <= _size);
 				auto old_size = _size;
 				emplace_back(args...);
 				if (index != _size)
-					std::rotate(_ptrs + index, _ptrs + old_size, _ptrs + old_size + 1);
+					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + 1);
 				return iterator(_ptrs + index);
 			}
 
@@ -568,7 +568,7 @@ namespace fixed
 			{
 				emplace_back(args...);
 				if (_size > 1)
-					std::rotate(_ptrs, _ptrs + _size - 2, _ptrs + size);
+					std::rotate(_ptrs.data(), _ptrs.data() + _size - 2, _ptrs.data() + size);
 				return front();
 			}
 
@@ -671,7 +671,7 @@ namespace fixed
 				}
 				if (index != _size && size_inserted != 0)
 				{
-					std::rotate(_ptrs + index, _ptrs + old_size, _ptrs + old_size + size_inserted);
+					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + size_inserted);
 				}
 				other.erase(first, last);
 			}

@@ -145,7 +145,47 @@ void test_modifiers()
 	}
 
 	{
-		
+		fixed::list<int, 30> l;
+		auto init = { 1, 2, 3, 4, 5 };
+		l.assign(init);
+
+		auto& front = l.front();
+		auto& next = *(l.begin() + 1);
+		CHECK(front == 1);
+		CHECK(next == 2);
+		l.insert(l.begin() + 1, 2, 10);
+		auto exp = { 1, 10, 10, 2, 3, 4, 5 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+		CHECK(front == 1);
+		CHECK(next == 2);
+		auto& new_next = *(l.begin() + 1);
+		CHECK(new_next == 10);
+	}
+
+	{
+		fixed::list<int, 30> l = { 1, 2, 3, 4, 5 };
+
+		auto& pos0 = l.front();
+		auto& pos1 = *(l.begin() + 1);
+		auto& pos2 = *(l.begin() + 2);
+		auto& pos3 = *(l.begin() + 3);
+
+		CHECK(pos0 == 1);
+		CHECK(pos1 == 2);
+		CHECK(pos2 == 3);
+		CHECK(pos3 == 4);
+
+		auto to_insert = { 10, 11, 12 };
+		l.insert(l.begin() + 2, to_insert.begin(), to_insert.end());
+		auto exp = { 1, 2, 10, 11, 12, 3, 4, 5 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+		CHECK(pos0 == 1);
+		CHECK(pos1 == 2);
+		CHECK(pos2 == 3);
+		CHECK(pos3 == 4);
 	}
 }
 
