@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <iterator>
+#include <cassert>
 #include "fixed_type_traits.hpp"
 
 namespace fixed
@@ -72,24 +73,27 @@ namespace fixed
 				return *this;
 			}
 
-			pointer_iterator operator++(int) const
+			pointer_iterator operator++(int)
 			{
 				assert(_value != nullptr);
-				return { _value + 1 };
+				pointer_iterator result = *this;
+				++(*this);
+				return result;
 			}
-
 
 			pointer_iterator& operator--()
 			{
 				assert(_value != nullptr);
-				_value--;
+				--_value;
 				return *this;
 			}
 
-			pointer_iterator operator--(int) const 
+			pointer_iterator operator--(int)
 			{
 				assert(_value != nullptr);
-				return { _value - 1 };
+				pointer_iterator result = *this;
+				--(*this);
+				return result;
 			}
 
 			pointer_iterator& operator+=(difference_type n)
@@ -211,12 +215,13 @@ namespace fixed
 				return *this;
 			}
 
-			const_pointer_iterator operator++(int) const
+			const_pointer_iterator operator++(int)
 			{
 				assert(_value != nullptr);
-				return { _value + 1 };
+				const_pointer_iterator result = (*this);
+				++(*this);
+				return result;
 			}
-
 
 			const_pointer_iterator& operator--()
 			{
@@ -225,10 +230,12 @@ namespace fixed
 				return *this;
 			}
 
-			const_pointer_iterator operator--(int) const
+			const_pointer_iterator operator--(int)
 			{
 				assert(_value != nullptr);
-				return { _value - 1 };
+				const_pointer_iterator result = (*this);
+				--(*this);
+				return result;
 			}
 
 			const_pointer_iterator& operator+=(difference_type n)
