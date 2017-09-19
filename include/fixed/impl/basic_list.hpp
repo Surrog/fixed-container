@@ -25,8 +25,8 @@ namespace fixed
 			typedef const value_type& const_reference;
 			typedef value_type* pointer;
 			typedef const value_type* const_pointer;
-			typedef wrap_pointer_iterator<T, pointer_iterator<T*>> iterator;
-			typedef const_wrap_pointer_iterator<T, const_pointer_iterator<T*>> const_iterator;
+			typedef wrap_pointer_iterator<pointer_iterator<T*>> iterator;
+			typedef const_wrap_pointer_iterator<const_pointer_iterator<T*>> const_iterator;
 			typedef std::reverse_iterator<iterator> reverse_iterator;
 			typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 

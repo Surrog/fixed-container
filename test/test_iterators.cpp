@@ -83,22 +83,102 @@ void test_pointer_iterator()
 		CHECK(it <= it);
 		CHECK(it <= it1);
 	}
+
+	{
+		char test[5] = "1234";
+
+		ITERATOR_TYPE<char> beg(test);
+		ITERATOR_TYPE<char> end(test + 4);
+
+		CHECK(std::equal(beg, end, test, test + 4));
+	}
 }
 
+template <template <typename> typename ITERATOR_TYPE,
+	template <typename> typename SUB_IT_TYPE>
 void test_wrap_iterator()
 {
+	using Iterator = ITERATOR_TYPE<SUB_IT_TYPE<char*>>;
 	{
-		fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char*>> it1;
-		fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char*>> it2;
+		Iterator it1;
+		Iterator it2;
 		CHECK(it1 == it2);
 		CHECK(!(it1 != it2));
 	}
 
+	char test[5] = "1234";
+	char* ref_test[5] = { test + 0, test + 1, test + 2, test + 3, test + 4 };
+
 	{
-		char test[5] = "1234";
-		char* ref_test[5] = { test + 0, test + 1, test + 2, test + 3, test + 4 };
+		Iterator it(ref_test);
+		CHECK(*it == '1');
+		Iterator copy(it);
+		CHECK(*copy == '1');
+		Iterator move(std::move(it));
+		CHECK(*move == '1');
+	}
 
+	{
+		Iterator it(ref_test);
+		CHECK(*it == '1');
+		it++;
+		CHECK(*it == '2');
+		++it;
+		CHECK(*it == '3');
+		it--;
+		CHECK(*it == '2');
+		--it;
+		CHECK(*it == '1');
+	}
 
+	{
+		Iterator it(ref_test);
+		CHECK(*it == '1');
+		it += 2;
+		CHECK(*it == '3');
+		it -= 1;
+		CHECK(*it == '2');
+		Iterator copy = it + 2;
+		CHECK(*copy == '4');
+		CHECK(*it == '2');
+		copy = it - 1;
+		CHECK(*copy == '1');
+		CHECK(*it == '2');
+	}
+
+	{
+		Iterator it0(ref_test);
+		Iterator it1(ref_test + 1);
+		CHECK((it1 - it0) == 1);
+		CHECK((it0 - it1) == -1);
+	}
+
+	{
+		Iterator it(ref_test);
+		CHECK(*it == '1');
+		CHECK(it[0] == '1');
+		CHECK(it[1] == '2');
+		CHECK(it[2] == '3');
+		CHECK(it[3] == '4');
+	}
+
+	{
+		Iterator it(ref_test);
+		Iterator it1(ref_test + 1);
+
+		CHECK(it < it1);
+		CHECK(it1 > it);
+		CHECK(it1 >= it1);
+		CHECK(it1 >= it);
+		CHECK(it <= it);
+		CHECK(it <= it1);
+
+	}
+
+	{
+		Iterator beg(ref_test);
+		Iterator end(beg + 4);
+		CHECK(std::equal(beg, end, test, test + 4));
 	}
 }
 
@@ -139,11 +219,12 @@ TEST_CASE("testing allocator", "[utility]")
 	test_pointer_iterator<fixed::_impl::pointer_iterator>();
 	test_pointer_iterator<fixed::_impl::const_pointer_iterator>();
 
-	test_not_const<fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char>>>();
-	test_not_const<fixed::_impl::const_wrap_pointer_iterator<char, fixed::_impl::const_pointer_iterator<char>>>();
+	test_not_const<fixed::_impl::wrap_pointer_iterator<fixed::_impl::pointer_iterator<char>>>();
+	test_not_const<fixed::_impl::const_wrap_pointer_iterator<fixed::_impl::const_pointer_iterator<char>>>();
 
-	test_assign<fixed::_impl::const_wrap_pointer_iterator<char, fixed::_impl::const_pointer_iterator<char>>
-		, fixed::_impl::wrap_pointer_iterator<char, fixed::_impl::pointer_iterator<char>>>();
+	test_assign<fixed::_impl::const_wrap_pointer_iterator<fixed::_impl::const_pointer_iterator<char>>
+		, fixed::_impl::wrap_pointer_iterator<fixed::_impl::pointer_iterator<char>>>();
 
-	test_wrap_iterator();
+	test_wrap_iterator<fixed::_impl::wrap_pointer_iterator, fixed::_impl::pointer_iterator>();
+	test_wrap_iterator<fixed::_impl::const_wrap_pointer_iterator, fixed::_impl::const_pointer_iterator>();
 }
