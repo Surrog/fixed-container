@@ -150,6 +150,6 @@ void test_modifiers()
 
 TEST_CASE("testing lists", "[linear]")
 {
-	//test_list();
-	//test_modifiers();
+	test_list();
+	test_modifiers();
 }
