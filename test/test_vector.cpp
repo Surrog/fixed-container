@@ -17,14 +17,13 @@ bool operator==(const test_struct& lval, const test_struct& rval)
 	return lval.i == rval.i && lval.c == rval.c && lval.ui == rval.ui;
 }
 
-typedef fixed::vector<test_struct, 10> local_static_vector;
-typedef std::vector<test_struct> reference_vector;
-
+template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename VECTOR_TYPE,
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
 void test_vector_constructor()
 {
 	{
-		local_static_vector test;
-		reference_vector vec_ref;
+		VECTOR_TYPE<test_struct, 10, Alloc_pattern> test;
+		std::vector<test_struct> vec_ref;
 
 		unsigned int array_test[] = { 1u, 2u };
 		test.push_back(test_struct());
@@ -32,21 +31,21 @@ void test_vector_constructor()
 		test.push_back({ 30, 'b', array_test });
 		vec_ref.push_back({ 30, 'b', array_test });
 
-		local_static_vector test2 = test;
+		VECTOR_TYPE<test_struct, 10, Alloc_pattern> test2 = test;
 
 		CHECK(std::equal(test.begin(), test.end(), vec_ref.begin(), vec_ref.end()));
 		CHECK(std::equal(test.begin(), test.end(), test2.begin(), test2.end()));
 	}
 
 	{
-		fixed::vector<std::string, 10> words1{ "the", "frogurt", "is", "also", "cursed" };
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words1{ "the", "frogurt", "is", "also", "cursed" };
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words1.begin(), words1.end(), expected.begin(), expected.end()));
 		}
 
 		// words2 == words1
-		fixed::vector<std::string, 10> words2(words1.begin(), words1.end());
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words2(words1.begin(), words1.end());
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words2.begin(), words2.end(), expected.begin(), expected.end()));
@@ -55,21 +54,21 @@ void test_vector_constructor()
 
 	{
 		// c++11 initializer list syntax:
-		fixed::vector<std::string, 10> words1{ "the", "frogurt", "is", "also", "cursed" };
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words1{ "the", "frogurt", "is", "also", "cursed" };
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words1.begin(), words1.end(), expected.begin(), expected.end()));
 		}
 
 		// words2 == words1
-		fixed::vector<std::string, 10> words2(words1.begin(), words1.end());
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words2(words1.begin(), words1.end());
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words2.begin(), words2.end(), expected.begin(), expected.end()));
 		}
 
 		// words3 == words1
-		fixed::vector<std::string, 10> words3(words1);
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words3(words1);
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words3.begin(), words3.end(), expected.begin(), expected.end()));
@@ -78,28 +77,28 @@ void test_vector_constructor()
 
 	{
 		// c++11 initializer list syntax:
-		fixed::vector<std::string, 5> words1{ "the", "frogurt", "is", "also", "cursed" };
+		VECTOR_TYPE<std::string, 5, Alloc_pattern> words1{ "the", "frogurt", "is", "also", "cursed" };
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words1.begin(), words1.end(), expected.begin(), expected.end()));
 		}
 
 		// words2 == words1
-		fixed::vector<std::string, 10> words2(words1.begin(), words1.end());
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words2(words1.begin(), words1.end());
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words2.begin(), words2.end(), expected.begin(), expected.end()));
 		}
 
 		// words3 == words1
-		fixed::vector<std::string, 10> words3(words1);
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words3(words1);
 		{
 			auto expected = { "the", "frogurt", "is", "also", "cursed" };
 			CHECK(std::equal(words3.begin(), words3.end(), expected.begin(), expected.end()));
 		}
 
 		// words4 is {"Mo", "Mo", "Mo", "Mo", "Mo"}
-		fixed::vector<std::string, 10> words4(5, "Mo");
+		VECTOR_TYPE<std::string, 10, Alloc_pattern> words4(5, "Mo");
 		{
 			auto expected = { "Mo", "Mo", "Mo", "Mo", "Mo" };
 			CHECK(std::equal(words4.begin(), words4.end(), expected.begin(), expected.end()));
@@ -107,9 +106,9 @@ void test_vector_constructor()
 	}
 
 	{
-		fixed::vector<int, 10> nums1{ 3, 1, 4, 6, 5, 9 };
-		fixed::vector<int, 6> nums2;
-		fixed::vector<int, 20> nums3;
+		VECTOR_TYPE<int, 10, Alloc_pattern> nums1{ 3, 1, 4, 6, 5, 9 };
+		VECTOR_TYPE<int, 6, Alloc_pattern> nums2;
+		VECTOR_TYPE<int, 20, Alloc_pattern> nums3;
 
 		CHECK(nums1.size() == 6);
 		CHECK(nums2.size() == 0);
@@ -130,11 +129,13 @@ void test_vector_constructor()
 	}
 }
 
+template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename VECTOR_TYPE,
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
 void test_vector_iterator()
 {
-	fixed::vector<int, 20> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	using fiterator = fixed::vector<int, 20>::iterator;
-	using fciterator = fixed::vector<int, 20>::const_iterator;
+	VECTOR_TYPE<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	using fiterator = VECTOR_TYPE<int, 20, Alloc_pattern>::iterator;
+	using fciterator = VECTOR_TYPE<int, 20, Alloc_pattern>::const_iterator;
 
 	{
 		fiterator it;
@@ -185,10 +186,12 @@ void test_vector_iterator()
 	}
 }
 
+template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename VECTOR_TYPE,
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
 void test_vector_modifier()
 {
 	{
-		fixed::vector<int, 20> vec(3, 100);
+		VECTOR_TYPE<int, 20, Alloc_pattern> vec(3, 100);
 		std::vector<int> expected = { 100, 100, 100 };
 		CHECK(vec == expected);
 
@@ -214,7 +217,7 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> c{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		VECTOR_TYPE<int, 10, Alloc_pattern> c{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		std::vector<int> expected{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		
 		c.erase(c.begin());
@@ -234,7 +237,7 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<char, 5> characters;
+		VECTOR_TYPE<char, 5, Alloc_pattern> characters;
 
 		characters.assign(5, 'a');
 
@@ -249,11 +252,11 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector;
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector;
 		for (int i = 1; i <= 5; i++) myvector.push_back(i);
 
 		int i = 1;
-		for (fixed::vector<int, 10>::iterator it = myvector.begin(); it != myvector.end(); ++it)
+		for (VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin(); it != myvector.end(); ++it)
 		{
 			CHECK(*it == i);
 			i++;
@@ -261,11 +264,11 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector(5);
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector(5);
 
-		fixed::vector<int, 10>::reverse_iterator rbit = myvector.rbegin();
-		fixed::vector<int, 10>::reverse_iterator reit = myvector.rend();
-		fixed::vector<int, 10>::iterator it = myvector.begin() + (myvector.size() - 1);
+		VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rbit = myvector.rbegin();
+		VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator reit = myvector.rend();
+		VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin() + (myvector.size() - 1);
 		int i = 0;
 		while (rbit != reit) {
 			CHECK(&*it == &*rbit);
@@ -278,15 +281,15 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector(5);  // 5 default-constructed ints
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector(5);  // 5 default-constructed ints
 
 		int i = 0;
 
-		fixed::vector<int, 10>::reverse_iterator rit = myvector.rbegin();
+		VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rit = myvector.rbegin();
 		for (; rit != myvector.rend(); ++rit)
 			*rit = ++i;
 		CHECK(i == 5);
-		for (fixed::vector<int, 10>::iterator it = myvector.begin(); it != myvector.end(); ++it)
+		for (VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin(); it != myvector.end(); ++it)
 		{
 			CHECK(*it == i);
 			i--;
@@ -294,7 +297,7 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector = { 10,20,30,40,50 };
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector = { 10,20,30,40,50 };
 
 		auto expected = { 10,20,30,40,50 };
 		int i = 0;
@@ -306,7 +309,7 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector = { 10,20,30,40,50 };
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector = { 10,20,30,40,50 };
 
 		auto expected = { 10,20,30,40,50 };
 		for (std::size_t i = 0; i < expected.size(); i++)
@@ -316,7 +319,7 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector = { 10,20,30,40,50 };
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector = { 10,20,30,40,50 };
 
 		auto expected = { 10,20,30,40,50 };
 		for (std::size_t i = 0; i < expected.size(); i++)
@@ -329,7 +332,7 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector;
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector;
 
 		CHECK(myvector.empty());
 		myvector = { 10,20,30,40,50 };
@@ -344,13 +347,13 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 10> myvector = { 10, 20, 30, 40, 50 };
+		VECTOR_TYPE<int, 10, Alloc_pattern> myvector = { 10, 20, 30, 40, 50 };
 		int * ptr = myvector.data();
 
 		{
 			auto beg = myvector.begin();
 			auto end = myvector.end();
-			fixed::vector<int, 10>::size_type i = 0;
+			VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
 
 			while (beg != end)
 			{
@@ -365,7 +368,7 @@ void test_vector_modifier()
 		{
 			auto beg = myvector.begin();
 			auto end = myvector.end();
-			fixed::vector<int, 10>::size_type i = 0;
+			VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
 
 			while (beg != end)
 			{
@@ -377,8 +380,8 @@ void test_vector_modifier()
 	}
 
 	{
-		fixed::vector<int, 20, fixed::_impl::basic_stack_allocator> stack = { 1, 2, 3, 4, 5 };
-		fixed::vector<int, 30, fixed::_impl::basic_heap_allocator> heap = { 1, 2, 3, 4, 5 };
+		VECTOR_TYPE<int, 20, fixed::_impl::basic_stack_allocator> stack = { 1, 2, 3, 4, 5 };
+		VECTOR_TYPE<int, 30, fixed::_impl::basic_heap_allocator> heap = { 1, 2, 3, 4, 5 };
 
 		CHECK(stack == heap);
 		heap = { 5, 6, 7, 8, 9};
@@ -386,26 +389,13 @@ void test_vector_modifier()
 	}
 }
 
-void test_vector_allocator()
-{
-	{
-		fixed::vector<int, 10, fixed::_impl::basic_stack_allocator> stack;
-		fixed::vector<int, 10, fixed::_impl::basic_heap_allocator> heap;
-	}
-
-	{
-		fixed::_impl::empty_source s;
-
-		fixed::vector<int, 10, fixed::_impl::basic_stack_allocator> stack(s);
-		fixed::vector<int, 10, fixed::_impl::basic_heap_allocator> heap(s);
-	}
-
-}
-
 TEST_CASE("testing basic_vector", "[linear]")
 {
-	test_vector_constructor();
-	test_vector_modifier();
-	test_vector_iterator();
-	test_vector_allocator();
+	test_vector_constructor<fixed::vector, fixed::_impl::basic_stack_allocator>();
+	test_vector_modifier<fixed::vector, fixed::_impl::basic_stack_allocator>();
+	test_vector_iterator<fixed::vector, fixed::_impl::basic_stack_allocator>();
+
+	test_vector_constructor<fixed::vector, fixed::_impl::basic_heap_allocator>();
+	test_vector_modifier<fixed::vector, fixed::_impl::basic_heap_allocator>();
+	test_vector_iterator<fixed::vector, fixed::_impl::basic_heap_allocator>();
 }
