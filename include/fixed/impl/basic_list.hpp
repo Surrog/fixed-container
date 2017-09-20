@@ -2,7 +2,6 @@
 #define FIXED_BASIC_LIST_HPP
 
 #include <array>
-#include <cassert>
 #include "fixed/impl/basic_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
 #include "iterator.hpp"
@@ -40,7 +39,7 @@ namespace fixed
 
 			void push_back()
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new (_ptrs[_size]) T();
 				++_size;
 			}
@@ -330,25 +329,25 @@ namespace fixed
 			//Element access
 			reference front()
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				return *_ptrs[0];
 			}
 
 			const_reference front() const
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				return *_ptrs[0];
 			}
 
 			reference back()
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				return *_ptrs[_size - 1];
 			}
 
 			const_reference back() const
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				return *_ptrs[_size - 1];
 			}
 
@@ -454,8 +453,8 @@ namespace fixed
 
 			iterator insert(const_iterator pos, T&& value)
 			{
-				container_size_type index = pos - begin();
-				assert(index <= _size);
+				container_size_type index = std::distance(cbegin(), pos);
+				FIXED_CHECK(index <= _size);
 				auto old_size = _size;
 				push_back(value);
 				if (index != _size)
@@ -465,8 +464,8 @@ namespace fixed
 
 			iterator insert(const_iterator pos, size_type count, const T& value)
 			{
-				container_size_type index = pos - begin();
-				assert(index <= _size);
+				container_size_type index = std::distance(cbegin(), pos);
+				FIXED_CHECK(index <= _size);
 				auto old_size = _size;
 				for (size_type i = 0; i < count; i++)
 					push_back(value);
@@ -478,8 +477,8 @@ namespace fixed
 			template< class InputIt, std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
 			iterator insert(const_iterator pos, InputIt first, InputIt last)
 			{
-				container_size_type index = pos - begin();
-				assert(index <= _size);
+				container_size_type index = std::distance(cbegin(), pos);
+				FIXED_CHECK(index <= _size);
 				auto old_size = _size;
 				size_type size_inserted = 0;
 				while (first != last)
@@ -503,8 +502,8 @@ namespace fixed
 			template <class... Args>
 			iterator emplace(const_iterator pos, Args&&... args)
 			{
-				container_size_type index = pos - begin();
-				assert(index <= _size);
+				container_size_type index = std::distance(cbegin(), pos);
+				FIXED_CHECK(index <= _size);
 				auto old_size = _size;
 				emplace_back(args...);
 				if (index != _size)
@@ -514,30 +513,42 @@ namespace fixed
 
 			iterator erase(const_iterator pos)
 			{
-				assert(_size > 0);
-				container_size_type index = pos - begin();
-				assert(index <= _size);
-				if (index != _size && index != _size - 1) //move object to the back
+				FIXED_CHECK(_size > 0);
+				container_size_type index = std::distance(cbegin(), pos);
+				FIXED_CHECK(index < _size);
+				if (index != _size - 1) //move object to the back
 					std::rotate(_ptrs.data() + index, _ptrs.data() + index + 1, _ptrs.data() + _size);
 				pop_back(); //pop it !
-				return iterator(_ptrs.data() + index);
+				return iterator(_ptrs.data() + std::min(index, _size));
 			}
 
 			iterator erase(const_iterator first, const_iterator last)
 			{
-				assert(false);//TODO: implement this
+				FIXED_CHECK(_size > 0);
+				container_size_type beg_i = std::distance(cbegin(), first);
+				container_size_type end_i = std::distance(cbegin(), last);
+				FIXED_CHECK(beg_i < _size);
+				FIXED_CHECK(end_i <= _size);
+				FIXED_CHECK(beg_i < end_i);
+				if (end_i != _size)
+					std::rotate(_ptrs.data() + beg_i, _ptrs.data() + end_i, _ptrs.data() + _size);
+				for (container_size_type i = 0; i < (end_i - beg_i); ++i)
+				{
+					pop_back();
+				}
+				return iterator(_ptrs.data() + std::min(beg_i, _size));
 			}
 
 			void push_back(const T& value)
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new (_ptrs[_size]) T(value);
 				++_size;
 			}
 
 			void push_back(T&& value)
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new (_ptrs[_size]) T(value);
 				++_size;
 			}
@@ -545,7 +556,7 @@ namespace fixed
 			template< class... Args>
 			reference emplace_back(Args&&... args)
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new(_ptrs[_size]) T(args...);
 				++_size;
 				return back();
@@ -553,7 +564,7 @@ namespace fixed
 
 			void pop_back()
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				_ptrs[_size - 1]->~T();
 				--_size;
 			}
@@ -579,7 +590,7 @@ namespace fixed
 
 			void pop_front()
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				erase(begin());
 			}
 
@@ -637,8 +648,8 @@ namespace fixed
 			template <class Compare, container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
 			void merge(basic_list<T, RSIZE, RALLOC>&& other, Compare comp)
 			{
-				assert(size() + other.size() <= max_size());
-				assert(&other != this);
+				FIXED_CHECK(size() + other.size() <= max_size());
+				FIXED_CHECK(&other != this);
 				for (auto& item : other)
 				{
 					insert(std::lower_bound(begin(), end(), item, comp), std::move(item));
@@ -655,7 +666,7 @@ namespace fixed
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
 			void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other, const_iterator it)
 			{
-				assert(this != &other);
+				FIXED_CHECK(this != &other);
 				insert(pos, std::move(it));
 				other.erase(it);
 			}
@@ -663,9 +674,9 @@ namespace fixed
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
 			void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other, const_iterator first, const_iterator last)
 			{
-				assert(this != &other);
-				auto index = pos - begin();
-				assert(index <= _size);
+				FIXED_CHECK(this != &other);
+				auto index = std::distance(begin(), pos);
+				FIXED_CHECK(index <= _size);
 				auto old_size = _size;
 				size_type size_inserted = 0;
 				while (first != last)
@@ -747,7 +758,7 @@ namespace fixed
 		private:
 			void erase_local_ptr(T** ptr)
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				(*ptr)->~T();
 				if (ptr != _ptrs.data() + _size - 1)
 				{

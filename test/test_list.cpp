@@ -4,9 +4,10 @@
 #include "fixed/impl/fixed_def.hpp"
 #include <string>
 #include <cstring>
+#include <list>
 
 template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename LIST_TYPE, 
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern >
 void test_list()
 {
 	{ //constructor definition check
@@ -117,7 +118,7 @@ void test_list()
 }
 
 template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename LIST_TYPE,
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern>
 void test_modifiers()
 {
 	{
@@ -258,8 +259,40 @@ void test_modifiers()
 		CHECK(l.size() == exp.size());
 		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 		CHECK(*result == 1);
+
+		while (l.size())
+		{
+			l.erase(l.begin());
+		}
+
+		CHECK_THROWS(l.erase(l.end()));
 	}
-}
+
+	{
+		LIST_TYPE<int, 5, Alloc_pattern> l{ 0, 1, 2, 3, 4 };
+		l.erase(l.begin(), l.begin() + 5);
+		CHECK(l.empty());
+	}
+
+	{
+		LIST_TYPE<int, 5, Alloc_pattern> l{ 0, 1, 2, 3, 4 };
+		l.erase(l.begin() + 1, l.begin() + 5);
+		auto exp = { 0 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+	}
+
+	{
+		LIST_TYPE<int, 5, Alloc_pattern> l{ 0, 1, 2, 3, 4 };
+		auto& val = *(l.begin() + 4);
+		CHECK(val == 4);
+		l.erase(l.begin(), l.begin() + 4);
+		auto exp = { 4 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+		CHECK(val == 4);
+	}
+} 
 
 TEST_CASE("testing lists", "[linear]")
 {

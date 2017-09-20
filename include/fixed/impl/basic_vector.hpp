@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <cassert>
 #include <vector>
 
 #include "fixed/impl/iterator.hpp"
@@ -230,14 +229,14 @@ namespace fixed
 			}
 
 			//element access
-			T& at(size_type n) { assert(n < _size); return data()[n]; }
-			const T& at(size_type n) const { assert(n < _size); return data()[n]; }
+			T& at(size_type n) { FIXED_CHECK(n < _size); return data()[n]; }
+			const T& at(size_type n) const { FIXED_CHECK(n < _size); return data()[n]; }
 			T& operator[](size_type n) { return data()[n]; }
 			const T& operator[](size_type n) const { return data()[n]; }
 			T& front() { return at(0); }
 			const T& front() const { return at(0); }
-			T& back() { assert(_size > 0); return at(_size - 1); }
-			const T& back() const { assert(_size > 0); return at(_size - 1); }
+			T& back() { FIXED_CHECK(_size > 0); return at(_size - 1); }
+			const T& back() const { FIXED_CHECK(_size > 0); return at(_size - 1); }
 			T* data() { return _data_container.data(); }
 			const T* data() const { return _data_container.data(); }
 
@@ -284,7 +283,7 @@ namespace fixed
 			//Modifiers
 			void assign(size_type count, const T& value)
 			{
-				assert(count <= max_size());
+				FIXED_CHECK(count <= max_size());
 				_size = count;
 				for (auto& val : *this)
 				{
@@ -298,35 +297,35 @@ namespace fixed
 				void assign(InputIt first, InputIt last)
 			{
 				size = std::distance(first, last);
-				assert(size <= max_size());
+				FIXED_CHECK(size <= max_size());
 				_size = size;
 				std::transform(first, last, begin(), [](const auto& value) { return value; });
 			}
 
 			void assign(std::initializer_list<T> list)
 			{
-				assert(list.size() <= max_size());
+				FIXED_CHECK(list.size() <= max_size());
 				_size = list.size();
 				std::transform(list.begin(), list.end(), begin(), [](const auto& value) { return value; });
 			}
 
 			void push_back(const T& value)
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new(&*end())T(value);
 				_size++;
 			}
 
 			void push_back(T&& value)
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new(&*end())T(value);
 				_size++;
 			}
 
 			void pop_back()
 			{
-				assert(_size > 0);
+				FIXED_CHECK(_size > 0);
 				_size--;
 				(*end()).~T();
 			}
@@ -416,8 +415,8 @@ namespace fixed
 			template <size_type RSIZE>
 			void swap(basic_vector<T, RSIZE>& rval)
 			{
-				assert(rval.size() < SIZE);
-				assert(size() < RSIZE);
+				FIXED_CHECK(rval.size() < SIZE);
+				FIXED_CHECK(size() < RSIZE);
 
 				auto lbeg = begin();
 				auto lend = end();
@@ -459,7 +458,7 @@ namespace fixed
 			template < class... Args>
 			void emplace_back(Args&&... args)
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new (&*end())T(args...);
 				_size++;
 			}
@@ -467,7 +466,7 @@ namespace fixed
 			template <class... Args>
 			iterator emplace_back(Args&&... args)
 			{
-				assert(_size < max_size());
+				FIXED_CHECK(_size < max_size());
 				new (&*end())T(args...);
 				auto result = end();
 				_size++;
@@ -495,7 +494,7 @@ namespace fixed
 
 			void uninitialized_assign(size_type count, const T& value)
 			{
-				assert(count <= max_size());
+				FIXED_CHECK(count <= max_size());
 
 				for (size_type i = 0; i < count; i++)
 				{
@@ -506,7 +505,7 @@ namespace fixed
 
 			void uninitialized_assign(size_type count)
 			{
-				assert(count <= max_size());
+				FIXED_CHECK(count <= max_size());
 
 				for (size_type i = 0; i < count; i++)
 				{
