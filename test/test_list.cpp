@@ -2,6 +2,7 @@
 #include "catch.hpp"
 #include "fixed/list.hpp"
 #include <string>
+#include <cstring>
 
 void test_list()
 {
