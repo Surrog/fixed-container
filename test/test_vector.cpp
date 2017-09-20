@@ -353,7 +353,7 @@ void test_vector_modifier()
 		{
 			auto beg = myvector.begin();
 			auto end = myvector.end();
-			VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
+			typename VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
 
 			while (beg != end)
 			{
@@ -368,7 +368,7 @@ void test_vector_modifier()
 		{
 			auto beg = myvector.begin();
 			auto end = myvector.end();
-			VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
+			typename VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
 
 			while (beg != end)
 			{
