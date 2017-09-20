@@ -18,7 +18,7 @@ bool operator==(const test_struct& lval, const test_struct& rval)
 }
 
 template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename VECTOR_TYPE,
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern  >
 void test_vector_constructor()
 {
 	{
@@ -130,7 +130,7 @@ void test_vector_constructor()
 }
 
 template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename VECTOR_TYPE,
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern >
 void test_vector_iterator()
 {
 	VECTOR_TYPE<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -187,7 +187,7 @@ void test_vector_iterator()
 }
 
 template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename VECTOR_TYPE,
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern = basic_stack_allocator >
+	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern >
 void test_vector_modifier()
 {
 	{
