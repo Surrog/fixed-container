@@ -221,8 +221,8 @@ void test_modifiers()
 		const char * _val = nullptr;
 		bool operator==(const test& rval)
 		{
-			return std::equal(_val, _val + std::strlen(_val),
-				rval._val, rval._val + std::strlen(rval._val));
+			return std::equal(_val, _val + strlen(_val),
+				rval._val, rval._val + strlen(rval._val));
 		}
 	};
 
@@ -245,7 +245,14 @@ void test_modifiers()
 		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 	}
 
-
+	{
+		fixed::list<int, 5> l{ 0, 1, 2, 3, 4 };
+		auto result = l.erase(l.begin());
+		auto exp = { 1, 2, 3, 4 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+		CHECK(*result == 1);
+	}
 }
 
 TEST_CASE("testing lists", "[linear]")

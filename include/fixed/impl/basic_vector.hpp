@@ -284,8 +284,8 @@ namespace fixed
 			//Modifiers
 			void assign(size_type count, const T& value)
 			{
+				assert(count <= max_size());
 				_size = count;
-				assert(_size <= SIZE);
 				for (auto& val : *this)
 				{
 					new (&val)T(value);
@@ -297,28 +297,29 @@ namespace fixed
 			>
 				void assign(InputIt first, InputIt last)
 			{
-				_size = std::distance(first, last);
-				assert(_size <= SIZE);
+				size = std::distance(first, last);
+				assert(size <= max_size());
+				_size = size;
 				std::transform(first, last, begin(), [](const auto& value) { return value; });
 			}
 
 			void assign(std::initializer_list<T> list)
 			{
-				assert(list.size() <= SIZE);
+				assert(list.size() <= max_size());
 				_size = list.size();
 				std::transform(list.begin(), list.end(), begin(), [](const auto& value) { return value; });
 			}
 
 			void push_back(const T& value)
 			{
-				assert(_size < SIZE);
+				assert(_size < max_size());
 				new(&*end())T(value);
 				_size++;
 			}
 
 			void push_back(T&& value)
 			{
-				assert(_size < SIZE);
+				assert(_size < max_size());
 				new(&*end())T(value);
 				_size++;
 			}
@@ -458,7 +459,7 @@ namespace fixed
 			template < class... Args>
 			void emplace_back(Args&&... args)
 			{
-				assert(_size < SIZE);
+				assert(_size < max_size());
 				new (&*end())T(args...);
 				_size++;
 			}
@@ -466,7 +467,7 @@ namespace fixed
 			template <class... Args>
 			iterator emplace_back(Args&&... args)
 			{
-				assert(_size < SIZE);
+				assert(_size < max_size());
 				new (&*end())T(args...);
 				auto result = end();
 				_size++;
@@ -494,7 +495,7 @@ namespace fixed
 
 			void uninitialized_assign(size_type count, const T& value)
 			{
-				assert(count <= SIZE);
+				assert(count <= max_size());
 
 				for (size_type i = 0; i < count; i++)
 				{
@@ -505,7 +506,7 @@ namespace fixed
 
 			void uninitialized_assign(size_type count)
 			{
-				assert(count <= SIZE);
+				assert(count <= max_size());
 
 				for (size_type i = 0; i < count; i++)
 				{

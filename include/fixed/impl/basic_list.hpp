@@ -40,7 +40,7 @@ namespace fixed
 
 			void push_back()
 			{
-				assert(_size + 1 < SIZE);
+				assert(_size < max_size());
 				new (_ptrs[_size]) T();
 				++_size;
 			}
@@ -73,7 +73,7 @@ namespace fixed
 			basic_list()
 				: _data_holder(), _ptrs(), _size(0)
 			{
-				for (size_type i = 0; i < SIZE; i++)
+				for (size_type i = 0; i < _data_holder.max_size(); i++)
 				{
 					_ptrs[i] = _data_holder.data() + i;
 				}
@@ -514,7 +514,13 @@ namespace fixed
 
 			iterator erase(const_iterator pos)
 			{
-				assert(false);//TODO: implement this
+				assert(_size > 0);
+				container_size_type index = pos - begin();
+				assert(index <= _size);
+				if (index != _size && index != _size - 1) //move object to the back
+					std::rotate(_ptrs.data() + index, _ptrs.data() + index + 1, _ptrs.data() + _size);
+				pop_back(); //pop it !
+				return iterator(_ptrs.data() + index);
 			}
 
 			iterator erase(const_iterator first, const_iterator last)
@@ -524,14 +530,14 @@ namespace fixed
 
 			void push_back(const T& value)
 			{
-				assert(_size + 1 < SIZE);
+				assert(_size < max_size());
 				new (_ptrs[_size]) T(value);
 				++_size;
 			}
 
 			void push_back(T&& value)
 			{
-				assert(_size + 1 < max_size());
+				assert(_size < max_size());
 				new (_ptrs[_size]) T(value);
 				++_size;
 			}
@@ -539,7 +545,7 @@ namespace fixed
 			template< class... Args>
 			reference emplace_back(Args&&... args)
 			{
-				assert(_size + 1 < SIZE);
+				assert(_size < max_size());
 				new(_ptrs[_size]) T(args...);
 				++_size;
 				return back();
