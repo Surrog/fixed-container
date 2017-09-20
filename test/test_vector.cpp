@@ -134,8 +134,8 @@ template <template <typename, fixed::_impl::container_size_type, template <typen
 void test_vector_iterator()
 {
 	VECTOR_TYPE<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	using fiterator = VECTOR_TYPE<int, 20, Alloc_pattern>::iterator;
-	using fciterator = VECTOR_TYPE<int, 20, Alloc_pattern>::const_iterator;
+	using fiterator = typename VECTOR_TYPE<int, 20, Alloc_pattern>::iterator;
+	using fciterator = typename VECTOR_TYPE<int, 20, Alloc_pattern>::const_iterator;
 
 	{
 		fiterator it;
