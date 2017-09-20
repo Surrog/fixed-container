@@ -256,7 +256,7 @@ void test_vector_modifier()
 		for (int i = 1; i <= 5; i++) myvector.push_back(i);
 
 		int i = 1;
-		for (VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin(); it != myvector.end(); ++it)
+		for (typename VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin(); it != myvector.end(); ++it)
 		{
 			CHECK(*it == i);
 			i++;
@@ -266,9 +266,9 @@ void test_vector_modifier()
 	{
 		VECTOR_TYPE<int, 10, Alloc_pattern> myvector(5);
 
-		VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rbit = myvector.rbegin();
-		VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator reit = myvector.rend();
-		VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin() + (myvector.size() - 1);
+		typename VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rbit = myvector.rbegin();
+		typename VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator reit = myvector.rend();
+		typename VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin() + (myvector.size() - 1);
 		int i = 0;
 		while (rbit != reit) {
 			CHECK(&*it == &*rbit);
@@ -285,11 +285,11 @@ void test_vector_modifier()
 
 		int i = 0;
 
-		VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rit = myvector.rbegin();
+		typename VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rit = myvector.rbegin();
 		for (; rit != myvector.rend(); ++rit)
 			*rit = ++i;
 		CHECK(i == 5);
-		for (VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin(); it != myvector.end(); ++it)
+		for (typename VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it = myvector.begin(); it != myvector.end(); ++it)
 		{
 			CHECK(*it == i);
 			i--;
