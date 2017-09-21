@@ -388,28 +388,34 @@ namespace fixed
 
 			iterator erase(const_iterator position)
 			{
-				auto initial_pos = std::distance(cbegin(), position);
-				if (position != end())
+				FIXED_CHECK(_size > 0);
+				container_size_type index = std::distance(cbegin(), position);
+				FIXED_CHECK(index < _size);
+				if (index != _size - 1)
 				{
-					std::rotate(begin() + initial_pos, begin() + initial_pos + 1, end());
+					std::rotate(begin() + index, begin() + index + 1, end());
 				}
 				pop_back();
-				return begin() + initial_pos;
+				return begin() + std::min(index, _size);
 			}
 
 			iterator erase(const_iterator first, const_iterator last)
 			{
-				auto elem_num = std::distance(first, last);
-				auto initial_pos = std::distance(cbegin(), first);
-				if (last != end() || last != const_iterator())
+				FIXED_CHECK(_size > 0);
+				container_size_type beg_i = std::distance(cbegin(), first);
+				container_size_type end_i = std::distance(cbegin(), last);
+				FIXED_CHECK(beg_i < _size);
+				FIXED_CHECK(end_i <= _size);
+				FIXED_CHECK(beg_i < end_i);
+				if (end_i != _size)
 				{
-					std::rotate(begin() + initial_pos, begin() + initial_pos + elem_num, end());
+					std::rotate(begin() + beg_i, begin() + end_i, end());
 				}
-				for (auto i = 0; i < elem_num; i++)
+				for (container_size_type i = 0; i < (end_i - beg_i); i++)
 				{
 					pop_back();
 				}
-				return begin() + initial_pos;
+				return begin() + std::min(beg_i, _size);
 			}
 
 			template <size_type RSIZE>

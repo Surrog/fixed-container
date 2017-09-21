@@ -387,6 +387,93 @@ void test_vector_modifier()
 		heap = { 5, 6, 7, 8, 9};
 		CHECK(stack != heap);
 	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		
+		CHECK_THROWS(v.erase(v.end()));
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin());
+		auto exp = { 1, 2, 3, 4 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(*it == 1);
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 1);
+		auto exp = { 0, 2, 3, 4 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(*it == 2);
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 2);
+		auto exp = { 0, 1, 3, 4 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(*it == 3);
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 3);
+		auto exp = { 0, 1, 2, 4 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(*it == 4);
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 4);
+		auto exp = { 0, 1, 2, 3 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(it == v.end());
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 0, v.begin() + 2);
+		auto exp = { 2, 3, 4 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(*it == 2);
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 1, v.begin() + 3);
+		auto exp = { 0, 3, 4 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(*it == 3);
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 2, v.begin() + 4);
+		auto exp = { 0, 1, 4 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(*it == 4);
+	}
+
+	{
+		VECTOR_TYPE<int, 10, fixed::_impl::basic_stack_allocator> v = { 0, 1, 2, 3, 4 };
+		auto it = v.erase(v.begin() + 3, v.begin() + 5);
+		auto exp = { 0, 1, 2 };
+		CHECK(v.size() == exp.size());
+		CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+		CHECK(it == v.end());
+	}
 }
 
 TEST_CASE("testing basic_vector", "[linear]")
