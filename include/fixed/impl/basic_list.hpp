@@ -549,7 +549,7 @@ namespace fixed
 			void push_back(T&& value)
 			{
 				FIXED_CHECK(_size < max_size());
-				new (_ptrs[_size]) T(value);
+				new (_ptrs[_size]) T(std::move(value));
 				++_size;
 			}
 

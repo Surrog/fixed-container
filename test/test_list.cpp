@@ -225,6 +225,7 @@ void test_modifiers()
 
 	struct test {
 		test(const char* val) : _val(val) {}
+
 		const char * _val = nullptr;
 		bool operator==(const test& rval)
 		{
@@ -291,6 +292,40 @@ void test_modifiers()
 		CHECK(l.size() == exp.size());
 		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 		CHECK(val == 4);
+	}
+
+	{
+		LIST_TYPE<int, 5, Alloc_pattern> l{ 0 };
+		l.push_back(1);
+		auto exp = { 0, 1 };
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+	}
+
+	struct test_move {
+		test_move(const char* val) : _val(val) {}
+		test_move(test_move&& orig) : _val(orig._val) { orig._val = nullptr; }
+
+		const char * _val = nullptr;
+		bool operator==(const test_move& rval)
+		{
+			return std::equal(_val, _val + strlen(_val),
+				rval._val, rval._val + strlen(rval._val));
+		}
+	};
+
+	{
+		LIST_TYPE<test_move, 5, Alloc_pattern> l;
+		l.push_back(test_move("test"));
+		CHECK(l.size() == 1);
+		test_move val("toto");
+		l.push_back(std::move(val));
+		CHECK(val._val == nullptr);
+		CHECK(l.size() == 2);
+	}
+
+	{
+		
 	}
 } 
 
