@@ -497,6 +497,55 @@ void test_vector_modifier()
 		CHECK(l.size() == 2);
 	}
 
+	struct test_construct
+	{
+		test_construct(int& val) : _val(&val)
+		{
+			++(*_val);
+		}
+
+		test_construct(const test_construct& orig)
+			: _val(orig._val)
+		{
+			++(*_val);
+		}
+
+		test_construct(test_construct&& orig) :
+			_val(orig._val)
+		{
+			orig._val = nullptr;
+		}
+
+		~test_construct()
+		{
+			if (_val) (*_val)--;
+		}
+		int* _val;
+	};
+
+	{
+		int v = 0;
+		VECTOR_TYPE<test_construct, 5, Alloc_pattern> c;
+		c.push_back(test_construct(v));
+		CHECK(v == 1);
+		CHECK(c.size() == 1);
+		CHECK(*c.front()._val == 1);
+		c.pop_back();
+		CHECK(v == 0);
+		CHECK(c.size() == 0);
+	}
+
+	{
+		int v = 0;
+		{
+			VECTOR_TYPE<test_construct, 5, Alloc_pattern> c;
+			c.resize(5, test_construct(v));
+			CHECK(c.size() == 5);
+			CHECK(v == 5);
+		}
+		CHECK(v == 0);
+	}
+
 }
 
 TEST_CASE("testing basic_vector", "[linear]")

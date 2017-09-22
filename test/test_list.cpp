@@ -364,10 +364,13 @@ void test_modifiers()
 
 	{
 		int v = 0;
-		LIST_TYPE<test_construct, 5, Alloc_pattern> l;
-		l.resize(5, test_construct(v));
-		CHECK(l.size() == 5);
-		CHECK(v == 5);
+		{
+			LIST_TYPE<test_construct, 5, Alloc_pattern> l;
+			l.resize(5, test_construct(v));
+			CHECK(l.size() == 5);
+			CHECK(v == 5);
+		}
+		CHECK(v == 0);
 	}
 } 
 
