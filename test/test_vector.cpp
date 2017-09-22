@@ -530,9 +530,13 @@ void test_vector_modifier()
 		CHECK(v == 1);
 		CHECK(c.size() == 1);
 		CHECK(*c.front()._val == 1);
+		auto& ref = c.emplace_back(v);
+		CHECK(v == 2);
+		CHECK(c.size() == 2);
+		CHECK(*ref._val == 2);
 		c.pop_back();
-		CHECK(v == 0);
-		CHECK(c.size() == 0);
+		CHECK(v == 1);
+		CHECK(c.size() == 1);
 	}
 
 	{

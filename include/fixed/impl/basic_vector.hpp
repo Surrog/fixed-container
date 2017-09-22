@@ -461,22 +461,13 @@ namespace fixed
 				std::rotate(position, end() - 1, end());
 			}
 
-			template < class... Args>
-			void emplace_back(Args&&... args)
-			{
-				FIXED_CHECK(_size < max_size());
-				new (&*end())T(args...);
-				_size++;
-			}
-
 			template <class... Args>
-			iterator emplace_back(Args&&... args)
+			reference emplace_back(Args&&... args)
 			{
 				FIXED_CHECK(_size < max_size());
 				new (&*end())T(args...);
-				auto result = end();
 				_size++;
-				return result;
+				return back();
 			}
 
 

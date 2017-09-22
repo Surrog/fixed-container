@@ -357,9 +357,13 @@ void test_modifiers()
 		CHECK(v == 1);
 		CHECK(l.size() == 1);
 		CHECK(*l.front()._val == 1);
+		auto& ref = l.emplace_back(v);
+		CHECK(v == 2);
+		CHECK(l.size() == 2);
+		CHECK(*ref._val == 2);
 		l.pop_back();
-		CHECK(v == 0);
-		CHECK(l.size() == 0);
+		CHECK(v == 1);
+		CHECK(l.size() == 1);
 	}
 
 	{
@@ -371,6 +375,10 @@ void test_modifiers()
 			CHECK(v == 5);
 		}
 		CHECK(v == 0);
+	}
+
+	{
+		
 	}
 } 
 
