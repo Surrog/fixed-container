@@ -331,6 +331,12 @@ void test_modifiers()
 			++(*_val);
 		}
 
+		test_construct(const test_construct& orig)
+			: _val(orig._val)
+		{
+			++(*_val);
+		}
+
 		test_construct(test_construct&& orig) :
 			_val(orig._val)
 		{
@@ -354,6 +360,14 @@ void test_modifiers()
 		l.pop_back();
 		CHECK(v == 0);
 		CHECK(l.size() == 0);
+	}
+
+	{
+		int v = 0;
+		LIST_TYPE<test_construct, 5, Alloc_pattern> l;
+		l.resize(5, test_construct(v));
+		CHECK(l.size() == 5);
+		CHECK(v == 5);
 	}
 } 
 
