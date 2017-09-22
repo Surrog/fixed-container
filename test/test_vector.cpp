@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include "fixed/vector.hpp"
+#include <cstring>
 #include "catch.hpp"
 
 struct test_struct
