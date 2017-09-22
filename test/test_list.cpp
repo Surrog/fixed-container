@@ -324,8 +324,36 @@ void test_modifiers()
 		CHECK(l.size() == 2);
 	}
 
+	struct test_construct
 	{
-		
+		test_construct(int& val) : _val(&val)
+		{
+			++(*_val);
+		}
+
+		test_construct(test_construct&& orig) :
+			_val(orig._val)
+		{
+			orig._val = nullptr;
+		}
+
+		~test_construct()
+		{
+			if (_val) (*_val)--;
+		}
+		int* _val;
+	};
+
+	{
+		int v = 0;
+		LIST_TYPE<test_construct, 5, Alloc_pattern> l;
+		l.push_back(test_construct(v));
+		CHECK(v == 1);
+		CHECK(l.size() == 1);
+		CHECK(*l.front()._val == 1);
+		l.pop_back();
+		CHECK(v == 0);
+		CHECK(l.size() == 0);
 	}
 } 
 
