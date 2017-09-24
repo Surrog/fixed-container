@@ -4,7 +4,7 @@
 
 C++ library dedicate to provide data container that work with a fixed amount of memory.  
 Emphasis of this implementation are:
-- No dynamic expansion but emphasis on simplicity and compactness.
+- No dynamic expansion in favor of simplicity and compactness.
 - Allowing to customize memory sources easily.
 - Providing tailored container depending the amount of elements expected.
 - Most of iterators are Random-access iterators   
