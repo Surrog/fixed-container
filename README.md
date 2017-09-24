@@ -7,6 +7,7 @@ Emphasis of this implementation are:
 - No dynamic expansion but emphasis on simplicity and compactness.
 - Allowing to customize memory sources easily.
 - Providing tailored container depending the amount of elements expected.
+- Most of iterators are Random-access iterators   
 
 Containers interface mirror the standard library at the C++17 update, but are implemented with different allocator design (allowing customized memory sources).  
 The container implementation does not allow dynamic expansion, it assume that you can put an upper bound on the number of element you need to work with.
