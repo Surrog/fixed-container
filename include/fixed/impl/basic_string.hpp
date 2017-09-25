@@ -3,22 +3,20 @@
 
 #include <string>
 
-#include "fixed/vector.hpp"
 #include "fixed/impl/fixed_def.hpp"
+#include "fixed/vector.hpp"
 
 namespace fixed
 {
-	namespace _impl
-	{
-		template <class CHAR_T
-			, container_size_type SIZE
-			, class Traits = std::char_traits<CHAR_T>>
-			class basic_string
-		{
-			fixed::vector<CHAR_T, SIZE> _data;
-
-		};
-	}
+namespace _impl
+{
+    template <class CHAR_T, container_size_type SIZE,
+        class Traits = std::char_traits<CHAR_T>>
+    class basic_string
+    {
+        fixed::vector<CHAR_T, SIZE> _data;
+    };
+}
 }
 
-#endif //!HEAPLESS_STRING_HPP
+#endif //! HEAPLESS_STRING_HPP
