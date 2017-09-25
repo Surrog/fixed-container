@@ -7,6 +7,7 @@
 #include <list>
 
 #include "test_struct.hpp"
+#include "test_function_unary.hpp"
 
 template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename LIST_TYPE, 
 	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern >
@@ -286,25 +287,6 @@ void test_modifiers()
 	}
 
 	{
-		LIST_TYPE<int, 5, Alloc_pattern> l{ 0 };
-		l.push_back(1);
-		auto exp = { 0, 1 };
-		CHECK(l.size() == exp.size());
-		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-	}
-
-	{
-		LIST_TYPE<test_move, 5, Alloc_pattern> l;
-		l.push_back(test_move("test"));
-		CHECK(l.size() == 1);
-		test_move val("toto");
-		l.push_back(std::move(val));
-		CHECK(val._val == nullptr);
-		CHECK(l.size() == 2);
-	}
-
-
-	{
 		int v = 0;
 		LIST_TYPE<test_construct, 5, Alloc_pattern> l;
 		l.push_back(test_construct(v));
@@ -320,97 +302,12 @@ void test_modifiers()
 		CHECK(l.size() == 1);
 	}
 
-	{
-		int v = 0;
-		{
-			LIST_TYPE<test_construct, 5, Alloc_pattern> l;
-			l.resize(5, test_construct(v));
-			CHECK(l.size() == 5);
-			CHECK(v == 5);
-		}
-		CHECK(v == 0);
-	}
-
-	{
-		LIST_TYPE<int, 5, Alloc_pattern> l;
-		l.push_front(0);
-		{
-			auto exp = { 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.push_front(1);
-		{
-			auto exp = { 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.push_front(2);
-		{
-			auto exp = { 2, 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.push_front(3);
-		{
-			auto exp = { 3, 2, 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.push_front(4);
-		{
-			auto exp = { 4, 3, 2, 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		CHECK_THROWS(l.push_front(5));
-	}
-
-	{
-		LIST_TYPE<test_move, 5, Alloc_pattern> l;
-		test_move m("test");
-		l.push_front(std::move(m));
-		CHECK(m._val == nullptr);
-	}
-
-	{
-		LIST_TYPE<int, 5, Alloc_pattern> l;
-		l.emplace_front(0);
-		{
-			auto exp = { 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.emplace_front(1);
-		{
-			auto exp = { 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.emplace_front(2);
-		{
-			auto exp = { 2, 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.emplace_front(3);
-		{
-			auto exp = { 3, 2, 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		l.emplace_front(4);
-		{
-			auto exp = { 4, 3, 2, 1, 0 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
-		CHECK_THROWS(l.emplace_front(5));
-	}
-
-	{
-		
-	}
+	test_push_back<LIST_TYPE, Alloc_pattern>();
+	test_emplace_back<LIST_TYPE, Alloc_pattern>();
+	test_pop_back<LIST_TYPE, Alloc_pattern>();
+	test_resize<LIST_TYPE, Alloc_pattern>();
+	test_push_front<LIST_TYPE, Alloc_pattern>();
+	test_emplace_front<LIST_TYPE, Alloc_pattern>();
 }
 
 TEST_CASE("testing lists", "[linear]")

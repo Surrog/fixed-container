@@ -465,7 +465,7 @@ namespace fixed
 			reference emplace_back(Args&&... args)
 			{
 				FIXED_CHECK(_size < max_size());
-				new (&*end())T(args...);
+				new (&*end())T(std::forward<Args>(args)...);
 				_size++;
 				return back();
 			}

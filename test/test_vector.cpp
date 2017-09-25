@@ -6,12 +6,7 @@
 #include <cstring>
 #include "catch.hpp"
 #include "test_struct.hpp"
-
-
-bool operator==(const test_emplace& lval, const test_emplace& rval)
-{
-	return lval.i == rval.i && lval.c == rval.c && lval.ui == rval.ui;
-}
+#include "test_function_unary.hpp"
 
 template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename VECTOR_TYPE,
 	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern  >
@@ -471,43 +466,10 @@ void test_vector_modifier()
 		CHECK(it == v.end());
 	}
 
-	{
-		VECTOR_TYPE<test_move, 5, Alloc_pattern> l;
-		l.push_back(test_move("test"));
-		CHECK(l.size() == 1);
-		test_move val("toto");
-		l.push_back(std::move(val));
-		CHECK(val._val == nullptr);
-		CHECK(l.size() == 2);
-	}
-
-	{
-		int v = 0;
-		VECTOR_TYPE<test_construct, 5, Alloc_pattern> c;
-		c.push_back(test_construct(v));
-		CHECK(v == 1);
-		CHECK(c.size() == 1);
-		CHECK(*c.front()._val == 1);
-		auto& ref = c.emplace_back(v);
-		CHECK(v == 2);
-		CHECK(c.size() == 2);
-		CHECK(*ref._val == 2);
-		c.pop_back();
-		CHECK(v == 1);
-		CHECK(c.size() == 1);
-	}
-
-	{
-		int v = 0;
-		{
-			VECTOR_TYPE<test_construct, 5, Alloc_pattern> c;
-			c.resize(5, test_construct(v));
-			CHECK(c.size() == 5);
-			CHECK(v == 5);
-		}
-		CHECK(v == 0);
-	}
-
+	test_push_back<VECTOR_TYPE, Alloc_pattern>();
+	test_pop_back<VECTOR_TYPE, Alloc_pattern>();
+	test_emplace_back<VECTOR_TYPE, Alloc_pattern>();
+	test_resize<VECTOR_TYPE, Alloc_pattern>();
 }
 
 TEST_CASE("testing basic_vector", "[linear]")
