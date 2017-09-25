@@ -16,7 +16,12 @@ namespace fixed
 #endif
 
 #if !defined(NDEBUG) || defined(FIXED_CONTAINER_CHECK_BOUND)
-#define FIXED_CHECK(ex) (!(ex)) ? throw std::out_of_range("allocator out of range or empty container") : ((void)0)
+#define FIXED_CHECK_INBOUND(ex) (!(ex)) ? throw std::out_of_range("Iterator out of range") : ((void)0)
+#define FIXED_CHECK_BADRANGE(ex) (!(ex)) ? throw std::out_of_range("Bad iterator range") : ((void)0)
+#define FIXED_CHECK_FULL(ex) (!(ex)) ? throw std::out_of_range("Container full") : ((void)0)
+#define FIXED_CHECK_EMPTY(ex) (!(ex)) ? throw std::out_of_range("Empty container") : ((void)0)
+#define FIXED_CHECK_CUSTOM(ex, msg) (!(ex)) ? throw std::out_of_range(msg) : ((void)0)
+
 #else //!defined(NDEBUG) || defined(FIXED_CONTAINER_CHECK_BOUND)
 #define FIXED_CHECK(ex) ((void)0)
 #endif //defined(NDEBUG) && !defined(FIXED_CONTAINER_CHECK_BOUND)

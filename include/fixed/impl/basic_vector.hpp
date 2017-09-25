@@ -229,14 +229,14 @@ namespace fixed
 			}
 
 			//element access
-			T& at(size_type n) { FIXED_CHECK(n < _size); return data()[n]; }
-			const T& at(size_type n) const { FIXED_CHECK(n < _size); return data()[n]; }
+			T& at(size_type n) { FIXED_CHECK_INBOUND(n < _size); return data()[n]; }
+			const T& at(size_type n) const { FIXED_CHECK_INBOUND(n < _size); return data()[n]; }
 			T& operator[](size_type n) { return data()[n]; }
 			const T& operator[](size_type n) const { return data()[n]; }
 			T& front() { return at(0); }
 			const T& front() const { return at(0); }
-			T& back() { FIXED_CHECK(_size > 0); return at(_size - 1); }
-			const T& back() const { FIXED_CHECK(_size > 0); return at(_size - 1); }
+			T& back() { FIXED_CHECK_EMPTY(_size > 0); return at(_size - 1); }
+			const T& back() const { FIXED_CHECK_EMPTY(_size > 0); return at(_size - 1); }
 			T* data() { return _data_container.data(); }
 			const T* data() const { return _data_container.data(); }
 
@@ -283,7 +283,7 @@ namespace fixed
 			//Modifiers
 			void assign(size_type count, const T& value)
 			{
-				FIXED_CHECK(count <= max_size());
+				FIXED_CHECK_FULL(count <= max_size());
 				_size = count;
 				for (auto& val : *this)
 				{
@@ -297,35 +297,35 @@ namespace fixed
 				void assign(InputIt first, InputIt last)
 			{
 				size = std::distance(first, last);
-				FIXED_CHECK(size <= max_size());
+				FIXED_CHECK_FULL(size <= max_size());
 				_size = size;
 				std::transform(first, last, begin(), [](const auto& value) { return value; });
 			}
 
 			void assign(std::initializer_list<T> list)
 			{
-				FIXED_CHECK(list.size() <= max_size());
+				FIXED_CHECK_FULL(list.size() <= max_size());
 				_size = list.size();
 				std::transform(list.begin(), list.end(), begin(), [](const auto& value) { return value; });
 			}
 
 			void push_back(const T& value)
 			{
-				FIXED_CHECK(_size < max_size());
+				FIXED_CHECK_FULL(_size < max_size());
 				new(&*end())T(value);
 				_size++;
 			}
 
 			void push_back(T&& value)
 			{
-				FIXED_CHECK(_size < max_size());
+				FIXED_CHECK_FULL(_size < max_size());
 				new(&*end())T(std::move(value));
 				_size++;
 			}
 
 			void pop_back()
 			{
-				FIXED_CHECK(_size > 0);
+				FIXED_CHECK_EMPTY(_size > 0);
 				_size--;
 				(*end()).~T();
 			}
@@ -388,9 +388,9 @@ namespace fixed
 
 			iterator erase(const_iterator position)
 			{
-				FIXED_CHECK(_size > 0);
+				FIXED_CHECK_EMPTY(_size > 0);
 				container_size_type index = std::distance(cbegin(), position);
-				FIXED_CHECK(index < _size);
+				FIXED_CHECK_INBOUND(index < _size);
 				if (index != _size - 1)
 				{
 					std::rotate(begin() + index, begin() + index + 1, end());
@@ -401,12 +401,12 @@ namespace fixed
 
 			iterator erase(const_iterator first, const_iterator last)
 			{
-				FIXED_CHECK(_size > 0);
+				FIXED_CHECK_EMPTY(_size > 0);
 				container_size_type beg_i = std::distance(cbegin(), first);
 				container_size_type end_i = std::distance(cbegin(), last);
-				FIXED_CHECK(beg_i < _size);
-				FIXED_CHECK(end_i <= _size);
-				FIXED_CHECK(beg_i < end_i);
+				FIXED_CHECK_INBOUND(beg_i < _size);
+				FIXED_CHECK_INBOUND(end_i <= _size);
+				FIXED_CHECK_BADRANGE(beg_i < end_i);
 				if (end_i != _size)
 				{
 					std::rotate(begin() + beg_i, begin() + end_i, end());
@@ -421,8 +421,8 @@ namespace fixed
 			template <size_type RSIZE>
 			void swap(basic_vector<T, RSIZE>& rval)
 			{
-				FIXED_CHECK(rval.size() < SIZE);
-				FIXED_CHECK(size() < RSIZE);
+				FIXED_CHECK_FULL(rval.size() < max_size());
+				FIXED_CHECK_FULL(size() < rval.max_size());
 
 				auto lbeg = begin();
 				auto lend = end();
@@ -457,14 +457,14 @@ namespace fixed
 			template <class... Args>
 			iterator emplace(iterator position, Args&&... args)
 			{
-				emplace_back(args...);
+				emplace_back(std::forward<Args>(args)...);
 				std::rotate(position, end() - 1, end());
 			}
 
 			template <class... Args>
 			reference emplace_back(Args&&... args)
 			{
-				FIXED_CHECK(_size < max_size());
+				FIXED_CHECK_FULL(_size < max_size());
 				new (&*end())T(std::forward<Args>(args)...);
 				_size++;
 				return back();
@@ -491,7 +491,7 @@ namespace fixed
 
 			void uninitialized_assign(size_type count, const T& value)
 			{
-				FIXED_CHECK(count <= max_size());
+				FIXED_CHECK_FULL(count <= max_size());
 
 				for (size_type i = 0; i < count; i++)
 				{
@@ -502,7 +502,7 @@ namespace fixed
 
 			void uninitialized_assign(size_type count)
 			{
-				FIXED_CHECK(count <= max_size());
+				FIXED_CHECK_FULL(count <= max_size());
 
 				for (size_type i = 0; i < count; i++)
 				{

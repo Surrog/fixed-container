@@ -277,8 +277,8 @@ void test_pop_back()
 		for (std::size_t i = 0; i < l.max_size(); i++)
 		{
 			l.pop_back();
-			CHECK(l.size() == 5 - i);
-			CHECK(l.back() == 5 - i);
+			CHECK(l.size() == 4 - i);
+			CHECK(l.back() == 4 - i);
 		}
 	}
 	
