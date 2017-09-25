@@ -16,7 +16,7 @@ template <template <typename, fixed::_impl::container_size_type,
 void test_vector_constructor()
 {
     {
-        VECTOR_TYPE<test_emplace, 10, Alloc_pattern> test;
+        VECTOR_T<test_emplace, 10, Alloc_pattern> test;
         std::vector<test_emplace> vec_ref;
 
         unsigned int array_test[] = {1u, 2u};
@@ -25,7 +25,7 @@ void test_vector_constructor()
         test.push_back({30, 'b', array_test});
         vec_ref.push_back({30, 'b', array_test});
 
-        VECTOR_TYPE<test_emplace, 10, Alloc_pattern> test2 = test;
+        VECTOR_T<test_emplace, 10, Alloc_pattern> test2 = test;
 
         CHECK(std::equal(
             test.begin(), test.end(), vec_ref.begin(), vec_ref.end()));
@@ -33,7 +33,7 @@ void test_vector_constructor()
     }
 
     {
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words1{
+        VECTOR_T<std::string, 10, Alloc_pattern> words1{
             "the", "frogurt", "is", "also", "cursed"};
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
@@ -42,7 +42,7 @@ void test_vector_constructor()
         }
 
         // words2 == words1
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words2(
+        VECTOR_T<std::string, 10, Alloc_pattern> words2(
             words1.begin(), words1.end());
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
@@ -53,7 +53,7 @@ void test_vector_constructor()
 
     {
         // c++11 initializer list syntax:
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words1{
+        VECTOR_T<std::string, 10, Alloc_pattern> words1{
             "the", "frogurt", "is", "also", "cursed"};
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
@@ -62,7 +62,7 @@ void test_vector_constructor()
         }
 
         // words2 == words1
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words2(
+        VECTOR_T<std::string, 10, Alloc_pattern> words2(
             words1.begin(), words1.end());
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
@@ -71,7 +71,7 @@ void test_vector_constructor()
         }
 
         // words3 == words1
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words3(words1);
+        VECTOR_T<std::string, 10, Alloc_pattern> words3(words1);
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
             CHECK(std::equal(words3.begin(), words3.end(), expected.begin(),
@@ -81,7 +81,7 @@ void test_vector_constructor()
 
     {
         // c++11 initializer list syntax:
-        VECTOR_TYPE<std::string, 5, Alloc_pattern> words1{
+        VECTOR_T<std::string, 5, Alloc_pattern> words1{
             "the", "frogurt", "is", "also", "cursed"};
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
@@ -90,7 +90,7 @@ void test_vector_constructor()
         }
 
         // words2 == words1
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words2(
+        VECTOR_T<std::string, 10, Alloc_pattern> words2(
             words1.begin(), words1.end());
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
@@ -99,7 +99,7 @@ void test_vector_constructor()
         }
 
         // words3 == words1
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words3(words1);
+        VECTOR_T<std::string, 10, Alloc_pattern> words3(words1);
         {
             auto expected = {"the", "frogurt", "is", "also", "cursed"};
             CHECK(std::equal(words3.begin(), words3.end(), expected.begin(),
@@ -107,7 +107,7 @@ void test_vector_constructor()
         }
 
         // words4 is {"Mo", "Mo", "Mo", "Mo", "Mo"}
-        VECTOR_TYPE<std::string, 10, Alloc_pattern> words4(5, "Mo");
+        VECTOR_T<std::string, 10, Alloc_pattern> words4(5, "Mo");
         {
             auto expected = {"Mo", "Mo", "Mo", "Mo", "Mo"};
             CHECK(std::equal(words4.begin(), words4.end(), expected.begin(),
@@ -116,9 +116,9 @@ void test_vector_constructor()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> nums1{3, 1, 4, 6, 5, 9};
-        VECTOR_TYPE<int, 6, Alloc_pattern> nums2;
-        VECTOR_TYPE<int, 20, Alloc_pattern> nums3;
+        VECTOR_T<int, 10, Alloc_pattern> nums1{3, 1, 4, 6, 5, 9};
+        VECTOR_T<int, 6, Alloc_pattern> nums2;
+        VECTOR_T<int, 20, Alloc_pattern> nums3;
 
         CHECK(nums1.size() == 6);
         CHECK(nums2.size() == 0);
@@ -146,10 +146,10 @@ template <template <typename, fixed::_impl::container_size_type,
     typename Alloc_pattern>
 void test_vector_iterator()
 {
-    VECTOR_TYPE<int, 20, Alloc_pattern> vec{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    using fiterator = typename VECTOR_TYPE<int, 20, Alloc_pattern>::iterator;
+    VECTOR_T<int, 20, Alloc_pattern> vec{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    using fiterator = typename VECTOR_T<int, 20, Alloc_pattern>::iterator;
     using fciterator =
-        typename VECTOR_TYPE<int, 20, Alloc_pattern>::const_iterator;
+        typename VECTOR_T<int, 20, Alloc_pattern>::const_iterator;
 
     {
         fiterator it;
@@ -209,7 +209,7 @@ template <template <typename, fixed::_impl::container_size_type,
 void test_vector_modifier()
 {
     {
-        VECTOR_TYPE<int, 20, Alloc_pattern> vec(3, 100);
+        VECTOR_T<int, 20, Alloc_pattern> vec(3, 100);
         std::vector<int> expected = {100, 100, 100};
         CHECK(vec == expected);
 
@@ -235,7 +235,7 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> c{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        VECTOR_T<int, 10, Alloc_pattern> c{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         std::vector<int> expected{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
         c.erase(c.begin());
@@ -255,7 +255,7 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<char, 5, Alloc_pattern> characters;
+        VECTOR_T<char, 5, Alloc_pattern> characters;
 
         characters.assign(5, 'a');
 
@@ -270,12 +270,12 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector;
+        VECTOR_T<int, 10, Alloc_pattern> myvector;
         for(int i = 1; i <= 5; i++)
             myvector.push_back(i);
 
         int i = 1;
-        for(typename VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it
+        for(typename VECTOR_T<int, 10, Alloc_pattern>::iterator it
             = myvector.begin();
             it != myvector.end(); ++it)
         {
@@ -285,13 +285,13 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector(5);
+        VECTOR_T<int, 10, Alloc_pattern> myvector(5);
 
-        typename VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rbit
+        typename VECTOR_T<int, 10, Alloc_pattern>::reverse_iterator rbit
             = myvector.rbegin();
-        typename VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator reit
+        typename VECTOR_T<int, 10, Alloc_pattern>::reverse_iterator reit
             = myvector.rend();
-        typename VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it
+        typename VECTOR_T<int, 10, Alloc_pattern>::iterator it
             = myvector.begin() + (myvector.size() - 1);
         int i = 0;
         while(rbit != reit)
@@ -305,17 +305,17 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector(
+        VECTOR_T<int, 10, Alloc_pattern> myvector(
             5); // 5 default-constructed ints
 
         int i = 0;
 
-        typename VECTOR_TYPE<int, 10, Alloc_pattern>::reverse_iterator rit
+        typename VECTOR_T<int, 10, Alloc_pattern>::reverse_iterator rit
             = myvector.rbegin();
         for(; rit != myvector.rend(); ++rit)
             *rit = ++i;
         CHECK(i == 5);
-        for(typename VECTOR_TYPE<int, 10, Alloc_pattern>::iterator it
+        for(typename VECTOR_T<int, 10, Alloc_pattern>::iterator it
             = myvector.begin();
             it != myvector.end(); ++it)
         {
@@ -325,7 +325,7 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
+        VECTOR_T<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
 
         auto expected = {10, 20, 30, 40, 50};
         int i = 0;
@@ -337,7 +337,7 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
+        VECTOR_T<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
 
         auto expected = {10, 20, 30, 40, 50};
         for(std::size_t i = 0; i < expected.size(); i++)
@@ -347,7 +347,7 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
+        VECTOR_T<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
 
         auto expected = {10, 20, 30, 40, 50};
         for(std::size_t i = 0; i < expected.size(); i++)
@@ -360,7 +360,7 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector;
+        VECTOR_T<int, 10, Alloc_pattern> myvector;
 
         CHECK(myvector.empty());
         myvector = {10, 20, 30, 40, 50};
@@ -375,13 +375,13 @@ void test_vector_modifier()
     }
 
     {
-        VECTOR_TYPE<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
+        VECTOR_T<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
         int* ptr = myvector.data();
 
         {
             auto beg = myvector.begin();
             auto end = myvector.end();
-            typename VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
+            typename VECTOR_T<int, 10, Alloc_pattern>::size_type i = 0;
 
             while(beg != end)
             {
@@ -396,7 +396,7 @@ void test_vector_modifier()
         {
             auto beg = myvector.begin();
             auto end = myvector.end();
-            typename VECTOR_TYPE<int, 10, Alloc_pattern>::size_type i = 0;
+            typename VECTOR_T<int, 10, Alloc_pattern>::size_type i = 0;
 
             while(beg != end)
             {
