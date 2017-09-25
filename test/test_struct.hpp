@@ -2,6 +2,7 @@
 #define FIXED_TEST_STRUCT_HPP
 
 #include <algorithm>
+#include <cstring>
 
 struct test
 {
