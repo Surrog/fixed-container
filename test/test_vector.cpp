@@ -5,15 +5,10 @@
 #include "fixed/vector.hpp"
 #include <cstring>
 #include "catch.hpp"
+#include "test_struct.hpp"
 
-struct test_struct
-{
-	int i = 10;
-	char c = 'c';
-	unsigned int* ui = nullptr;
-};
 
-bool operator==(const test_struct& lval, const test_struct& rval)
+bool operator==(const test_emplace& lval, const test_emplace& rval)
 {
 	return lval.i == rval.i && lval.c == rval.c && lval.ui == rval.ui;
 }
@@ -23,16 +18,16 @@ template <template <typename, fixed::_impl::container_size_type, template <typen
 void test_vector_constructor()
 {
 	{
-		VECTOR_TYPE<test_struct, 10, Alloc_pattern> test;
-		std::vector<test_struct> vec_ref;
+		VECTOR_TYPE<test_emplace, 10, Alloc_pattern> test;
+		std::vector<test_emplace> vec_ref;
 
 		unsigned int array_test[] = { 1u, 2u };
-		test.push_back(test_struct());
-		vec_ref.push_back(test_struct());
+		test.push_back(test_emplace());
+		vec_ref.push_back(test_emplace());
 		test.push_back({ 30, 'b', array_test });
 		vec_ref.push_back({ 30, 'b', array_test });
 
-		VECTOR_TYPE<test_struct, 10, Alloc_pattern> test2 = test;
+		VECTOR_TYPE<test_emplace, 10, Alloc_pattern> test2 = test;
 
 		CHECK(std::equal(test.begin(), test.end(), vec_ref.begin(), vec_ref.end()));
 		CHECK(std::equal(test.begin(), test.end(), test2.begin(), test2.end()));
@@ -476,18 +471,6 @@ void test_vector_modifier()
 		CHECK(it == v.end());
 	}
 
-	struct test_move {
-		test_move(const char* val) : _val(val) {}
-		test_move(test_move&& orig) : _val(orig._val) { orig._val = nullptr; }
-
-		const char * _val = nullptr;
-		bool operator==(const test_move& rval)
-		{
-			return std::equal(_val, _val + strlen(_val),
-				rval._val, rval._val + strlen(rval._val));
-		}
-	};
-
 	{
 		VECTOR_TYPE<test_move, 5, Alloc_pattern> l;
 		l.push_back(test_move("test"));
@@ -497,32 +480,6 @@ void test_vector_modifier()
 		CHECK(val._val == nullptr);
 		CHECK(l.size() == 2);
 	}
-
-	struct test_construct
-	{
-		test_construct(int& val) : _val(&val)
-		{
-			++(*_val);
-		}
-
-		test_construct(const test_construct& orig)
-			: _val(orig._val)
-		{
-			++(*_val);
-		}
-
-		test_construct(test_construct&& orig) :
-			_val(orig._val)
-		{
-			orig._val = nullptr;
-		}
-
-		~test_construct()
-		{
-			if (_val) (*_val)--;
-		}
-		int* _val;
-	};
 
 	{
 		int v = 0;

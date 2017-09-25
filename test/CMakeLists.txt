@@ -30,6 +30,7 @@ set(SOURCES
 	"${PROJECT_SOURCE_DIR}/test_list.cpp"
 	"${PROJECT_SOURCE_DIR}/test_unordered_map.cpp"
 	"${PROJECT_SOURCE_DIR}/test_vector.cpp"
+	"${PROJECT_SOURCE_DIR}/test_struct.hpp"
 	
 	"${FIXED_EXPOSED_SOURCE_DIR}/list.hpp"
 	"${FIXED_EXPOSED_SOURCE_DIR}/string.hpp"
