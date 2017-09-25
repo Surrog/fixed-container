@@ -478,4 +478,33 @@ void test_pop_back()
     }
 }
 
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename CONTAINER_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_swap()
+{
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> lval{1, 2, 3};
+        CONTAINER_T<int, 4, Alloc_pattern> rval{3, 4};
+
+        auto exp1 = {1, 2, 3};
+        auto exp2 = {3, 4};
+        lval.swap(rval);
+
+        CHECK(lval.size() == exp2.size());
+        CHECK(std::equal(lval.begin(), lval.end(), exp2.begin(), exp2.end()));
+        CHECK(rval.size() == exp1.size());
+        CHECK(std::equal(rval.begin(), rval.end(), exp1.begin(), exp1.end()));
+    }
+
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> lval{1, 2, 3, 4, 5};
+        CONTAINER_T<int, 4, Alloc_pattern> rval{3, 4};
+
+        CHECK_THROWS(lval.swap(rval));
+    }
+}
+
 #endif //! FIXED_TEST_FUNCTION_UNARY_HPP

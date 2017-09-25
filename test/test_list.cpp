@@ -265,6 +265,7 @@ void test_modifiers()
 	test_resize<LIST_T, Alloc_pattern>();
 	test_push_front<LIST_T, Alloc_pattern>();
 	test_emplace_front<LIST_T, Alloc_pattern>();
+	test_swap<LIST_T, Alloc_pattern>();
 }
 
 TEST_CASE("testing lists", "[linear]")

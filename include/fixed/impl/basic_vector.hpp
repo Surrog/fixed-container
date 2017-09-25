@@ -448,35 +448,47 @@ namespace _impl
             return begin() + std::min(beg_i, _size);
         }
 
-        template <size_type RSIZE> void swap(basic_vector<T, RSIZE>& rval)
+        template <size_type RSIZE,
+            template <typename, container_size_type> typename RAlloc_pattern>
+        void swap(basic_vector<T, RSIZE, RAlloc_pattern>& rval)
         {
             FIXED_CHECK_FULL(rval.size() < max_size());
             FIXED_CHECK_FULL(size() < rval.max_size());
 
-            auto lbeg = begin();
-            auto lend = end();
-            auto rbeg = rval.begin();
-            auto rend = rval.end();
+			size_type lsize = size();
+			size_type rsize = rval.size();
 
-            while(lbeg != lend && rbeg != rend)
-            {
-                std::swap(*lbeg, rbeg);
-                ++lbeg;
-                ++rbeg;
-            }
+			auto lbeg = begin();
+			auto lend = end();
+			auto rbeg = rval.begin();
+			auto rend = rval.end();
 
-            while(lbeg != lend)
-            {
-                rval.push_back(std::move(*lbeg));
-                ++lbeg;
-            }
+			while (lbeg != lend && rbeg != rend)
+			{
+				std::swap(*lbeg, *rbeg);
+				++lbeg;
+				++rbeg;
+			}
 
-            while(rbeg != rend)
-            {
-                push_back(std::move(*rbeg));
-                ++rbeg;
-            }
-        }
+			if (lbeg != lend)
+			{
+				while (lbeg != lend)
+				{
+					rval.push_back(std::move_if_noexcept(*lbeg));
+					++lbeg;
+				}
+				resize(rsize);
+			}
+			else if (rbeg != rend)
+			{
+				while (rbeg != rend)
+				{
+					push_back(std::move_if_noexcept(*rbeg));
+					++rbeg;
+				}
+				rval.resize(lsize);
+			}
+		}
 
         void clear() noexcept
         {

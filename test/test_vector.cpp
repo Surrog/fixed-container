@@ -412,6 +412,7 @@ void test_vector_modifier()
     test_pop_back<VECTOR_T, Alloc_pattern>();
     test_emplace_back<VECTOR_T, Alloc_pattern>();
     test_resize<VECTOR_T, Alloc_pattern>();
+	test_swap<VECTOR_T, Alloc_pattern>();
 }
 
 TEST_CASE("testing basic_vector", "[linear]")

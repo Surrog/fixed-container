@@ -602,29 +602,44 @@ namespace _impl
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        void swap(basic_list<T, RSIZE, RALLOC>& other)
+        void swap(basic_list<T, RSIZE, RALLOC>& rval)
         {
-            size_type i = 0;
-            size_type other_size = other._size;
-            while(i < _size && i < other_size)
+			FIXED_CHECK_FULL(rval.size() < max_size());
+			FIXED_CHECK_FULL(size() < rval.max_size());
+
+            size_type lsize = size();
+            size_type rsize = rval.size();
+
+            auto lbeg = begin();
+            auto lend = end();
+            auto rbeg = rval.begin();
+            auto rend = rval.end();
+
+            while(lbeg != lend && rbeg != rend)
             {
-                std::swap(*_ptrs[i], *other._ptrs[i]);
-                ++i;
+                std::swap(*lbeg, *rbeg);
+                ++lbeg;
+                ++rbeg;
             }
 
-            while(i < _size)
+            if(lbeg != lend)
             {
-                other.push_back(std::move_if_noexcept(*_ptrs[i]));
-                ++i;
+                while(lbeg != lend)
+                {
+                    rval.push_back(std::move_if_noexcept(*lbeg));
+                    ++lbeg;
+                }
+                resize(rsize);
             }
-
-            while(i < other_size)
+            else if(rbeg != rend)
             {
-                push_back(std::move_if_noexcept(*other._ptrs[i]));
-                ++i;
+                while(rbeg != rend)
+                {
+                    push_back(std::move_if_noexcept(*rbeg));
+                    ++rbeg;
+                }
+                rval.resize(lsize);
             }
-
-            std::swap(_size, other._size);
         }
 
         // Operations
