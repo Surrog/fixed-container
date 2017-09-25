@@ -407,6 +407,10 @@ void test_modifiers()
 		}
 		CHECK_THROWS(l.emplace_front(5));
 	}
+
+	{
+		
+	}
 }
 
 TEST_CASE("testing lists", "[linear]")

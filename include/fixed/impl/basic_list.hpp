@@ -590,7 +590,7 @@ namespace fixed
 			{
 				emplace_back(args...);
 				if (_size > 1)
-					std::rotate(_ptrs.data(), _ptrs.data() + _size - 2, _ptrs.data() + _size);
+					std::rotate(_ptrs.data(), _ptrs.data() + _size - 1, _ptrs.data() + _size);
 				return front();
 			}
 
