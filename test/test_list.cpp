@@ -9,7 +9,7 @@
 #include "test_struct.hpp"
 #include "test_function_unary.hpp"
 
-template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename LIST_TYPE, 
+template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename LIST_T, 
 	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern >
 void test_list()
 {
@@ -120,7 +120,7 @@ void test_list()
 	}
 }
 
-template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename LIST_TYPE,
+template <template <typename, fixed::_impl::container_size_type, template <typename, fixed::_impl::container_size_type> typename> typename LIST_T,
 	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern>
 void test_modifiers()
 {
@@ -244,36 +244,8 @@ void test_modifiers()
 		};
 		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 	}
-
-	{
-		LIST_TYPE<int, 5, Alloc_pattern> l{ 0, 1, 2, 3, 4 };
-		auto result = l.erase(l.begin());
-		auto exp = { 1, 2, 3, 4 };
-		CHECK(l.size() == exp.size());
-		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		CHECK(*result == 1);
-
-		while (l.size())
-		{
-			l.erase(l.begin());
-		}
-
-		CHECK_THROWS(l.erase(l.end()));
-	}
-
-	{
-		LIST_TYPE<int, 5, Alloc_pattern> l{ 0, 1, 2, 3, 4 };
-		l.erase(l.begin(), l.begin() + 5);
-		CHECK(l.empty());
-	}
-
-	{
-		LIST_TYPE<int, 5, Alloc_pattern> l{ 0, 1, 2, 3, 4 };
-		l.erase(l.begin() + 1, l.begin() + 5);
-		auto exp = { 0 };
-		CHECK(l.size() == exp.size());
-		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-	}
+	
+	test_erase<LIST_T, Alloc_pattern>();
 
 	{
 		LIST_TYPE<int, 5, Alloc_pattern> l{ 0, 1, 2, 3, 4 };
@@ -286,28 +258,13 @@ void test_modifiers()
 		CHECK(val == 4);
 	}
 
-	{
-		int v = 0;
-		LIST_TYPE<test_construct, 5, Alloc_pattern> l;
-		l.push_back(test_construct(v));
-		CHECK(v == 1);
-		CHECK(l.size() == 1);
-		CHECK(*l.front()._val == 1);
-		auto& ref = l.emplace_back(v);
-		CHECK(v == 2);
-		CHECK(l.size() == 2);
-		CHECK(*ref._val == 2);
-		l.pop_back();
-		CHECK(v == 1);
-		CHECK(l.size() == 1);
-	}
 
-	test_push_back<LIST_TYPE, Alloc_pattern>();
-	test_emplace_back<LIST_TYPE, Alloc_pattern>();
-	test_pop_back<LIST_TYPE, Alloc_pattern>();
-	test_resize<LIST_TYPE, Alloc_pattern>();
-	test_push_front<LIST_TYPE, Alloc_pattern>();
-	test_emplace_front<LIST_TYPE, Alloc_pattern>();
+	test_push_back<LIST_T, Alloc_pattern>();
+	test_emplace_back<LIST_T, Alloc_pattern>();
+	test_pop_back<LIST_T, Alloc_pattern>();
+	test_resize<LIST_T, Alloc_pattern>();
+	test_push_front<LIST_T, Alloc_pattern>();
+	test_emplace_front<LIST_T, Alloc_pattern>();
 }
 
 TEST_CASE("testing lists", "[linear]")

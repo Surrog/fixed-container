@@ -8,6 +8,141 @@ template <template <typename, fixed::_impl::container_size_type,
           typename CONTAINER_T,
     template <typename, fixed::_impl::container_size_type>
     typename Alloc_pattern>
+void test_erase()
+{
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+
+        CHECK_THROWS(v.erase(v.end()));
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin());
+        auto exp = {1, 2, 3, 4};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(*it == 1);
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 1);
+        auto exp = {0, 2, 3, 4};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(*it == 2);
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 2);
+        auto exp = {0, 1, 3, 4};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(*it == 3);
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 3);
+        auto exp = {0, 1, 2, 4};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(*it == 4);
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 4);
+        auto exp = {0, 1, 2, 3};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(it == v.end());
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 0, v.begin() + 2);
+        auto exp = {2, 3, 4};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(*it == 2);
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 1, v.begin() + 3);
+        auto exp = {0, 3, 4};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(*it == 3);
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 2, v.begin() + 4);
+        auto exp = {0, 1, 4};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(*it == 4);
+    }
+
+    {
+        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+            = {0, 1, 2, 3, 4};
+        auto it = v.erase(v.begin() + 3, v.begin() + 5);
+        auto exp = {0, 1, 2};
+        CHECK(v.size() == exp.size());
+        CHECK(std::equal(v.begin(), v.end(), exp.begin(), exp.end()));
+        CHECK(it == v.end());
+    }
+
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> l{0, 1, 2, 3, 4};
+        auto result = l.erase(l.begin());
+        auto exp = {1, 2, 3, 4};
+        CHECK(l.size() == exp.size());
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+        CHECK(*result == 1);
+
+        while(l.size())
+        {
+            l.erase(l.begin());
+        }
+
+        CHECK_THROWS(l.erase(l.end()));
+    }
+
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> l{0, 1, 2, 3, 4};
+        l.erase(l.begin(), l.begin() + 5);
+        CHECK(l.empty());
+    }
+
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> l{0, 1, 2, 3, 4};
+        l.erase(l.begin() + 1, l.begin() + 5);
+        auto exp = {0};
+        CHECK(l.size() == exp.size());
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename CONTAINER_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
 void test_resize()
 {
     {
