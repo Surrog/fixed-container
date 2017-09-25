@@ -276,20 +276,14 @@ void test_pop_back()
 		}
 		for (std::size_t i = 0; i < l.max_size(); i++)
 		{
-			l.pop_back();
-			CHECK(l.size() == 4 - i);
+			CHECK(l.size() == 5 - i);
 			CHECK(l.back() == 4 - i);
+			l.pop_back();
 		}
 	}
 	
 	{
 		CONTAINER_T<int, 5, Alloc_pattern> l = {0, 1, 2, 3, 4};
-		l.pop_back();
-		{
-			auto exp = { 0, 1, 2, 3, 4 };
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-		}
 		l.pop_back();
 		{
 			auto exp = { 0, 1, 2, 3 };
@@ -320,7 +314,7 @@ void test_pop_back()
 	}
 
 	{
-		int val;
+		int val = 0;
 		CONTAINER_T<test_construct, 5, Alloc_pattern> l(5, test_construct(val));
 		CHECK(val == 5);
 
