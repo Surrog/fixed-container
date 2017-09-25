@@ -177,12 +177,12 @@ namespace fixed
 				: basic_list(other.begin(), other.end(), alloc)
 			{}
 
-			basic_list(basic_list&& other)
+			basic_list(basic_list&& other) noexcept
 				: basic_list()
 			{
 				for (T& elem : other)
 				{
-					push_back(std::move(elem));
+					push_back(std::move_if_noexcept(elem));
 				}
 				other.clear();
 			}
@@ -190,12 +190,12 @@ namespace fixed
 			template < class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-				basic_list(basic_list&& other, Alloc_source& alloc)
+				basic_list(basic_list&& other, Alloc_source& alloc) noexcept
 				: basic_list(alloc)
 			{
 				for (auto& elem : other)
 				{
-					push_back(std::move(elem));
+					push_back(std::move_if_noexcept(elem));
 				}
 				other.clear();
 			}
@@ -204,20 +204,26 @@ namespace fixed
 				class Alloc_source = empty_source,
 				std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0
 			>
-				basic_list(basic_list<T, RSIZE, RALLOC>&& other, Alloc_source& alloc)
+				basic_list(basic_list<T, RSIZE, RALLOC>&& other, Alloc_source& alloc) noexcept
 				: basic_list(alloc)
 			{
 				for (auto& elem : other)
 				{
-					push_back(std::move(elem));
+					push_back(std::move_if_noexcept(elem));
 				}
 				other.clear();
 			}
 
 			template <container_size_type RSIZE, template <typename, container_size_type> typename RALLOC>
-			basic_list(basic_list<T, RSIZE, RALLOC> && other)
-				: basic_list(other, empty_source())
-			{}
+			basic_list(basic_list<T, RSIZE, RALLOC> && other) noexcept
+				: basic_list()
+			{
+				for (auto& elem : other)
+				{
+					push_back(std::move_if_noexcept(elem));
+				}
+				other.clear();
+			}
 
 
 			template < class Alloc_source = empty_source,
@@ -265,7 +271,7 @@ namespace fixed
 
 					for (auto& val : other)
 					{
-						set_at(i, std::move(val));
+						set_at(i, std::move_if_noexcept(val));
 						++i;
 					}
 				}
@@ -281,7 +287,7 @@ namespace fixed
 
 					for (auto& val : other)
 					{
-						set_at(i, std::move(val));
+						set_at(i, std::move_if_noexcept(val));
 						++i;
 					}
 				}
@@ -294,7 +300,7 @@ namespace fixed
 				size_type i = 0;
 				for (auto& val : ilist)
 				{
-					set_at(i, std::move(val));
+					set_at(i, val);
 					++i;
 				}
 				return *this;
@@ -448,7 +454,7 @@ namespace fixed
 
 			iterator insert(const_iterator pos, const T& value)
 			{
-				insert(pos, 1, value);
+				return insert(pos, 1, value);
 			}
 
 			iterator insert(const_iterator pos, T&& value)
@@ -625,13 +631,13 @@ namespace fixed
 
 				while (i < _size)
 				{
-					other.push_back(std::move(*_ptrs[i]));
+					other.push_back(std::move_if_noexcept(*_ptrs[i]));
 					++i;
 				}
 
 				while (i < other_size)
 				{
-					push_back(std::move(*other._ptrs[i]));
+					push_back(std::move_if_noexcept(*other._ptrs[i]));
 					++i;
 				}
 
