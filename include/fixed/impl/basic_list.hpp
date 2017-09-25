@@ -462,7 +462,7 @@ namespace fixed
 				container_size_type index = std::distance(cbegin(), pos);
 				FIXED_CHECK(index <= _size);
 				auto old_size = _size;
-				push_back(value);
+				push_back(std::move(value));
 				if (index != _size)
 					std::rotate(_ptrs.data() + index, _ptrs.data() + old_size, _ptrs.data() + old_size + 1);
 				return iterator(_ptrs.data() + index);
@@ -582,7 +582,7 @@ namespace fixed
 
 			void push_front(T&& value)
 			{
-				insert(cbegin(), value);
+				insert(cbegin(), std::move(value));
 			}
 
 			template<class... Args>
@@ -590,7 +590,7 @@ namespace fixed
 			{
 				emplace_back(args...);
 				if (_size > 1)
-					std::rotate(_ptrs.data(), _ptrs.data() + _size - 2, _ptrs.data() + size);
+					std::rotate(_ptrs.data(), _ptrs.data() + _size - 2, _ptrs.data() + _size);
 				return front();
 			}
 
