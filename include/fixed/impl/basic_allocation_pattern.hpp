@@ -52,6 +52,7 @@ namespace _impl
         typedef const T* const_pointer;
         typedef const T& const_reference;
         typedef allocation_pattern_tag allocation_pattern;
+        typedef std::false_type allocation_movable;
 
         pointer data() { return reinterpret_cast<T*>(_data); }
         const_pointer data() const { return reinterpret_cast<const T*>(_data); }
@@ -96,6 +97,7 @@ namespace _impl
         typedef const T* const_pointer;
         typedef const T& const_reference;
         typedef allocation_pattern_tag allocation_pattern;
+        typedef std::true_type allocation_movable;
 
         pointer data() { return reinterpret_cast<T*>(_data.get()); }
         const_pointer data() const
