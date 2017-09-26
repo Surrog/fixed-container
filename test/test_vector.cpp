@@ -16,16 +16,16 @@ template <template <typename, fixed::_impl::container_size_type,
 void test_vector_constructor()
 {
     {
-        VECTOR_T<test_emplace, 10, Alloc_pattern> test;
-        std::vector<test_emplace> vec_ref;
+        VECTOR_T<test_emplace_struct, 10, Alloc_pattern> test;
+        std::vector<test_emplace_struct> vec_ref;
 
         unsigned int array_test[] = {1u, 2u};
-        test.push_back(test_emplace());
-        vec_ref.push_back(test_emplace());
+        test.push_back(test_emplace_struct());
+        vec_ref.push_back(test_emplace_struct());
         test.push_back({30, 'b', array_test});
         vec_ref.push_back({30, 'b', array_test});
 
-        VECTOR_T<test_emplace, 10, Alloc_pattern> test2 = test;
+        VECTOR_T<test_emplace_struct, 10, Alloc_pattern> test2 = test;
 
         CHECK(std::equal(
             test.begin(), test.end(), vec_ref.begin(), vec_ref.end()));
@@ -358,22 +358,7 @@ void test_vector_modifier()
         CHECK(myvector.front() == 10);
         CHECK(myvector.back() == 50);
     }
-
-    {
-        VECTOR_T<int, 10, Alloc_pattern> myvector;
-
-        CHECK(myvector.empty());
-        myvector = {10, 20, 30, 40, 50};
-        CHECK(!myvector.empty());
-        CHECK(myvector.size() == 5);
-        myvector.clear();
-        CHECK(myvector.empty());
-        CHECK(myvector.max_size() == 10);
-        myvector.reserve(10);
-        CHECK(myvector.capacity() == 10);
-        myvector.shrink_to_fit();
-    }
-
+	
     {
         VECTOR_T<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
         int* ptr = myvector.data();
@@ -407,7 +392,12 @@ void test_vector_modifier()
         }
     }
 
+	test_assign<VECTOR_T, Alloc_pattern>();
+	test_capacity<VECTOR_T, Alloc_pattern>();
+	test_vector_capacity<VECTOR_T, Alloc_pattern>();
+	test_insert<VECTOR_T, Alloc_pattern>();
     test_erase<VECTOR_T, Alloc_pattern>();
+	test_emplace<VECTOR_T, Alloc_pattern>();
     test_push_back<VECTOR_T, Alloc_pattern>();
     test_pop_back<VECTOR_T, Alloc_pattern>();
     test_emplace_back<VECTOR_T, Alloc_pattern>();

@@ -322,19 +322,28 @@ namespace _impl
             std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
         void assign(InputIt first, InputIt last)
         {
-            size = std::distance(first, last);
+            container_size_type size = std::distance(first, last);
             FIXED_CHECK_FULL(size <= max_size());
-            _size = size;
-            std::transform(
-                first, last, begin(), [](const auto& value) { return value; });
-        }
+			size_type i = 0;
+			while (first != last)
+			{
+				set_at(i, *first);
+				++i;
+				++first;
+			}
+			_size = size;
+		}
 
         void assign(std::initializer_list<T> list)
         {
             FIXED_CHECK_FULL(list.size() <= max_size());
+			size_type i = 0;
+			for (const T& val : list)
+			{
+				set_at(i, val);
+				++i;
+			}
             _size = list.size();
-            std::transform(list.begin(), list.end(), begin(),
-                [](const auto& value) { return value; });
         }
 
         void push_back(const T& value)
@@ -413,7 +422,7 @@ namespace _impl
 
         iterator insert(const_iterator pos, std::initializer_list<T> ilist)
         {
-            return insert(pos, ilist.begin, ilist.end);
+            return insert(pos, ilist.begin(), ilist.end());
         }
 
         iterator erase(const_iterator position)
@@ -497,10 +506,13 @@ namespace _impl
         }
 
         template <class... Args>
-        iterator emplace(iterator position, Args&&... args)
+        iterator emplace(const_iterator position, Args&&... args)
         {
+			container_size_type index = std::distance(cbegin(), position);
+			FIXED_CHECK_INBOUND(index <= _size);
             emplace_back(std::forward<Args>(args)...);
-            std::rotate(position, end() - 1, end());
+            std::rotate(begin() + index, end() - 1, end());
+			return begin() + index;
         }
 
         template <class... Args> reference emplace_back(Args&&... args)
@@ -528,6 +540,18 @@ namespace _impl
                 ++begin;
             }
         }
+
+		void set_at(size_type index, const T& value)
+		{
+			if (index < _size)
+			{
+				at(index) = value;
+			}
+			else
+			{
+				push_back(value);
+			}
+		}
 
         void uninitialized_assign(size_type count, const T& value)
         {

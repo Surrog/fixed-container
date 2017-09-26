@@ -100,26 +100,26 @@ struct test_move
     }
 };
 
-struct test_emplace
+struct test_emplace_struct
 {
     int i = 10;
     char c = 'c';
     unsigned int* ui = nullptr;
 
-    test_emplace() noexcept = default;
-    test_emplace(const test_emplace&) noexcept = default;
-    test_emplace& operator=(const test_emplace&) noexcept = default;
-    test_emplace(test_emplace&&) noexcept = default;
-    test_emplace& operator=(test_emplace&&) noexcept = default;
+    test_emplace_struct() noexcept = default;
+    test_emplace_struct(const test_emplace_struct&) noexcept = default;
+    test_emplace_struct& operator=(const test_emplace_struct&) noexcept = default;
+    test_emplace_struct(test_emplace_struct&&) noexcept = default;
+    test_emplace_struct& operator=(test_emplace_struct&&) noexcept = default;
 
-    test_emplace(int i_, char c_, unsigned int* ui_)
+    test_emplace_struct(int i_, char c_, unsigned int* ui_)
         : i(i_)
         , c(c_)
         , ui(ui_)
     {
     }
 
-    bool operator==(const test_emplace& rval) noexcept
+    bool operator==(const test_emplace_struct& rval) noexcept
     {
         return i == rval.i && c == rval.c && ui == rval.ui;
     }

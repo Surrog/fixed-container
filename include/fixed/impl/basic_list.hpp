@@ -58,7 +58,7 @@ namespace _impl
             }
         }
 
-        void set_at(size_type index, T&& value)
+        void set_at(size_type index, T& value)
         {
             if(index < _size)
             {
@@ -500,7 +500,7 @@ namespace _impl
             container_size_type index = std::distance(cbegin(), pos);
             FIXED_CHECK_INBOUND(index <= _size);
             auto old_size = _size;
-            emplace_back(args...);
+            emplace_back(std::forward<Args>(args)...);
             if(index != _size)
                 std::rotate(_ptrs.data() + index, _ptrs.data() + old_size,
                     _ptrs.data() + old_size + 1);
@@ -647,21 +647,23 @@ namespace _impl
             template <typename, container_size_type> typename RALLOC>
         void merge(basic_list<T, RSIZE, RALLOC>&& other)
         {
-            merge(other, std::less<T>());
+            merge(std::move(other), std::less<T>());
         }
 
         template <class Compare, container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
         void merge(basic_list<T, RSIZE, RALLOC>&& other, Compare comp)
         {
-            FIXED_CHECK_FULL(size() + other.size() <= max_size());
-            FIXED_CHECK_CUSTOM(&other != this, "Merge with itself");
-            for(auto& item : other)
-            {
-                insert(std::lower_bound(begin(), end(), item, comp),
-                    std::move(item));
-            }
-            other.clear();
+			if (static_cast<void*>(&other) != static_cast<void*>(this))
+			{
+				FIXED_CHECK_FULL(size() + other.size() <= max_size());
+				for (auto& item : other)
+				{
+					insert(std::lower_bound(begin(), end(), item, comp),
+						std::move(item));
+				}
+				other.clear();
+			}
         }
 
         template <container_size_type RSIZE,
