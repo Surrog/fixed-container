@@ -26,12 +26,15 @@ include_directories(${INCLUDE_DIRS})
 set(SOURCES
 	"${PROJECT_SOURCE_DIR}/catch.hpp"
 	"${PROJECT_SOURCE_DIR}/main.cpp"
-	"${PROJECT_SOURCE_DIR}/test_iterators.cpp"
+	"${PROJECT_SOURCE_DIR}/test_basic_list_iterators.cpp"
+	"${PROJECT_SOURCE_DIR}/test_functions_iterators.hpp"
+	"${PROJECT_SOURCE_DIR}/test_functions_unary_containers.hpp"
 	"${PROJECT_SOURCE_DIR}/test_list.cpp"
+	"${PROJECT_SOURCE_DIR}/test_pointer_iterators.cpp"
+	"${PROJECT_SOURCE_DIR}/test_struct.hpp"
 	"${PROJECT_SOURCE_DIR}/test_unordered_map.cpp"
 	"${PROJECT_SOURCE_DIR}/test_vector.cpp"
-	"${PROJECT_SOURCE_DIR}/test_struct.hpp"
-	
+		
 	"${FIXED_EXPOSED_SOURCE_DIR}/list.hpp"
 	"${FIXED_EXPOSED_SOURCE_DIR}/string.hpp"
 	"${FIXED_EXPOSED_SOURCE_DIR}/unordered_map.hpp"
@@ -40,13 +43,15 @@ set(SOURCES
 	"${FIXED_IMPL_SOURCE_DIR}/basic_allocation_pattern.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_allocation_sources.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_list.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_list_iterator.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/basic_pointer_iterator.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_small_string.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_string.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_unordered_map.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/basic_vector.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/fixed_def.hpp"
 	"${FIXED_IMPL_SOURCE_DIR}/fixed_type_traits.hpp"
-	"${FIXED_IMPL_SOURCE_DIR}/iterator.hpp"
+	"${FIXED_IMPL_SOURCE_DIR}/fixed_type_traits.hpp"
 	)
 
 add_executable(fixed_test ${SOURCES})

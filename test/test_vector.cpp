@@ -1,7 +1,7 @@
 
 #include "catch.hpp"
 #include "fixed/vector.hpp"
-#include "test_function_unary.hpp"
+#include "test_functions_unary_containers.hpp"
 #include "test_struct.hpp"
 #include <cstring>
 #include <iostream>
@@ -358,10 +358,10 @@ void test_vector_modifier()
         CHECK(myvector.front() == 10);
         CHECK(myvector.back() == 50);
     }
-	
+
     {
         VECTOR_T<int, 10, Alloc_pattern> myvector = {10, 20, 30, 40, 50};
-        int* ptr = myvector.data();
+        int* ptr = reinterpret_cast<int*>(myvector.data());
 
         {
             auto beg = myvector.begin();
@@ -392,28 +392,28 @@ void test_vector_modifier()
         }
     }
 
-	test_assign<VECTOR_T, Alloc_pattern>();
-	test_capacity<VECTOR_T, Alloc_pattern>();
-	test_vector_capacity<VECTOR_T, Alloc_pattern>();
-	test_insert<VECTOR_T, Alloc_pattern>();
+    test_assign<VECTOR_T, Alloc_pattern>();
+    test_capacity<VECTOR_T, Alloc_pattern>();
+    test_vector_capacity<VECTOR_T, Alloc_pattern>();
+    test_insert<VECTOR_T, Alloc_pattern>();
     test_erase<VECTOR_T, Alloc_pattern>();
-	test_emplace<VECTOR_T, Alloc_pattern>();
+    test_emplace<VECTOR_T, Alloc_pattern>();
     test_push_back<VECTOR_T, Alloc_pattern>();
     test_pop_back<VECTOR_T, Alloc_pattern>();
     test_emplace_back<VECTOR_T, Alloc_pattern>();
     test_resize<VECTOR_T, Alloc_pattern>();
-	test_swap<VECTOR_T, Alloc_pattern>();
+    test_swap<VECTOR_T, Alloc_pattern>();
 }
 
 TEST_CASE("testing basic_vector", "[linear]")
 {
     test_vector_constructor<fixed::vector,
-        fixed::_impl::basic_stack_allocator>();
-    test_vector_modifier<fixed::vector, fixed::_impl::basic_stack_allocator>();
-    test_vector_iterator<fixed::vector, fixed::_impl::basic_stack_allocator>();
+        fixed::_impl::aligned_stack_allocator>();
+    test_vector_modifier<fixed::vector, fixed::_impl::aligned_stack_allocator>();
+    test_vector_iterator<fixed::vector, fixed::_impl::aligned_stack_allocator>();
 
     test_vector_constructor<fixed::vector,
-        fixed::_impl::basic_heap_allocator>();
-    test_vector_modifier<fixed::vector, fixed::_impl::basic_heap_allocator>();
-    test_vector_iterator<fixed::vector, fixed::_impl::basic_heap_allocator>();
+        fixed::_impl::aligned_heap_allocator>();
+    test_vector_modifier<fixed::vector, fixed::_impl::aligned_heap_allocator>();
+    test_vector_iterator<fixed::vector, fixed::_impl::aligned_heap_allocator>();
 }

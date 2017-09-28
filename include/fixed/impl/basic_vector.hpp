@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "fixed/impl/basic_allocation_pattern.hpp"
-#include "fixed/impl/iterator.hpp"
+#include "fixed/impl/basic_pointer_iterator.hpp"
 
 namespace fixed
 {
@@ -14,7 +14,7 @@ namespace _impl
 {
     template <typename T, container_size_type SIZE,
         template <typename, container_size_type> typename Alloc_pattern
-        = basic_stack_allocator>
+        = aligned_stack_allocator>
     class basic_vector
     {
     public:
@@ -26,13 +26,24 @@ namespace _impl
         typedef container_size_type size_type;
         typedef std::ptrdiff_t difference_type;
 
-        typedef pointer_iterator<T> iterator;
-        typedef const_pointer_iterator<T> const_iterator;
+		template <typename Types, size_type ALLOC_SIZE>
+		using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
+
+	private:
+		// datas
+
+		typedef Alloc_pattern<T, SIZE> allocator_type_impl;
+
+		size_type _size = 0;
+		allocator_type_impl _data_container;
+	
+	public:
+		typedef typename allocator_type_impl::aligned_type aligned_type;
+        typedef typename allocator_type_impl::iterator  iterator;
+        typedef typename allocator_type_impl::const_iterator const_iterator;
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-        template <typename Types, size_type ALLOC_SIZE>
-        using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
 
         // Basic function
         ~basic_vector() { clear(); }
@@ -40,8 +51,7 @@ namespace _impl
         basic_vector()
             : _size(0)
             , _data_container()
-        {
-        }
+        {}
 
         template <typename Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
@@ -231,15 +241,15 @@ namespace _impl
         T& at(size_type n)
         {
             FIXED_CHECK_INBOUND(n < _size);
-            return data()[n];
+            return begin()[n];
         }
         const T& at(size_type n) const
         {
             FIXED_CHECK_INBOUND(n < _size);
-            return data()[n];
+            return begin()[n];
         }
-        T& operator[](size_type n) { return data()[n]; }
-        const T& operator[](size_type n) const { return data()[n]; }
+        T& operator[](size_type n) { return begin()[n]; }
+        const T& operator[](size_type n) const { return begin()[n]; }
         T& front() { return at(0); }
         const T& front() const { return at(0); }
         T& back()
@@ -252,16 +262,17 @@ namespace _impl
             FIXED_CHECK_EMPTY(_size > 0);
             return at(_size - 1);
         }
-        T* data() { return _data_container.data(); }
-        const T* data() const { return _data_container.data(); }
+
+		aligned_type* data() { return _data_container.data(); }
+        const aligned_type* data() const { return _data_container.data(); }
 
         // iterators
-        iterator begin() { return {data()}; }
-        const_iterator begin() const { return {data()}; }
-        const_iterator cbegin() const { return {data()}; }
-        iterator end() { return {data() + _size}; }
-        const_iterator end() const { return const_iterator(data() + _size); }
-        const_iterator cend() const { return const_iterator(data() + _size); }
+        iterator begin() { return _data_container.begin(); }
+        const_iterator begin() const { return _data_container.begin(); }
+        const_iterator cbegin() const { return _data_container.cbegin(); }
+        iterator end() { return begin() + _size; }
+        const_iterator end() const { return begin() + _size; }
+        const_iterator cend() const { return cbegin() + _size; }
 
         reverse_iterator rbegin() { return reverse_iterator(end()); }
         const_reverse_iterator rbegin() const
@@ -523,11 +534,7 @@ namespace _impl
             return back();
         }
 
-    private:
-        // datas
-        size_type _size = 0;
-        Alloc_pattern<T, SIZE> _data_container;
-
+private:
         // managing uninitialized memory
         template <class InputIt,
             std::enable_if_t<is_iterator<InputIt>::value, int> = 0>

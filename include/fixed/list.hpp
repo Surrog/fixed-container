@@ -7,7 +7,7 @@ namespace fixed
 {
 template <typename T, _impl::container_size_type SIZE,
     template <typename, _impl::container_size_type> typename Alloc_pattern
-    = _impl::basic_stack_allocator>
+    = _impl::aligned_stack_allocator>
 using list = _impl::basic_list<T, SIZE, Alloc_pattern>;
 }
 

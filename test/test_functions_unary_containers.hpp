@@ -1,5 +1,5 @@
-#ifndef FIXED_TEST_FUNCTION_UNARY_HPP
-#define FIXED_TEST_FUNCTION_UNARY_HPP
+#ifndef FIXED_TEST_FUNCTIONS_UNARY_CONTAINERS_HPP
+#define FIXED_TEST_FUNCTIONS_UNARY_CONTAINERS_HPP
 
 #include "test_struct.hpp"
 
@@ -156,14 +156,14 @@ template <template <typename, fixed::_impl::container_size_type,
 void test_erase()
 {
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
 
         CHECK_THROWS(v.erase(v.end()));
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin());
         auto exp = {1, 2, 3, 4};
@@ -173,7 +173,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 1);
         auto exp = {0, 2, 3, 4};
@@ -183,7 +183,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 2);
         auto exp = {0, 1, 3, 4};
@@ -193,7 +193,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 3);
         auto exp = {0, 1, 2, 4};
@@ -203,7 +203,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 4);
         auto exp = {0, 1, 2, 3};
@@ -213,7 +213,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 0, v.begin() + 2);
         auto exp = {2, 3, 4};
@@ -223,7 +223,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 1, v.begin() + 3);
         auto exp = {0, 3, 4};
@@ -233,7 +233,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 2, v.begin() + 4);
         auto exp = {0, 1, 4};
@@ -243,7 +243,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::basic_stack_allocator> v
+        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 3, v.begin() + 5);
         auto exp = {0, 1, 2};
@@ -964,4 +964,4 @@ void test_merge()
     }
 }
 
-#endif //! FIXED_TEST_FUNCTION_UNARY_HPP
+#endif //! FIXED_TEST_FUNCTIONS_UNARY_CONTAINERS_HPP

@@ -8,7 +8,7 @@
 
 #include "fixed/impl/basic_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
-#include "fixed/impl/iterator.hpp"
+#include "fixed/impl/basic_pointer_iterator.hpp"
 
 namespace fixed
 {
@@ -17,7 +17,7 @@ namespace _impl
     template <typename Key, typename T, container_size_type SIZE,
         class Hash = std::hash<Key>, class Pred = std::equal_to<Key>,
         template <typename, container_size_type> typename Alloc_pattern
-        = basic_stack_allocator>
+        = aligned_stack_allocator>
     class basic_unordered_map
     {
         // typedefs
@@ -35,7 +35,7 @@ namespace _impl
         typedef std::ptrdiff_t difference_type;
 
         typedef pointer_iterator<T> iterator;
-        typedef pointer_iterator<const T> const_iterator;
+        typedef const_pointer_iterator<T> const_iterator;
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 

@@ -1,9 +1,9 @@
 #ifndef FIXED_BASIC_LIST_HPP
 #define FIXED_BASIC_LIST_HPP
 
+#include "basic_list_iterator.hpp"
 #include "fixed/impl/basic_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
-#include "iterator.hpp"
 #include <algorithm>
 #include <array>
 #include <utility>
@@ -14,7 +14,7 @@ namespace _impl
 {
     template <typename T, container_size_type SIZE,
         template <typename, container_size_type> typename Alloc_pattern
-        = basic_stack_allocator>
+        = aligned_stack_allocator>
     class basic_list
     {
     public:
@@ -25,24 +25,22 @@ namespace _impl
         typedef const value_type& const_reference;
         typedef value_type* pointer;
         typedef const value_type* const_pointer;
-        typedef wrap_pointer_iterator<pointer_iterator<T*>> iterator;
-        typedef const_wrap_pointer_iterator<const_pointer_iterator<T*>>
-            const_iterator;
-        typedef std::reverse_iterator<iterator> reverse_iterator;
-        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         template <typename Types, size_type ALLOC_SIZE>
         using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
 
     private:
-        Alloc_pattern<T, SIZE> _data_holder;
-        Alloc_pattern<T*, SIZE> _ptrs;
+        typedef Alloc_pattern<T, SIZE> allocator_type_data_impl;
+        typedef Alloc_pattern<typename allocator_type_data_impl::iterator, SIZE> allocator_type_ptrs_impl;
+
+        allocator_type_data_impl _data_holder;
+        allocator_type_ptrs_impl _ptrs;
         size_type _size = 0;
 
         void push_back()
         {
             FIXED_CHECK_FULL(_size < max_size());
-            new(_ptrs[_size]) T();
+            new(_ptrs[_size].get()) T();
             ++_size;
         }
 
@@ -71,6 +69,15 @@ namespace _impl
         }
 
     public:
+        typedef basic_list_iterator<T,
+            typename allocator_type_ptrs_impl::iterator>
+            iterator;
+        typedef const_basic_list_iterator<T,
+            typename allocator_type_ptrs_impl::const_iterator>
+            const_iterator;
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
         basic_list()
             : _data_holder()
             , _ptrs()
@@ -78,7 +85,7 @@ namespace _impl
         {
             for(size_type i = 0; i < _data_holder.max_size(); i++)
             {
-                _ptrs[i] = _data_holder.data() + i;
+                _ptrs[i] = _data_holder.begin() + i;
             }
         }
 
@@ -373,7 +380,7 @@ namespace _impl
         iterator begin() noexcept
         {
             if(_size > 0)
-                return iterator(_ptrs.data());
+                return iterator(_ptrs.begin());
             return end();
         }
 
@@ -382,14 +389,14 @@ namespace _impl
         const_iterator cbegin() const noexcept
         {
             if(_size > 0)
-                return const_iterator(_ptrs.data());
+                return const_iterator(_ptrs.begin());
             return end();
         }
 
         iterator end() noexcept
         {
             if(_size > 0)
-                return iterator(_ptrs.data() + _size);
+                return iterator(_ptrs.begin() + _size);
             return iterator();
         }
 
@@ -398,7 +405,7 @@ namespace _impl
         const_iterator cend() const noexcept
         {
             if(_size > 0)
-                return const_iterator(_ptrs.data() + _size);
+                return const_iterator(_ptrs.begin() + _size);
             return const_iterator();
         }
 
@@ -432,7 +439,7 @@ namespace _impl
         {
             for(size_type i = 0; i < _size; i++)
             {
-                _ptrs[i]->~T();
+                _ptrs[i].get()->~T();
             }
             _size = 0;
         }
@@ -449,9 +456,9 @@ namespace _impl
             auto old_size = _size;
             push_back(std::move(value));
             if(index != _size)
-                std::rotate(_ptrs.data() + index, _ptrs.data() + old_size,
-                    _ptrs.data() + old_size + 1);
-            return iterator(_ptrs.data() + index);
+                std::rotate(_ptrs.begin() + index, _ptrs.begin() + old_size,
+                    _ptrs.begin() + old_size + 1);
+            return iterator(_ptrs.begin() + index);
         }
 
         iterator insert(const_iterator pos, size_type count, const T& value)
@@ -462,9 +469,9 @@ namespace _impl
             for(size_type i = 0; i < count; i++)
                 push_back(value);
             if(index != _size && count != 0)
-                std::rotate(_ptrs.data() + index, _ptrs.data() + old_size,
-                    _ptrs.data() + old_size + count);
-            return iterator(_ptrs.data() + index);
+                std::rotate(_ptrs.begin() + index, _ptrs.begin() + old_size,
+                    _ptrs.begin() + old_size + count);
+            return iterator(_ptrs.begin() + index);
         }
 
         template <class InputIt,
@@ -483,10 +490,10 @@ namespace _impl
             }
             if(index != _size && size_inserted != 0)
             {
-                std::rotate(_ptrs.data() + index, _ptrs.data() + old_size,
-                    _ptrs.data() + old_size + size_inserted);
+                std::rotate(_ptrs.begin() + index, _ptrs.begin() + old_size,
+                    _ptrs.begin() + old_size + size_inserted);
             }
-            return iterator(_ptrs.data() + index);
+            return iterator(_ptrs.begin() + index);
         }
 
         iterator insert(const_iterator pos, std::initializer_list<T> ilist)
@@ -502,9 +509,9 @@ namespace _impl
             auto old_size = _size;
             emplace_back(std::forward<Args>(args)...);
             if(index != _size)
-                std::rotate(_ptrs.data() + index, _ptrs.data() + old_size,
-                    _ptrs.data() + old_size + 1);
-            return iterator(_ptrs.data() + index);
+                std::rotate(_ptrs.begin() + index, _ptrs.begin() + old_size,
+                    _ptrs.begin() + old_size + 1);
+            return iterator(_ptrs.begin() + index);
         }
 
         iterator erase(const_iterator pos)
@@ -513,10 +520,10 @@ namespace _impl
             container_size_type index = std::distance(cbegin(), pos);
             FIXED_CHECK_INBOUND(index < _size);
             if(index != _size - 1) // move object to the back
-                std::rotate(_ptrs.data() + index, _ptrs.data() + index + 1,
-                    _ptrs.data() + _size);
+                std::rotate(_ptrs.begin() + index, _ptrs.begin() + index + 1,
+                    _ptrs.begin() + _size);
             pop_back(); // pop it !
-            return iterator(_ptrs.data() + std::min(index, _size));
+            return iterator(_ptrs.begin() + std::min(index, _size));
         }
 
         iterator erase(const_iterator first, const_iterator last)
@@ -528,33 +535,35 @@ namespace _impl
             FIXED_CHECK_INBOUND(end_i <= _size);
             FIXED_CHECK_BADRANGE(beg_i < end_i);
             if(end_i != _size)
-                std::rotate(_ptrs.data() + beg_i, _ptrs.data() + end_i,
-                    _ptrs.data() + _size);
+                std::rotate(_ptrs.begin() + beg_i, _ptrs.begin() + end_i,
+                    _ptrs.begin() + _size);
             for(container_size_type i = 0; i < (end_i - beg_i); ++i)
             {
                 pop_back();
             }
-            return iterator(_ptrs.data() + std::min(beg_i, _size));
+			if (_size)
+	            return begin() + std::min(beg_i, _size);
+			return end();
         }
 
         void push_back(const T& value)
         {
             FIXED_CHECK_FULL(_size < max_size());
-            new(_ptrs[_size]) T(value);
+            new(_ptrs[_size].get()) T(value);
             ++_size;
         }
 
         void push_back(T&& value)
         {
             FIXED_CHECK_FULL(_size < max_size());
-            new(_ptrs[_size]) T(std::move(value));
+            new(_ptrs[_size].get()) T(std::move(value));
             ++_size;
         }
 
         template <class... Args> reference emplace_back(Args&&... args)
         {
             FIXED_CHECK_FULL(_size < max_size());
-            new(_ptrs[_size]) T(std::forward<Args>(args)...);
+            new(_ptrs[_size].get()) T(std::forward<Args>(args)...);
             ++_size;
             return back();
         }
@@ -562,7 +571,7 @@ namespace _impl
         void pop_back()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            _ptrs[_size - 1]->~T();
+            _ptrs[_size - 1].get()->~T();
             --_size;
         }
 
@@ -574,8 +583,8 @@ namespace _impl
         {
             emplace_back(args...);
             if(_size > 1)
-                std::rotate(_ptrs.data(), _ptrs.data() + _size - 1,
-                    _ptrs.data() + _size);
+                std::rotate(_ptrs.begin(), _ptrs.begin() + _size - 1,
+                    _ptrs.begin() + _size);
             return front();
         }
 
@@ -604,8 +613,8 @@ namespace _impl
             template <typename, container_size_type> typename RALLOC>
         void swap(basic_list<T, RSIZE, RALLOC>& rval)
         {
-			FIXED_CHECK_FULL(rval.size() < max_size());
-			FIXED_CHECK_FULL(size() < rval.max_size());
+            FIXED_CHECK_FULL(rval.size() < max_size());
+            FIXED_CHECK_FULL(size() < rval.max_size());
 
             size_type lsize = size();
             size_type rsize = rval.size();
@@ -654,16 +663,16 @@ namespace _impl
             template <typename, container_size_type> typename RALLOC>
         void merge(basic_list<T, RSIZE, RALLOC>&& other, Compare comp)
         {
-			if (static_cast<void*>(&other) != static_cast<void*>(this))
-			{
-				FIXED_CHECK_FULL(size() + other.size() <= max_size());
-				for (auto& item : other)
-				{
-					insert(std::lower_bound(begin(), end(), item, comp),
-						std::move(item));
-				}
-				other.clear();
-			}
+            if(static_cast<void*>(&other) != static_cast<void*>(this))
+            {
+                FIXED_CHECK_FULL(size() + other.size() <= max_size());
+                for(auto& item : other)
+                {
+                    insert(std::lower_bound(begin(), end(), item, comp),
+                        std::move(item));
+                }
+                other.clear();
+            }
         }
 
         template <container_size_type RSIZE,
@@ -701,8 +710,8 @@ namespace _impl
             }
             if(index != _size && size_inserted != 0)
             {
-                std::rotate(_ptrs.data() + index, _ptrs.data() + old_size,
-                    _ptrs.data() + old_size + size_inserted);
+                std::rotate(_ptrs.begin() + index, _ptrs.begin() + old_size,
+                    _ptrs.begin() + old_size + size_inserted);
             }
             other.erase(first, last);
         }
@@ -714,14 +723,14 @@ namespace _impl
 
         template <class UnaryPredicate> void remove_if(UnaryPredicate p)
         {
-            auto it_ptr = std::find_if(_ptrs.data(), _ptrs.data() + _size,
+            auto it_ptr = std::find_if(_ptrs.begin(), _ptrs.begin() + _size,
                 [&p](const auto& ptr) { return p(*ptr); });
-            if(it_ptr != _ptrs.data())
+            if(it_ptr != _ptrs.begin())
             {
                 it_ptr->~T();
-                if(it_ptr != _ptrs.data() + _size - 1)
+                if(it_ptr != _ptrs.begin() + _size - 1)
                 {
-                    std::rotate(it_ptr, it_ptr + 1, _ptrs.data() + _size);
+                    std::rotate(it_ptr, it_ptr + 1, _ptrs.begin() + _size);
                 }
                 _size--;
             }
@@ -729,7 +738,7 @@ namespace _impl
 
         void reverse() noexcept
         {
-            std::reverse(_ptrs.data(), _ptrs.data() + _size);
+            std::reverse(_ptrs.begin(), _ptrs.begin() + _size);
         }
 
         void unique() { unique(std::equal_to<T>()); }
@@ -738,8 +747,8 @@ namespace _impl
         {
             if(_size > 1)
             {
-                auto beg = _ptrs.data();
-                auto end = _ptrs.data() + _size;
+                auto beg = _ptrs.begin();
+                auto end = _ptrs.begin() + _size;
                 while(beg < end - 2)
                 {
                     while(p(*beg, (*beg + 1)))
@@ -756,7 +765,7 @@ namespace _impl
 
         template <class Compare> void sort(Compare comp)
         {
-            std::sort(_ptrs.data(), _ptrs.data() + _size,
+            std::sort(_ptrs.begin(), _ptrs.begin() + _size,
                 [&comp](auto& lval, auto& rval) { return comp(*lval, *rval); });
         }
 
@@ -765,9 +774,9 @@ namespace _impl
         {
             FIXED_CHECK_EMPTY(_size > 0);
             (*ptr)->~T();
-            if(ptr != _ptrs.data() + _size - 1)
+            if(ptr != _ptrs.begin() + _size - 1)
             {
-                std::rotate(ptr, ptr + 1, _ptrs.data() + _size - 1);
+                std::rotate(ptr, ptr + 1, _ptrs.begin() + _size - 1);
             }
             _size--;
         }
