@@ -28,10 +28,10 @@ namespace _impl
             return !operator==(rval);
         }
 
-		pointer get() { return reinterpret_cast<pointer>(_value); }
-        const pointer get() const
+		value_type* get() { return reinterpret_cast<value_type*>(_value); }
+        const value_type* get() const
         {
-            return reinterpret_cast<pointer>(_value);
+            return reinterpret_cast<const value_type*>(_value);
         }
 
         reference operator*() const
@@ -40,8 +40,8 @@ namespace _impl
             return reinterpret_cast<reference>(*_value);
         }
 
-		pointer operator->() { return get(); }
-        const pointer operator->() const { return get(); }
+		value_type* operator->() { return get(); }
+        const value_type* operator->() const { return get(); }
 
         pointer_iterator() = default;
 
@@ -167,7 +167,7 @@ namespace _impl
             return !operator==(rval);
         }
 
-        const pointer get() const { return reinterpret_cast<pointer>(_value); }
+        const value_type* get() const { return reinterpret_cast<value_type*>(_value); }
 
         const reference operator*() const
         {
@@ -192,13 +192,13 @@ namespace _impl
             = default;
 
 		const_pointer_iterator(pointer_iterator<value_type>&& orig)
-			: _value(reinterpret_cast<aligned_type*>(orig.get()))
+			: const_pointer_iterator(reinterpret_cast<const aligned_type*>(orig.get()))
 		{
 			orig = pointer_iterator<value_type>();
 		}
 
         const_pointer_iterator(const pointer_iterator<value_type>& orig)
-            : _value(reinterpret_cast<aligned_type*>(orig.get()))
+            : const_pointer_iterator(reinterpret_cast<const aligned_type*>(orig.get()))
         {
         }
 
