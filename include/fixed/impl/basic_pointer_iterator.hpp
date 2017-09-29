@@ -175,7 +175,7 @@ namespace _impl
             return reinterpret_cast<const reference>(*_value);
         }
 
-        const pointer operator->() const { return get(); }
+        const value_type* operator->() const { return get(); }
 
         const_pointer_iterator() = default;
 
