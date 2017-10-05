@@ -64,6 +64,7 @@ struct test_construct
         if(_val)
             (*_val)--;
     }
+
     int* _val;
 };
 

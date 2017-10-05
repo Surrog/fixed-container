@@ -26,24 +26,23 @@ namespace _impl
         typedef container_size_type size_type;
         typedef std::ptrdiff_t difference_type;
 
-		template <typename Types, size_type ALLOC_SIZE>
-		using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
+        template <typename Types, size_type ALLOC_SIZE>
+        using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
 
-	private:
-		// datas
+    private:
+        // datas
 
-		typedef Alloc_pattern<T, SIZE> allocator_type_impl;
+        typedef Alloc_pattern<T, SIZE> allocator_type_impl;
 
-		size_type _size = 0;
-		allocator_type_impl _data_container;
-	
-	public:
-		typedef typename allocator_type_impl::aligned_type aligned_type;
-        typedef typename allocator_type_impl::iterator  iterator;
+        size_type _size = 0;
+        allocator_type_impl _data_container;
+
+    public:
+        typedef typename allocator_type_impl::aligned_type aligned_type;
+        typedef typename allocator_type_impl::iterator iterator;
         typedef typename allocator_type_impl::const_iterator const_iterator;
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-
 
         // Basic function
         ~basic_vector() { clear(); }
@@ -51,7 +50,8 @@ namespace _impl
         basic_vector()
             : _size(0)
             , _data_container()
-        {}
+        {
+        }
 
         template <typename Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
@@ -111,7 +111,7 @@ namespace _impl
             uninitialized_assign(orig.begin(), orig.end());
         }
 
-        basic_vector(basic_vector&& orig) { operator=(orig); }
+        basic_vector(basic_vector&& orig) { operator=(std::move(orig)); }
 
         template <size_type RSIZE,
             template <typename, size_type> typename RAllocator>
@@ -134,9 +134,42 @@ namespace _impl
 
         template <size_type RSIZE>
         basic_vector(basic_vector<T, RSIZE, Alloc_pattern>&& other)
-            : _size(other._size)
-            , _data_container(std::move(other._data_container))
+            : _size(0)
+            , _data_container()
         {
+            FIXED_CHECK_FULL(other.size() <= max_size());
+
+            // constexpr if (Alloc_pattern::allocation_movable()){
+            // _data_container = std::move(other._data_container);
+            // _size = other.size();
+            //} else {
+            for(auto& elem : other)
+            {
+                push_back(std::move_if_noexcept(elem));
+            }
+            other.resize(0);
+            //}
+        }
+
+        template <size_type RSIZE, typename Alloc_source,
+            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+        basic_vector(
+            basic_vector<T, RSIZE, Alloc_pattern>&& other, Alloc_source& alloc)
+            : _size(0)
+            , _data_container(alloc)
+        {
+            FIXED_CHECK_FULL(other.size() <= max_size());
+
+            // constexpr if (Alloc_pattern::allocation_movable()){
+            // _data_container = std::move(other._data_container);
+            // _size = other.size();
+            //} else {
+            for(auto& elem : other)
+            {
+                push_back(std::move_if_noexcept(elem));
+            }
+            other.resize(0);
+            //}
         }
 
         basic_vector(std::initializer_list<T> list)
@@ -167,7 +200,7 @@ namespace _impl
         {
             if(this != &rval)
             {
-                return operator=<SIZE, Alloc_pattern>(rval);
+                return operator=<SIZE, Alloc_pattern>(std::move(rval));
             }
             return *this;
         }
@@ -263,7 +296,7 @@ namespace _impl
             return at(_size - 1);
         }
 
-		aligned_type* data() { return _data_container.data(); }
+        aligned_type* data() { return _data_container.data(); }
         const aligned_type* data() const { return _data_container.data(); }
 
         // iterators
@@ -335,25 +368,25 @@ namespace _impl
         {
             container_size_type size = std::distance(first, last);
             FIXED_CHECK_FULL(size <= max_size());
-			size_type i = 0;
-			while (first != last)
-			{
-				set_at(i, *first);
-				++i;
-				++first;
-			}
-			_size = size;
-		}
+            size_type i = 0;
+            while(first != last)
+            {
+                set_at(i, *first);
+                ++i;
+                ++first;
+            }
+            _size = size;
+        }
 
         void assign(std::initializer_list<T> list)
         {
             FIXED_CHECK_FULL(list.size() <= max_size());
-			size_type i = 0;
-			for (const T& val : list)
-			{
-				set_at(i, val);
-				++i;
-			}
+            size_type i = 0;
+            for(const T& val : list)
+            {
+                set_at(i, val);
+                ++i;
+            }
             _size = list.size();
         }
 
@@ -387,7 +420,7 @@ namespace _impl
         {
             size_type pivot_index = _size;
             size_type insert_index = std::distance(cbegin(), pos);
-            push_back(value);
+            push_back(std::move(value));
             if(pos != cend() && pos != const_iterator())
             {
                 std::rotate(
@@ -475,40 +508,40 @@ namespace _impl
             FIXED_CHECK_FULL(rval.size() < max_size());
             FIXED_CHECK_FULL(size() < rval.max_size());
 
-			size_type lsize = size();
-			size_type rsize = rval.size();
+            size_type lsize = size();
+            size_type rsize = rval.size();
 
-			auto lbeg = begin();
-			auto lend = end();
-			auto rbeg = rval.begin();
-			auto rend = rval.end();
+            auto lbeg = begin();
+            auto lend = end();
+            auto rbeg = rval.begin();
+            auto rend = rval.end();
 
-			while (lbeg != lend && rbeg != rend)
-			{
-				std::swap(*lbeg, *rbeg);
-				++lbeg;
-				++rbeg;
-			}
+            while(lbeg != lend && rbeg != rend)
+            {
+                std::swap(*lbeg, *rbeg);
+                ++lbeg;
+                ++rbeg;
+            }
 
-			if (lbeg != lend)
-			{
-				while (lbeg != lend)
-				{
-					rval.push_back(std::move_if_noexcept(*lbeg));
-					++lbeg;
-				}
-				resize(rsize);
-			}
-			else if (rbeg != rend)
-			{
-				while (rbeg != rend)
-				{
-					push_back(std::move_if_noexcept(*rbeg));
-					++rbeg;
-				}
-				rval.resize(lsize);
-			}
-		}
+            if(lbeg != lend)
+            {
+                while(lbeg != lend)
+                {
+                    rval.push_back(std::move_if_noexcept(*lbeg));
+                    ++lbeg;
+                }
+                resize(rsize);
+            }
+            else if(rbeg != rend)
+            {
+                while(rbeg != rend)
+                {
+                    push_back(std::move_if_noexcept(*rbeg));
+                    ++rbeg;
+                }
+                rval.resize(lsize);
+            }
+        }
 
         void clear() noexcept
         {
@@ -519,11 +552,11 @@ namespace _impl
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args)
         {
-			container_size_type index = std::distance(cbegin(), position);
-			FIXED_CHECK_INBOUND(index <= _size);
+            container_size_type index = std::distance(cbegin(), position);
+            FIXED_CHECK_INBOUND(index <= _size);
             emplace_back(std::forward<Args>(args)...);
             std::rotate(begin() + index, end() - 1, end());
-			return begin() + index;
+            return begin() + index;
         }
 
         template <class... Args> reference emplace_back(Args&&... args)
@@ -534,7 +567,7 @@ namespace _impl
             return back();
         }
 
-private:
+    private:
         // managing uninitialized memory
         template <class InputIt,
             std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
@@ -548,17 +581,17 @@ private:
             }
         }
 
-		void set_at(size_type index, const T& value)
-		{
-			if (index < _size)
-			{
-				at(index) = value;
-			}
-			else
-			{
-				push_back(value);
-			}
-		}
+        void set_at(size_type index, const T& value)
+        {
+            if(index < _size)
+            {
+                at(index) = value;
+            }
+            else
+            {
+                push_back(value);
+            }
+        }
 
         void uninitialized_assign(size_type count, const T& value)
         {

@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include "test_functions_iterators.hpp"
-#include "fixed/impl/basic_list_iterator.hpp"
+#include "fixed/impl/basic_listed_vector_iterator.hpp"
 #include "fixed/impl/basic_allocation_pattern.hpp"
 
 template <template <typename, typename> typename ITERATOR_TYPE>
@@ -103,15 +103,15 @@ void test_basic_list_iterator()
 
 TEST_CASE("testing basic_list iterator", "[utility]")
 {
-	test_not_const<fixed::_impl::basic_list_iterator<
+	test_not_const<fixed::_impl::basic_listed_vector_iterator<
 		char, char*>>();
 	test_not_const<fixed::_impl::const_basic_list_iterator<
 		char, char*>>();
 
 	test_assign<fixed::_impl::const_basic_list_iterator<char, char*>,
-		fixed::_impl::basic_list_iterator<char, char*>>();
+		fixed::_impl::basic_listed_vector_iterator<char, char*>>();
 
-	test_basic_list_iterator<fixed::_impl::basic_list_iterator>();
+	test_basic_list_iterator<fixed::_impl::basic_listed_vector_iterator>();
 	test_basic_list_iterator<fixed::_impl::const_basic_list_iterator>();
 
 }

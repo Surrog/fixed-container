@@ -1,10 +1,12 @@
 
 #include "catch.hpp"
 #include "fixed/impl/fixed_def.hpp"
-#include "fixed/list.hpp"
+#include "fixed/listed_vector.hpp"
 #include <cstring>
 #include <list>
 #include <string>
+#include <iostream>
+#include <functional>
 
 #include "test_functions_unary_containers.hpp"
 #include "test_struct.hpp"
@@ -14,94 +16,121 @@ template <template <typename, fixed::_impl::container_size_type,
           typename LIST_T,
     template <typename, fixed::_impl::container_size_type>
     typename Alloc_pattern>
-void test_list()
+void test_list_contructors()
 {
-    { // constructor definition check
-        auto expected = {1, 2, 3, 4, 5};
+    test_constructor<LIST_T, Alloc_pattern>();
+    test_destructor<LIST_T, Alloc_pattern>();
+    test_operator_assignment<LIST_T, Alloc_pattern>();
+    test_assign<LIST_T, Alloc_pattern>();
+}
 
-        LIST_T<int, 20, Alloc_pattern> l;
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_list_element_access()
+{
+    test_front<LIST_T, Alloc_pattern>();
+    test_back<LIST_T, Alloc_pattern>();
+}
 
-        LIST_T<int, 30, fixed::_impl::aligned_heap_allocator> list_on_heap;
-        l = list_on_heap;
-        fixed::_impl::empty_source alloc_source_inst;
-        LIST_T<int, 20, Alloc_pattern> l_with_alloc_source(alloc_source_inst);
-        LIST_T<int, 20, Alloc_pattern> l_diff_with_alloc_source(
-            list_on_heap, alloc_source_inst);
-        l = l_with_alloc_source;
-        l = expected;
-        CHECK(std::equal(l.begin(), l.end(), expected.begin(), expected.end()));
-        list_on_heap = expected;
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_list_iterator()
+{
+    test_begin_end<LIST_T, Alloc_pattern>();
+    test_rbegin_rend<LIST_T, Alloc_pattern>();
+}
 
-        LIST_T<int, 20, Alloc_pattern> l_diff_with_alloc_source_not_empty(
-            list_on_heap, alloc_source_inst);
-        CHECK(std::equal(l_diff_with_alloc_source_not_empty.begin(),
-            l_diff_with_alloc_source_not_empty.end(), expected.begin(),
-            expected.end()));
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_list_capacity()
+{
+    test_generic_capacity<LIST_T, Alloc_pattern>();
+}
 
-        LIST_T<int, 20, Alloc_pattern> l_copy(l);
-        CHECK(std::equal(
-            l_copy.begin(), l_copy.end(), expected.begin(), expected.end()));
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_list_modifiers()
+{
+    test_clear<LIST_T, Alloc_pattern>();
+    test_insert<LIST_T, Alloc_pattern>();
+    test_emplace<LIST_T, Alloc_pattern>();
+    test_erase<LIST_T, Alloc_pattern>();
+    test_push_back<LIST_T, Alloc_pattern>();
+    test_emplace_back<LIST_T, Alloc_pattern>();
+    test_pop_back<LIST_T, Alloc_pattern>();
+    test_push_front<LIST_T, Alloc_pattern>();
+    test_emplace_front<LIST_T, Alloc_pattern>();
+    test_pop_front<LIST_T, Alloc_pattern>();
+    test_resize<LIST_T, Alloc_pattern>();
+    test_swap<LIST_T, Alloc_pattern>();
+}
 
-        LIST_T<int, 20, Alloc_pattern> l_copy_alloc(l, alloc_source_inst);
-        CHECK(std::equal(l_copy_alloc.begin(), l_copy_alloc.end(),
-            expected.begin(), expected.end()));
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename CONTAINER_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_merge()
+{
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> lval{1, 2, 3};
+        CONTAINER_T<int, 4, Alloc_pattern> rval{3, 4};
 
-        LIST_T<int, 20, Alloc_pattern> l_move(std::move(l));
-        CHECK(std::equal(
-            l_move.begin(), l_move.end(), expected.begin(), expected.end()));
-        CHECK(l.size() == 0);
-        CHECK(l.empty());
+        auto exp = {1, 2, 3, 3, 4};
+        lval.merge(std::move(rval));
 
-        LIST_T<int, 20, Alloc_pattern> l_move_alloc(
-            std::move(l_move), alloc_source_inst);
-        CHECK(std::equal(l_move_alloc.begin(), l_move_alloc.end(),
-            expected.begin(), expected.end()));
-        CHECK(l_move.size() == 0);
-        CHECK(l_move.empty());
-
-        LIST_T<int, 20, Alloc_pattern> l_with_size(5);
-        CHECK(l_with_size.size() == 5);
-        LIST_T<int, 20, Alloc_pattern> l_with_size_alloc(5, alloc_source_inst);
-        CHECK(l_with_size_alloc.size() == 5);
-
-        LIST_T<int, 20, Alloc_pattern> l_with_values(5, 2);
-        CHECK(l_with_values.size() == 5);
-        CHECK(std::all_of(l_with_values.begin(), l_with_values.end(),
-            [](const auto& v) { return v == 2; }));
-        LIST_T<int, 20, Alloc_pattern> l_with_values_alloc(
-            5, 2, alloc_source_inst);
-        CHECK(l_with_values_alloc.size() == 5);
-        CHECK(std::all_of(l_with_values.begin(), l_with_values.end(),
-            [](const auto& v) { return v == 2; }));
-
-        LIST_T<int, 20, Alloc_pattern> l_with_iterator(
-            expected.begin(), expected.end());
-        CHECK(l_with_iterator.size() == expected.size());
-        CHECK(std::equal(l_with_iterator.begin(), l_with_iterator.end(),
-            expected.begin(), expected.end()));
-        LIST_T<int, 20, Alloc_pattern> l_with_iterator_alloc(
-            expected.begin(), expected.end(), alloc_source_inst);
-        CHECK(l_with_iterator_alloc.size() == expected.size());
-        CHECK(std::equal(l_with_iterator_alloc.begin(),
-            l_with_iterator_alloc.end(), expected.begin(), expected.end()));
+        CHECK(lval.size() == exp.size());
+        CHECK(rval.size() == 0);
+        CHECK(std::equal(lval.begin(), lval.end(), exp.begin(), exp.end()));
     }
 
     {
-        LIST_T<int, 20, Alloc_pattern> l1 = {1, 2, 3, 4, 5};
-        auto expected = {1, 2, 3, 4, 5};
-        CHECK(
-            std::equal(l1.begin(), l1.end(), expected.begin(), expected.end()));
-        LIST_T<int, 20, Alloc_pattern> l2 = l1;
-        CHECK(
-            std::equal(l1.begin(), l1.end(), expected.begin(), expected.end()));
-        CHECK(
-            std::equal(l2.begin(), l2.end(), expected.begin(), expected.end()));
-        LIST_T<int, 20, Alloc_pattern> l3 = std::move(l2);
-        CHECK(
-            std::equal(l3.begin(), l3.end(), expected.begin(), expected.end()));
-        CHECK(l2.empty());
+        CONTAINER_T<int, 5, Alloc_pattern> lval{1, 2, 3};
 
-        LIST_T<int, 30, Alloc_pattern> l4 = l1;
+        auto exp = {1, 2, 3, 3, 4};
+        lval.merge(CONTAINER_T<int, 4, Alloc_pattern>{3, 4});
+
+        CHECK(lval.size() == exp.size());
+        CHECK(std::equal(lval.begin(), lval.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> lval{1, 2, 3};
+        CONTAINER_T<int, 4, Alloc_pattern> rval{4, 5, 6};
+
+        CHECK_THROWS(lval.merge(std::move(rval)));
+    }
+
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> lval{5, 2, 3};
+        lval.merge(std::move(lval));
+        auto exp = {5, 2, 3};
+        CHECK(lval.size() == exp.size());
+        CHECK(std::equal(lval.begin(), lval.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> lval{3, 4, 5};
+        CONTAINER_T<int, 5, Alloc_pattern> rval{1, 2};
+
+        auto exp = {1, 2, 3, 4, 5};
+        rval.merge(std::move(lval));
+
+        CHECK(rval.size() == exp.size());
+        CHECK(lval.size() == 0);
+        CHECK(std::equal(rval.begin(), rval.end(), exp.begin(), exp.end()));
     }
 }
 
@@ -110,33 +139,336 @@ template <template <typename, fixed::_impl::container_size_type,
           typename LIST_T,
     template <typename, fixed::_impl::container_size_type>
     typename Alloc_pattern>
-void test_modifiers()
+void test_splice()
 {
+    {
+        LIST_T<int, 10, Alloc_pattern> lc = {2, 3, 4, 5};
+        LIST_T<int, 10, Alloc_pattern> rc = {0, 1};
 
-    test_assign<LIST_T, Alloc_pattern>();
-    test_capacity<LIST_T, Alloc_pattern>();
-    test_insert<LIST_T, Alloc_pattern>();
-    test_erase<LIST_T, Alloc_pattern>();
-    test_push_back<LIST_T, Alloc_pattern>();
-    test_emplace<LIST_T, Alloc_pattern>();
-    test_emplace_back<LIST_T, Alloc_pattern>();
-    test_pop_back<LIST_T, Alloc_pattern>();
-    test_resize<LIST_T, Alloc_pattern>();
-    test_push_front<LIST_T, Alloc_pattern>();
-    test_emplace_front<LIST_T, Alloc_pattern>();
-    test_swap<LIST_T, Alloc_pattern>();
+        lc.splice(lc.cbegin(), std::move(rc));
+        auto exp = {0, 1, 2, 3, 4, 5};
+        CHECK(lc.size() == exp.size());
+        CHECK(std::equal(lc.begin(), lc.end(), exp.begin(), exp.end()));
+		CHECK(rc.size() == 0);
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> lc = {2, 3, 4, 5};
+        LIST_T<int, 10, Alloc_pattern> rc = {0, 1};
+
+        lc.splice(lc.begin(), std::move(rc), rc.begin() + 1);
+        auto exp = {1, 2, 3, 4, 5};
+        CHECK(lc.size() == exp.size());
+        CHECK(std::equal(lc.begin(), lc.end(), exp.begin(), exp.end()));
+		auto rc_exp = { 0 };
+		CHECK(rc.size() == rc_exp.size());
+		CHECK(std::equal(rc.begin(), rc.end(), rc_exp.begin(), rc_exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> lc = {2, 3, 4, 5};
+        LIST_T<int, 10, Alloc_pattern> rc = {0, 1};
+
+        lc.splice(lc.begin(), std::move(rc), rc.begin(), rc.begin() + 2);
+        auto exp = {0, 1, 2, 3, 4, 5};
+        CHECK(lc.size() == exp.size());
+        CHECK(std::equal(lc.begin(), lc.end(), exp.begin(), exp.end()));
+		CHECK(rc.size() == 0);
+    }
+
+    {
+        LIST_T<int, 4, Alloc_pattern> lc = {2, 3, 4, 5};
+        LIST_T<int, 4, Alloc_pattern> rc = {0, 1};
+
+        CHECK_THROWS(lc.splice(lc.begin(), std::move(rc)));
+    }
+
+    {
+        LIST_T<int, 4, Alloc_pattern> lc = {2, 3, 4, 5};
+        LIST_T<int, 4, Alloc_pattern> rc = {0, 1};
+
+        CHECK_THROWS(lc.splice(lc.begin(), std::move(rc), rc.begin() + 1));
+    }
+
+    {
+        LIST_T<int, 4, Alloc_pattern> lc = {2, 3, 4, 5};
+        LIST_T<int, 4, Alloc_pattern> rc = {0, 1};
+
+        CHECK_THROWS(lc.splice(lc.begin(), std::move(rc), rc.begin(), rc.begin() + 2));
+    }
+
+    {
+        LIST_T<test_move, 10, Alloc_pattern> lc;
+
+		lc.push_back(test_move("test1"));
+		lc.push_back(test_move("test2"));
+
+		LIST_T<test_move, 10, Alloc_pattern> rc;
+		
+		rc.push_back(test_move("toto"));
+		rc.push_back(test_move("titi"));
+		rc.push_back(test_move("tata"));
+
+        lc.splice(lc.begin(), std::move(rc));
+		CHECK(rc.size() == 0);
+		CHECK(lc.size() == 5);
+    }
+
+    {
+		LIST_T<test_move, 10, Alloc_pattern> lc;
+		lc.push_back(test_move("test1"));
+		lc.push_back(test_move("test2"));
+
+		LIST_T<test_move, 10, Alloc_pattern> rc;
+		rc.push_back(test_move("toto"));
+		rc.push_back(test_move("titi"));
+		rc.push_back(test_move("tata"));
+
+        lc.splice(lc.begin(), std::move(rc), rc.begin() + 1);
+    }
+
+    {
+		LIST_T<test_move, 10, Alloc_pattern> lc;
+		lc.push_back(test_move("test1"));
+		lc.push_back(test_move("test2"));
+
+		LIST_T<test_move, 10, Alloc_pattern> rc;
+		rc.push_back(test_move("toto"));
+		rc.push_back(test_move("titi"));
+		rc.push_back(test_move("tata"));
+
+        lc.splice(lc.begin(), std::move(rc), rc.begin(), rc.begin() + 2);
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_remove()
+{
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3, 4, 5};
+        c.remove(10);
+        auto exp = {1, 2, 3, 4, 5};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3, 4, 5};
+        c.remove(5);
+        auto exp = {1, 2, 3, 4};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3, 4};
+        c.remove(4);
+        auto exp = {1, 2, 3};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3};
+        c.remove(3);
+        auto exp = {1, 2};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2};
+        c.remove(2);
+        auto exp = {1};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1};
+        CHECK_NOTHROW(c.remove(1));
+        CHECK(c.size() == 0);
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c;
+        CHECK_NOTHROW(c.remove(1));
+        CHECK(c.size() == 0);
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_remove_if()
+{
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3, 4, 5};
+        c.remove_if([](int n) { return n < 3; });
+        auto exp = {3, 4, 5};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3, 4, 5};
+        c.remove_if([](int n) { return n == 3; });
+        auto exp = {1, 2, 4, 5};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3, 4, 5};
+        c.remove_if([](int n) { return n > 2; });
+        auto exp = {1, 2};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {1, 2, 3, 4, 5};
+        c.remove_if([](int n) { return n == 10; });
+        auto exp = {1, 2, 3, 4, 5};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c;
+        CHECK_NOTHROW(c.remove_if([](int n) { return n == 10; }));
+        CHECK(c.size() == 0);
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_reverse()
+{
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {0, 1, 2, 3, 4, 5};
+        CHECK_NOTHROW(c.reverse());
+        auto exp = {5, 4, 3, 2, 1, 0};
+        CHECK(c.size() == exp.size());
+        CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c;
+        CHECK_NOTHROW(c.reverse());
+        CHECK(c.size() == 0);
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_unique()
+{
+	{
+		LIST_T<int, 10, Alloc_pattern> c = { 1, 2, 3, 3, 3, 2, 1, 1, 2 };
+		c.unique();
+		auto exp = { 1, 2, 3, 2, 1, 2 };
+		CHECK(c.size() == exp.size());
+		CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+    }
+
+	{
+		int i = 0;
+		LIST_T<test_construct, 10, Alloc_pattern> c;
+		for (std::size_t v = 0; v < c.max_size(); v++)
+		{
+			c.push_back(test_construct(i));
+		}
+		CHECK(i == 10);
+		CHECK_NOTHROW(c.unique([](const test_construct&, const test_construct&)
+		{
+			return true;
+		}));
+		CHECK(c.size() == 1);
+		CHECK(i == 1);
+	}
+
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c;
+        CHECK_NOTHROW(c.unique());
+        CHECK(c.size() == 0);
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_sort()
+{
+    {
+        LIST_T<int, 10, Alloc_pattern> c = {8, 7, 5, 9, 0, 1, 3, 2, 6, 4};
+        CHECK_NOTHROW(c.sort());
+		{
+			auto exp = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+			CHECK(c.size() == exp.size());
+			CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+		}
+        CHECK_NOTHROW(c.sort(std::greater<int>()));
+		{
+			auto exp = { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+			CHECK(c.size() == exp.size());
+			CHECK(std::equal(c.begin(), c.end(), exp.begin(), exp.end()));
+		}
+    }
+
+    {
+        LIST_T<int, 10, Alloc_pattern> c;
+        CHECK_NOTHROW(c.sort());
+        CHECK(c.size() == 0);
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_list_operation()
+{
     test_merge<LIST_T, Alloc_pattern>();
+    test_splice<LIST_T, Alloc_pattern>();
+    test_remove<LIST_T, Alloc_pattern>();
+    test_remove_if<LIST_T, Alloc_pattern>();
+    test_reverse<LIST_T, Alloc_pattern>();
+    test_unique<LIST_T, Alloc_pattern>();
+    test_sort<LIST_T, Alloc_pattern>();
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename LIST_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
+void test_list()
+{
+    test_list_contructors<LIST_T, Alloc_pattern>();
+    test_list_element_access<LIST_T, Alloc_pattern>();
+    test_list_iterator<LIST_T, Alloc_pattern>();
+    test_list_capacity<LIST_T, Alloc_pattern>();
+    test_list_modifiers<LIST_T, Alloc_pattern>();
+    test_list_operation<LIST_T, Alloc_pattern>();
+    test_list_constant_reference<LIST_T, Alloc_pattern>();
 }
 
 TEST_CASE("testing lists", "[linear]")
 {
-    test_list<fixed::list, fixed::_impl::aligned_stack_allocator>();
-    test_modifiers<fixed::list, fixed::_impl::aligned_stack_allocator>();
-    test_list_constant_reference<fixed::list,
-        fixed::_impl::aligned_stack_allocator>();
-
-    test_list<fixed::list, fixed::_impl::aligned_heap_allocator>();
-    test_modifiers<fixed::list, fixed::_impl::aligned_heap_allocator>();
-    test_list_constant_reference<fixed::list,
-        fixed::_impl::aligned_heap_allocator>();
+    test_list<fixed::listed_vector, fixed::_impl::aligned_stack_allocator>();
+    test_list<fixed::listed_vector, fixed::_impl::aligned_heap_allocator>();
 }

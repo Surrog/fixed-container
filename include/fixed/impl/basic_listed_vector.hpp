@@ -1,7 +1,7 @@
 #ifndef FIXED_BASIC_LIST_HPP
 #define FIXED_BASIC_LIST_HPP
 
-#include "basic_list_iterator.hpp"
+#include "basic_listed_vector_iterator.hpp"
 #include "fixed/impl/basic_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
 #include <algorithm>
@@ -15,7 +15,7 @@ namespace _impl
     template <typename T, container_size_type SIZE,
         template <typename, container_size_type> typename Alloc_pattern
         = aligned_stack_allocator>
-    class basic_list
+    class basic_listed_vector
     {
     public:
         typedef T value_type;
@@ -31,7 +31,8 @@ namespace _impl
 
     private:
         typedef Alloc_pattern<T, SIZE> allocator_type_data_impl;
-        typedef Alloc_pattern<typename allocator_type_data_impl::iterator, SIZE> allocator_type_ptrs_impl;
+        typedef Alloc_pattern<typename allocator_type_data_impl::iterator, SIZE>
+            allocator_type_ptrs_impl;
 
         allocator_type_data_impl _data_holder;
         allocator_type_ptrs_impl _ptrs;
@@ -56,20 +57,20 @@ namespace _impl
             }
         }
 
-        void set_at(size_type index, T& value)
+        void set_at(size_type index, T&& value)
         {
             if(index < _size)
             {
-                *_ptrs[index] = value;
+                *_ptrs[index] = std::move(value);
             }
             else
             {
-                push_back(value);
+                push_back(std::move(value));
             }
         }
 
     public:
-        typedef basic_list_iterator<T,
+        typedef basic_listed_vector_iterator<T,
             typename allocator_type_ptrs_impl::iterator>
             iterator;
         typedef const_basic_list_iterator<T,
@@ -78,7 +79,7 @@ namespace _impl
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-        basic_list()
+        basic_listed_vector()
             : _data_holder()
             , _ptrs()
             , _size(0)
@@ -91,7 +92,7 @@ namespace _impl
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        explicit basic_list(Alloc_source& alloc)
+        explicit basic_listed_vector(Alloc_source& alloc)
             : _data_holder(alloc)
             , _ptrs()
             , _size(0)
@@ -102,8 +103,8 @@ namespace _impl
             }
         }
 
-        explicit basic_list(size_type count)
-            : basic_list()
+        explicit basic_listed_vector(size_type count)
+            : basic_listed_vector()
         {
             for(size_type i = 0; i < count; i++)
             {
@@ -113,8 +114,8 @@ namespace _impl
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        explicit basic_list(size_type count, Alloc_source& alloc)
-            : basic_list(alloc)
+        explicit basic_listed_vector(size_type count, Alloc_source& alloc)
+            : basic_listed_vector(alloc)
         {
             for(size_type i = 0; i < count; i++)
             {
@@ -122,8 +123,8 @@ namespace _impl
             }
         }
 
-        basic_list(size_type count, const T& value)
-            : basic_list()
+        basic_listed_vector(size_type count, const T& value)
+            : basic_listed_vector()
         {
             for(size_type i = 0; i < count; i++)
             {
@@ -133,8 +134,9 @@ namespace _impl
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_list(size_type count, const T& value, Alloc_source& alloc)
-            : basic_list(alloc)
+        basic_listed_vector(
+            size_type count, const T& value, Alloc_source& alloc)
+            : basic_listed_vector(alloc)
         {
             for(size_type i = 0; i < count; i++)
             {
@@ -144,8 +146,8 @@ namespace _impl
 
         template <class InputIt,
             std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
-        basic_list(InputIt first, InputIt last)
-            : basic_list()
+        basic_listed_vector(InputIt first, InputIt last)
+            : basic_listed_vector()
         {
             while(first != last)
             {
@@ -157,8 +159,8 @@ namespace _impl
         template <class InputIt, class Alloc_source = empty_source,
             std::enable_if_t<is_iterator<InputIt>::value, int> = 0,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_list(InputIt first, InputIt last, Alloc_source& alloc)
-            : basic_list(alloc)
+        basic_listed_vector(InputIt first, InputIt last, Alloc_source& alloc)
+            : basic_listed_vector(alloc)
         {
             while(first != last)
             {
@@ -167,22 +169,23 @@ namespace _impl
             }
         }
 
-        basic_list(const basic_list& other)
-            : basic_list(other.begin(), other.end())
+        basic_listed_vector(const basic_listed_vector& other)
+            : basic_listed_vector(other.begin(), other.end())
         {
         }
 
         template <class Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_list(const basic_list& other, Alloc_source& alloc)
-            : basic_list(other.begin(), other.end(), alloc)
+        basic_listed_vector(
+            const basic_listed_vector& other, Alloc_source& alloc)
+            : basic_listed_vector(other.begin(), other.end(), alloc)
         {
         }
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        basic_list(const basic_list<T, RSIZE, RALLOC>& other)
-            : basic_list(other.begin(), other.end())
+        basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other)
+            : basic_listed_vector(other.begin(), other.end())
         {
         }
 
@@ -190,14 +193,14 @@ namespace _impl
             template <typename, container_size_type> typename RALLOC,
             class Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_list(
-            const basic_list<T, RSIZE, RALLOC>& other, Alloc_source& alloc)
-            : basic_list(other.begin(), other.end(), alloc)
+        basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other,
+            Alloc_source& alloc)
+            : basic_listed_vector(other.begin(), other.end(), alloc)
         {
         }
 
-        basic_list(basic_list&& other) noexcept
-            : basic_list()
+        basic_listed_vector(basic_listed_vector&& other) noexcept
+            : basic_listed_vector()
         {
             for(T& elem : other)
             {
@@ -208,8 +211,9 @@ namespace _impl
 
         template <class Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_list(basic_list&& other, Alloc_source& alloc) noexcept
-            : basic_list(alloc)
+        basic_listed_vector(
+            basic_listed_vector&& other, Alloc_source& alloc) noexcept
+            : basic_listed_vector(alloc)
         {
             for(auto& elem : other)
             {
@@ -222,9 +226,9 @@ namespace _impl
             template <typename, container_size_type> typename RALLOC,
             class Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_list(
-            basic_list<T, RSIZE, RALLOC>&& other, Alloc_source& alloc) noexcept
-            : basic_list(alloc)
+        basic_listed_vector(basic_listed_vector<T, RSIZE, RALLOC>&& other,
+            Alloc_source& alloc) noexcept
+            : basic_listed_vector(alloc)
         {
             for(auto& elem : other)
             {
@@ -235,8 +239,9 @@ namespace _impl
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        basic_list(basic_list<T, RSIZE, RALLOC>&& other) noexcept
-            : basic_list()
+        basic_listed_vector(
+            basic_listed_vector<T, RSIZE, RALLOC>&& other) noexcept
+            : basic_listed_vector()
         {
             for(auto& elem : other)
             {
@@ -247,15 +252,15 @@ namespace _impl
 
         template <class Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_list(std::initializer_list<T> init,
+        basic_listed_vector(std::initializer_list<T> init,
             const Alloc_source& alloc = Alloc_source())
-            : basic_list(init.begin(), init.end(), alloc)
+            : basic_listed_vector(init.begin(), init.end(), alloc)
         {
         }
 
-        ~basic_list() { clear(); }
+        ~basic_listed_vector() { clear(); }
 
-        basic_list& operator=(const basic_list& other)
+        basic_listed_vector& operator=(const basic_listed_vector& other)
         {
             if(this != &other)
             {
@@ -271,7 +276,8 @@ namespace _impl
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        basic_list& operator=(const basic_list<T, RSIZE, RALLOC>& other)
+        basic_listed_vector& operator=(
+            const basic_listed_vector<T, RSIZE, RALLOC>& other)
         {
             size_type i = 0;
             for(auto& val : other)
@@ -282,7 +288,7 @@ namespace _impl
             return *this;
         }
 
-        basic_list& operator=(basic_list&& other) noexcept
+        basic_listed_vector& operator=(basic_listed_vector&& other) noexcept
         {
             if(this != &other)
             {
@@ -299,9 +305,10 @@ namespace _impl
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        basic_list& operator=(basic_list<T, RSIZE, RALLOC>&& other) noexcept
+        basic_listed_vector& operator=(
+            basic_listed_vector<T, RSIZE, RALLOC>&& other) noexcept
         {
-            if(this != &other)
+            if((void*)this != (void*)&other)
             {
                 size_type i = 0;
 
@@ -311,10 +318,11 @@ namespace _impl
                     ++i;
                 }
             }
+            other.resize(0);
             return *this;
         }
 
-        basic_list& operator=(std::initializer_list<T> ilist)
+        basic_listed_vector& operator=(std::initializer_list<T> ilist)
         {
             size_type i = 0;
             for(auto& val : ilist)
@@ -541,9 +549,9 @@ namespace _impl
             {
                 pop_back();
             }
-			if (_size)
-	            return begin() + std::min(beg_i, _size);
-			return end();
+            if(_size)
+                return begin() + std::min(beg_i, _size);
+            return end();
         }
 
         void push_back(const T& value)
@@ -611,7 +619,7 @@ namespace _impl
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        void swap(basic_list<T, RSIZE, RALLOC>& rval)
+        void swap(basic_listed_vector<T, RSIZE, RALLOC>& rval)
         {
             FIXED_CHECK_FULL(rval.size() < max_size());
             FIXED_CHECK_FULL(size() < rval.max_size());
@@ -654,14 +662,14 @@ namespace _impl
         // Operations
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        void merge(basic_list<T, RSIZE, RALLOC>&& other)
+        void merge(basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
             merge(std::move(other), std::less<T>());
         }
 
         template <class Compare, container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        void merge(basic_list<T, RSIZE, RALLOC>&& other, Compare comp)
+        void merge(basic_listed_vector<T, RSIZE, RALLOC>&& other, Compare comp)
         {
             if(static_cast<void*>(&other) != static_cast<void*>(this))
             {
@@ -677,43 +685,64 @@ namespace _impl
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other)
+        void splice(
+            const_iterator pos, basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
-            splice(pos, other, other.begin(), other.end());
+            splice(pos, std::move(other), other.cbegin(), other.cend());
         }
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other,
-            const_iterator it)
+        void splice(const_iterator pos,
+            basic_listed_vector<T, RSIZE, RALLOC>&& other, const_iterator it)
         {
-            FIXED_CHECK_CUSTOM(this != &other, "Splice with itself");
-            insert(pos, std::move(it));
+            FIXED_CHECK_CUSTOM(
+                (void*)this != (void*)&other, "Splice with itself");
+            auto elem_i = std::distance(other.cbegin(), it);
+            FIXED_CHECK_INBOUND(elem_i > 0);
+            FIXED_CHECK_INBOUND(std::size_t(elem_i) <= other.size());
+
+            insert(pos, std::move(*(other.begin() + elem_i)));
             other.erase(it);
         }
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
-        void splice(const_iterator pos, basic_list<T, RSIZE, RALLOC>&& other,
-            const_iterator first, const_iterator last)
+        void splice(const_iterator pos,
+            basic_listed_vector<T, RSIZE, RALLOC>&& other, const_iterator first,
+            const_iterator last)
         {
             FIXED_CHECK_CUSTOM(this != &other, "Splice with itself");
-            auto index = std::distance(begin(), pos);
-            FIXED_CHECK_INBOUND(index <= _size);
-            auto old_size = _size;
-            size_type size_inserted = 0;
-            while(first != last)
+
+            auto pos_i = std::distance(cbegin(), pos);
+            auto initial_size = size();
+            FIXED_CHECK_INBOUND(pos_i >= 0);
+            FIXED_CHECK_INBOUND(std::size_t(pos_i) <= _size);
+
+            auto first_i = std::distance(other.cbegin(), first);
+            auto last_i = std::distance(other.cbegin(), last);
+            auto range_size = std::distance(first, last);
+            FIXED_CHECK_BADRANGE(range_size >= 0);
+            if(range_size > 0)
             {
-                push_back(std::move(*first));
-                ++size_inserted;
-                ++first;
+                FIXED_CHECK_FULL(size() + range_size <= max_size());
+                FIXED_CHECK_INBOUND(first_i >= 0);
+                FIXED_CHECK_INBOUND(std::size_t(first_i) <= other.size());
+                FIXED_CHECK_INBOUND(last_i >= 0);
+                FIXED_CHECK_INBOUND(std::size_t(last_i) <= other.size());
+
+                auto first_m_it = other.begin() + first_i;
+                auto last_m_it = other.begin() + last_i;
+
+                while(first_m_it != last_m_it)
+                {
+                    push_back(std::move_if_noexcept(*first_m_it));
+                    ++first_m_it;
+                }
+                std::rotate(_ptrs.begin() + pos_i, _ptrs.begin() + initial_size,
+                    _ptrs.begin() + size());
+                other.erase(first, last);
             }
-            if(index != _size && size_inserted != 0)
-            {
-                std::rotate(_ptrs.begin() + index, _ptrs.begin() + old_size,
-                    _ptrs.begin() + old_size + size_inserted);
-            }
-            other.erase(first, last);
         }
 
         void remove(const T& value)
@@ -723,16 +752,11 @@ namespace _impl
 
         template <class UnaryPredicate> void remove_if(UnaryPredicate p)
         {
-            auto it_ptr = std::find_if(_ptrs.begin(), _ptrs.begin() + _size,
-                [&p](const auto& ptr) { return p(*ptr); });
-            if(it_ptr != _ptrs.begin())
+            auto found = std::find_if(begin(), end(), p);
+            while(found != end())
             {
-                it_ptr->~T();
-                if(it_ptr != _ptrs.begin() + _size - 1)
-                {
-                    std::rotate(it_ptr, it_ptr + 1, _ptrs.begin() + _size);
-                }
-                _size--;
+                erase(found);
+                found = std::find_if(begin(), end(), p);
             }
         }
 
@@ -745,19 +769,17 @@ namespace _impl
 
         template <class BinaryPredicate> void unique(BinaryPredicate p)
         {
-            if(_size > 1)
+            auto it_beg = begin();
+            auto it_end = end();
+
+            while(it_beg != it_end && it_beg + 1 != it_end)
             {
-                auto beg = _ptrs.begin();
-                auto end = _ptrs.begin() + _size;
-                while(beg < end - 2)
+                while(it_beg + 1 != it_end && p(*it_beg, *(it_beg + 1)))
                 {
-                    while(p(*beg, (*beg + 1)))
-                    {
-                        erase_local_ptr(beg + 1);
-                        end--;
-                    }
-                    beg++;
+                    erase(it_beg + 1);
+                    --it_end;
                 }
+                ++it_beg;
             }
         }
 

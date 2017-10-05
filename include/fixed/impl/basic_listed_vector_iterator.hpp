@@ -8,7 +8,7 @@ namespace fixed
 {
 namespace _impl
 {
-    template <typename T, typename STORAGE_T> struct basic_list_iterator
+    template <typename T, typename STORAGE_T> struct basic_listed_vector_iterator
     {
     public:
         typedef T value_type;
@@ -19,12 +19,12 @@ namespace _impl
         typedef std::ptrdiff_t difference_type;
         typedef std::random_access_iterator_tag iterator_category;
 
-        bool operator==(const basic_list_iterator& rval) const
+        bool operator==(const basic_listed_vector_iterator& rval) const
         {
             return _value == rval._value;
         }
 
-        bool operator!=(const basic_list_iterator& rval) const
+        bool operator!=(const basic_listed_vector_iterator& rval) const
         {
             return !operator==(rval);
         }
@@ -42,79 +42,79 @@ namespace _impl
             return reinterpret_cast<pointer>(*_value);
         }
 
-        basic_list_iterator() = default;
+        basic_listed_vector_iterator() = default;
 
-        basic_list_iterator(const STORAGE_T& val)
+        basic_listed_vector_iterator(const STORAGE_T& val)
             : _value(val)
         {}
 
-		basic_list_iterator(STORAGE_T&& val)
+		basic_listed_vector_iterator(STORAGE_T&& val)
 			: _value(std::move(val))
 		{}
 
-        basic_list_iterator(const basic_list_iterator&) = default;
-        basic_list_iterator(basic_list_iterator&&) noexcept = default;
-        basic_list_iterator& operator=(const basic_list_iterator&) = default;
-        basic_list_iterator& operator=(basic_list_iterator&&) noexcept
+        basic_listed_vector_iterator(const basic_listed_vector_iterator&) = default;
+        basic_listed_vector_iterator(basic_listed_vector_iterator&&) noexcept = default;
+        basic_listed_vector_iterator& operator=(const basic_listed_vector_iterator&) = default;
+        basic_listed_vector_iterator& operator=(basic_listed_vector_iterator&&) noexcept
             = default;
 
-        basic_list_iterator& operator++()
+        basic_listed_vector_iterator& operator++()
         {
             assert(_value != nullptr);
             ++_value;
             return *this;
         }
 
-        basic_list_iterator operator++(int)
+        basic_listed_vector_iterator operator++(int)
         {
             assert(_value != nullptr);
-            basic_list_iterator result = (*this);
+            basic_listed_vector_iterator result = (*this);
             ++(*this);
             return result;
         }
 
-        basic_list_iterator& operator--()
+        basic_listed_vector_iterator& operator--()
         {
             assert(_value != nullptr);
             _value--;
             return *this;
         }
 
-        basic_list_iterator operator--(int)
+        basic_listed_vector_iterator operator--(int)
         {
             assert(_value != nullptr);
-            basic_list_iterator result = (*this);
+            basic_listed_vector_iterator result = (*this);
             --(*this);
             return result;
         }
 
-        basic_list_iterator& operator+=(difference_type n)
+        basic_listed_vector_iterator& operator+=(difference_type n)
         {
             assert(_value != nullptr);
             _value += n;
             return *this;
         }
 
-        basic_list_iterator operator+(difference_type n) const
+        basic_listed_vector_iterator operator+(difference_type n) const
         {
             assert(_value != nullptr);
             return {_value + n};
         }
 
-        basic_list_iterator& operator-=(difference_type n)
+        basic_listed_vector_iterator& operator-=(difference_type n)
         {
             assert(_value != nullptr);
             _value -= n;
             return *this;
         }
 
-        basic_list_iterator operator-(difference_type n) const
+        basic_listed_vector_iterator operator-(difference_type n) const
         {
             assert(_value != nullptr);
             return {_value - n};
         }
 
-        difference_type operator-(const basic_list_iterator& rval) const
+        difference_type operator-(const basic_listed_vector_iterator& rval) const
         {
             return _value - rval._value;
         }
@@ -125,22 +125,22 @@ namespace _impl
             return reinterpret_cast<reference>(*_value[n]);
         }
 
-        bool operator<(const basic_list_iterator& rval) const
+        bool operator<(const basic_listed_vector_iterator& rval) const
         {
             return _value < rval._value;
         }
 
-        bool operator>(const basic_list_iterator& rval) const
+        bool operator>(const basic_listed_vector_iterator& rval) const
         {
             return _value > rval._value;
         }
 
-        bool operator<=(const basic_list_iterator& rval) const
+        bool operator<=(const basic_listed_vector_iterator& rval) const
         {
             return _value <= rval._value;
         }
 
-        bool operator>=(const basic_list_iterator& rval) const
+        bool operator>=(const basic_listed_vector_iterator& rval) const
         {
             return _value >= rval._value;
         }
@@ -194,13 +194,13 @@ namespace _impl
         const_basic_list_iterator& operator=(const_basic_list_iterator&&) noexcept = default;
 
 		template <typename STO>
-        const_basic_list_iterator(const basic_list_iterator<T, STO>& orig)
+        const_basic_list_iterator(const basic_listed_vector_iterator<T, STO>& orig)
             : _value(orig.get())
         {
         }
 
 		template <typename STO>
-		const_basic_list_iterator(basic_list_iterator<T, STO>&& orig)
+		const_basic_list_iterator(basic_listed_vector_iterator<T, STO>&& orig)
 			: _value(orig.get())
 		{
 		}
@@ -300,7 +300,7 @@ namespace _impl
     };
 
     template <typename T, typename STO>
-    auto operator+(std::ptrdiff_t lval, const basic_list_iterator<T, STO>& rval)
+    auto operator+(std::ptrdiff_t lval, const basic_listed_vector_iterator<T, STO>& rval)
     {
         return rval + lval;
     }
