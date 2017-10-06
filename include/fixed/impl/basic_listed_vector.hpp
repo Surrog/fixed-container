@@ -227,10 +227,12 @@ namespace _impl
             class Alloc_source = empty_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
         basic_listed_vector(basic_listed_vector<T, RSIZE, RALLOC>&& other,
-            Alloc_source& alloc) noexcept
+            Alloc_source& alloc)
             : basic_listed_vector(alloc)
         {
-            for(auto& elem : other)
+			FIXED_CHECK_FULL(other.size() <= max_size());
+
+			for(auto& elem : other)
             {
                 push_back(std::move_if_noexcept(elem));
             }
@@ -240,9 +242,10 @@ namespace _impl
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
         basic_listed_vector(
-            basic_listed_vector<T, RSIZE, RALLOC>&& other) noexcept
+            basic_listed_vector<T, RSIZE, RALLOC>&& other)
             : basic_listed_vector()
-        {
+		{
+			FIXED_CHECK_FULL(other.size() <= max_size());
             for(auto& elem : other)
             {
                 push_back(std::move_if_noexcept(elem));
@@ -307,8 +310,9 @@ namespace _impl
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
         basic_listed_vector& operator=(
-            basic_listed_vector<T, RSIZE, RALLOC>&& other) noexcept
+            basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
+			FIXED_CHECK_FULL(other.size() <= max_size());
             if((void*)this != (void*)&other)
             {
                 size_type i = 0;
@@ -325,6 +329,8 @@ namespace _impl
 
         basic_listed_vector& operator=(std::initializer_list<T> ilist)
         {
+			FIXED_CHECK_FULL(ilist.size() <= max_size());
+
             size_type i = 0;
             for(auto& val : ilist)
             {

@@ -40,6 +40,17 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+        try
+        {
+            CONTAINER_T<int, 1, Alloc_pattern> m(r);
+            CHECK(false);
+        }
+        catch(std::exception&)
+        {
+        }
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
 
     {
@@ -56,6 +67,18 @@ void test_canonical_constructor()
 
         CHECK(l.size() == 3);
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+        try
+        {
+            CONTAINER_T<int, 1, Alloc_pattern> m(r, alloc_source_inst);
+            CHECK(false);
+        }
+        catch(std::exception&)
+        {
+        }
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -77,6 +100,18 @@ void test_canonical_constructor()
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+        try
+        {
+            CONTAINER_T<int, 1, Alloc_pattern> m(std::move(r));
+            CHECK(false);
+        }
+        catch(std::exception&)
+        {
+        }
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
 
     {
@@ -95,6 +130,19 @@ void test_canonical_constructor()
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+        try
+        {
+            CONTAINER_T<int, 1, Alloc_pattern> m(
+                std::move(r), alloc_source_inst);
+            CHECK(false);
+        }
+        catch(std::exception&)
+        {
+        }
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
 
     {
@@ -110,6 +158,18 @@ void test_canonical_constructor()
         CONTAINER_T<test_move, 20, Alloc_pattern> r(std::move(l));
 
         CHECK(l.size() == 0);
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+        try
+        {
+            CONTAINER_T<test_move, 1, Alloc_pattern> m(std::move(r));
+            CHECK(false);
+        }
+        catch(std::exception&)
+        {
+        }
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -132,6 +192,19 @@ void test_canonical_constructor()
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+        try
+        {
+            CONTAINER_T<test_move, 1, Alloc_pattern> m(
+                std::move(r), alloc_source_inst);
+            CHECK(false);
+        }
+        catch(std::exception&)
+        {
+        }
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
 
     {
@@ -151,6 +224,13 @@ void test_canonical_constructor()
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+		CONTAINER_T<int, 1, Alloc_pattern> m;
+		CHECK_THROWS(m = std::move(r));
+
+		CHECK(r.size() == 3);
+		CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
     }
 
     {

@@ -147,7 +147,7 @@ namespace _impl
             {
                 push_back(std::move_if_noexcept(elem));
             }
-            other.resize(0);
+            other.clear();
             //}
         }
 
@@ -175,6 +175,7 @@ namespace _impl
         basic_vector(std::initializer_list<T> list)
             : basic_vector()
         {
+			FIXED_CHECK_FULL(list.size() <= max_size());
             uninitialized_assign(list.begin(), list.end());
         }
 
@@ -184,6 +185,7 @@ namespace _impl
             std::initializer_list<T> list, Alloc_source& alloc = empty_source())
             : basic_vector(alloc)
         {
+			FIXED_CHECK_FULL(list.size() <= max_size());
             uninitialized_assign(list.begin(), list.end());
         }
 
@@ -208,9 +210,10 @@ namespace _impl
         template <size_type RSIZE,
             template <typename, size_type> typename RAllocator>
         basic_vector& operator=(
-            basic_vector<T, RSIZE, RAllocator>&& rval) noexcept
+            basic_vector<T, RSIZE, RAllocator>&& rval)
         {
-            auto rbeg = rval.begin();
+			FIXED_CHECK_FULL(rval.size() <= max_size());
+			auto rbeg = rval.begin();
             auto rend = rval.end();
             auto lbeg = begin();
             auto lend = end();
@@ -592,6 +595,19 @@ namespace _impl
                 push_back(value);
             }
         }
+
+		void set_at(size_type index, T&& value)
+		{
+			if (index < _size)
+			{
+				at(index) = std::move(value);
+			}
+			else
+			{
+				push_back(std::move(value));
+			}
+		}
+
 
         void uninitialized_assign(size_type count, const T& value)
         {
