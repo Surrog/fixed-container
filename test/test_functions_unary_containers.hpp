@@ -8,8 +8,179 @@ template <template <typename, fixed::_impl::container_size_type,
           typename CONTAINER_T,
     template <typename, fixed::_impl::container_size_type>
     typename Alloc_pattern>
+void test_canonical_constructor()
+{
+    {
+        CONTAINER_T<int, 20, Alloc_pattern> l;
+        CONTAINER_T<test_move, 20, Alloc_pattern> lm;
+    }
+
+    fixed::_impl::empty_source alloc_source_inst;
+
+    {
+        CONTAINER_T<int, 20, Alloc_pattern> l(alloc_source_inst);
+        CONTAINER_T<test_move, 20, Alloc_pattern> lm(alloc_source_inst);
+    }
+
+    {
+        auto exp = {1, 2, 3};
+        CONTAINER_T<int, 20, Alloc_pattern> l;
+        l.push_back(1);
+        l.push_back(2);
+        l.push_back(3);
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<int, 20, Alloc_pattern> r(l);
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+    }
+
+    {
+        auto exp = {1, 2, 3};
+        CONTAINER_T<int, 20, Alloc_pattern> l;
+        l.push_back(1);
+        l.push_back(2);
+        l.push_back(3);
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<int, 20, Alloc_pattern> r(l, alloc_source_inst);
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        auto exp = {1, 2, 3};
+        CONTAINER_T<int, 20, Alloc_pattern> l;
+        l.push_back(1);
+        l.push_back(2);
+        l.push_back(3);
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<int, 20, Alloc_pattern> r(std::move(l));
+
+        CHECK(l.size() == 0);
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        auto exp = {1, 2, 3};
+        CONTAINER_T<int, 20, Alloc_pattern> l;
+        l.push_back(1);
+        l.push_back(2);
+        l.push_back(3);
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<int, 20, Alloc_pattern> r(std::move(l), alloc_source_inst);
+
+        CHECK(l.size() == 0);
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        auto exp = {"test", "titi", "toto"};
+        CONTAINER_T<test_move, 20, Alloc_pattern> l;
+        l.emplace_back("test");
+        l.emplace_back("titi");
+        l.emplace_back("toto");
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<test_move, 20, Alloc_pattern> r(std::move(l));
+
+        CHECK(l.size() == 0);
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        auto exp = {"test", "titi", "toto"};
+        CONTAINER_T<test_move, 20, Alloc_pattern> l;
+        l.emplace_back("test");
+        l.emplace_back("titi");
+        l.emplace_back("toto");
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<test_move, 20, Alloc_pattern> r(
+            std::move(l), alloc_source_inst);
+
+        CHECK(l.size() == 0);
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        auto exp = {1, 2, 3};
+        CONTAINER_T<int, 20, Alloc_pattern> l;
+        l.push_back(1);
+        l.push_back(2);
+        l.push_back(3);
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<int, 20, Alloc_pattern> r;
+        r = std::move(l);
+
+        CHECK(l.size() == 0);
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        auto exp = {"test", "titi", "toto"};
+        CONTAINER_T<test_move, 20, Alloc_pattern> l;
+        l.emplace_back("test");
+        l.emplace_back("titi");
+        l.emplace_back("toto");
+
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+        CONTAINER_T<test_move, 20, Alloc_pattern> r;
+        r = std::move(l);
+
+        CHECK(l.size() == 0);
+
+        CHECK(r.size() == 3);
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
+}
+
+template <template <typename, fixed::_impl::container_size_type,
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename CONTAINER_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
 void test_constructor()
 {
+    test_canonical_constructor<CONTAINER_T, Alloc_pattern>();
     { // constructor definition check
         auto expected = {1, 2, 3, 4, 5};
 
@@ -17,18 +188,30 @@ void test_constructor()
 
         CONTAINER_T<int, 30, fixed::_impl::aligned_heap_allocator> list_on_heap;
         l = list_on_heap;
+
         fixed::_impl::empty_source alloc_source_inst;
-        CONTAINER_T<int, 20, Alloc_pattern> l_with_alloc_source(
-            alloc_source_inst);
+
+        {
+            CONTAINER_T<int, 20, Alloc_pattern> l_with_alloc_source(
+                alloc_source_inst);
+
+            CONTAINER_T<test_move, 20, Alloc_pattern> l_with_alloc_source_m(
+                alloc_source_inst);
+
+            l = l_with_alloc_source;
+            l = expected;
+            CHECK(std::equal(
+                l.begin(), l.end(), expected.begin(), expected.end()));
+        }
+
         CONTAINER_T<int, 20, Alloc_pattern> l_diff_with_alloc_source(
             list_on_heap, alloc_source_inst);
-        l = l_with_alloc_source;
-        l = expected;
-        CHECK(std::equal(l.begin(), l.end(), expected.begin(), expected.end()));
+
         list_on_heap = expected;
 
         CONTAINER_T<int, 20, Alloc_pattern> l_diff_with_alloc_source_not_empty(
             list_on_heap, alloc_source_inst);
+
         CHECK(std::equal(l_diff_with_alloc_source_not_empty.begin(),
             l_diff_with_alloc_source_not_empty.end(), expected.begin(),
             expected.end()));
@@ -46,6 +229,24 @@ void test_constructor()
             l_move.begin(), l_move.end(), expected.begin(), expected.end()));
         CHECK(l.size() == 0);
         CHECK(l.empty());
+
+        {
+            CONTAINER_T<test_move, 20, Alloc_pattern> origin;
+            origin.push_back(test_move("test"));
+            origin.push_back(test_move("toto"));
+            origin.push_back(test_move("titi"));
+
+            CHECK(origin.size() == 3);
+
+            CONTAINER_T<test_move, 20, Alloc_pattern> l_test_move(
+                std::move(origin));
+            CHECK(origin.size() == 0);
+            CHECK(l_test_move.size() == 3);
+
+            auto exp = {"test", "toto", "titi"};
+            CHECK(std::equal(l_test_move.begin(), l_test_move.end(),
+                exp.begin(), exp.end()));
+        }
 
         CONTAINER_T<int, 20, Alloc_pattern> l_move_alloc(
             std::move(l_move), alloc_source_inst);
@@ -189,36 +390,36 @@ template <template <typename, fixed::_impl::container_size_type,
     typename Alloc_pattern>
 void test_operator_assignment()
 {
-	{
-		CONTAINER_T<int, 10, Alloc_pattern> nums1{ 3, 1, 4, 6, 5, 9 };
-		CONTAINER_T<int, 2, Alloc_pattern> nums2;
-		CHECK_THROWS(nums2 = nums1);
-	}
+    {
+        CONTAINER_T<int, 10, Alloc_pattern> nums1{3, 1, 4, 6, 5, 9};
+        CONTAINER_T<int, 2, Alloc_pattern> nums2;
+        CHECK_THROWS(nums2 = nums1);
+    }
 
-	{
-		CONTAINER_T<test_move, 10, Alloc_pattern> r;
-		r.emplace_back("test");
-		CONTAINER_T<test_move, 10, Alloc_pattern> l;
-		l = std::move(r);
-	}
+    {
+        CONTAINER_T<test_move, 10, Alloc_pattern> r;
+        r.emplace_back("test");
+        CONTAINER_T<test_move, 10, Alloc_pattern> l;
+        l = std::move(r);
+    }
 
     {
         CONTAINER_T<int, 10, Alloc_pattern> nums1{3, 1, 4, 6, 5, 9};
         CONTAINER_T<int, 6, Alloc_pattern> nums2;
         CONTAINER_T<int, 20, Alloc_pattern> nums3;
 
-		auto exp = { 3, 1, 4, 6, 5, 9 };
+        auto exp = {3, 1, 4, 6, 5, 9};
         CHECK(nums1.size() == 6);
-		CHECK(std::equal(nums1.begin(), nums1.end(), exp.begin(), exp.end()));
+        CHECK(std::equal(nums1.begin(), nums1.end(), exp.begin(), exp.end()));
         CHECK(nums2.size() == 0);
         CHECK(nums3.size() == 0);
         // copy assignment copies data from nums1 to nums2
         nums2 = nums1;
 
         CHECK(nums1.size() == 6);
-		CHECK(std::equal(nums1.begin(), nums1.end(), exp.begin(), exp.end()));
+        CHECK(std::equal(nums1.begin(), nums1.end(), exp.begin(), exp.end()));
         CHECK(nums2.size() == 6);
-		CHECK(std::equal(nums2.begin(), nums2.end(), exp.begin(), exp.end()));
+        CHECK(std::equal(nums2.begin(), nums2.end(), exp.begin(), exp.end()));
         CHECK(nums3.size() == 0);
         // move assignment moves data from nums1 to nums3,
         // modifying both nums1 and nums3
@@ -226,10 +427,9 @@ void test_operator_assignment()
 
         CHECK(nums1.size() == 0);
         CHECK(nums2.size() == 6);
-		CHECK(std::equal(nums2.begin(), nums2.end(), exp.begin(), exp.end()));
+        CHECK(std::equal(nums2.begin(), nums2.end(), exp.begin(), exp.end()));
         CHECK(nums3.size() == 6);
-		CHECK(std::equal(nums3.begin(), nums3.end(), exp.begin(), exp.end()));
-
+        CHECK(std::equal(nums3.begin(), nums3.end(), exp.begin(), exp.end()));
     }
 
     {
@@ -790,18 +990,18 @@ void test_erase()
 
         c.erase(c.begin());
         expected.erase(expected.begin());
-		CHECK(std::equal(c.begin(), c.end(), expected.begin(), expected.end()));
+        CHECK(std::equal(c.begin(), c.end(), expected.begin(), expected.end()));
 
         expected.erase(expected.begin() + 2, expected.begin() + 5);
         c.erase(c.begin() + 2, c.begin() + 5);
 
-		CHECK(std::equal(c.begin(), c.end(), expected.begin(), expected.end()));
+        CHECK(std::equal(c.begin(), c.end(), expected.begin(), expected.end()));
 
         expected.erase(expected.begin() + (expected.size() - 1));
         c.erase(c.begin() + (c.size() - 1));
         CHECK(c.size() == expected.size());
-		CHECK(std::equal(c.begin(), c.end(), expected.begin(), expected.end()));
-	}
+        CHECK(std::equal(c.begin(), c.end(), expected.begin(), expected.end()));
+    }
 
     {
         CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
@@ -1611,15 +1811,15 @@ void test_pop_front()
         CHECK_THROWS(c.pop_front());
     }
 
-	{
-		int i = 0;
-		CONTAINER_T<test_construct, 10, Alloc_pattern> c;
-		c.push_back(test_construct(i));
-		CHECK(i == 1);
-		c.pop_front();
-		CHECK(c.size() == 0);
-		CHECK(i == 0);
-	}
+    {
+        int i = 0;
+        CONTAINER_T<test_construct, 10, Alloc_pattern> c;
+        c.push_back(test_construct(i));
+        CHECK(i == 1);
+        c.pop_front();
+        CHECK(c.size() == 0);
+        CHECK(i == 0);
+    }
 }
 
 #endif //! FIXED_TEST_FUNCTIONS_UNARY_CONTAINERS_HPP

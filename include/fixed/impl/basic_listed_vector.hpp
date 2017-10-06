@@ -300,6 +300,7 @@ namespace _impl
                     ++i;
                 }
             }
+			other.clear();
             return *this;
         }
 
@@ -318,7 +319,7 @@ namespace _impl
                     ++i;
                 }
             }
-            other.resize(0);
+            other.clear();
             return *this;
         }
 

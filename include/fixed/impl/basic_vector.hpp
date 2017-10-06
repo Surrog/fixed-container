@@ -168,7 +168,7 @@ namespace _impl
             {
                 push_back(std::move_if_noexcept(elem));
             }
-            other.resize(0);
+            other.clear();
             //}
         }
 

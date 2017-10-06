@@ -99,6 +99,11 @@ struct test_move
         return std::equal(_val, _val + strlen(_val), rval._val,
             rval._val + strlen(rval._val));
     }
+
+    bool operator==(const char*& rval) const noexcept
+    {
+        return std::equal(_val, _val + strlen(_val), rval, rval + strlen(rval));
+    }
 };
 
 struct test_emplace_struct
@@ -109,7 +114,8 @@ struct test_emplace_struct
 
     test_emplace_struct() noexcept = default;
     test_emplace_struct(const test_emplace_struct&) noexcept = default;
-    test_emplace_struct& operator=(const test_emplace_struct&) noexcept = default;
+    test_emplace_struct& operator=(const test_emplace_struct&) noexcept
+        = default;
     test_emplace_struct(test_emplace_struct&&) noexcept = default;
     test_emplace_struct& operator=(test_emplace_struct&&) noexcept = default;
 
