@@ -30,6 +30,28 @@ namespace _impl
 #else //! defined(NDEBUG) || defined(FIXED_CONTAINER_CHECK_BOUND)
 #define FIXED_CHECK(ex) ((void)0)
 #endif // defined(NDEBUG) && !defined(FIXED_CONTAINER_CHECK_BOUND)
+
+    template <bool val> struct constexpr_if
+    {
+        template <typename CLOSURE_T> constexpr constexpr_if(const CLOSURE_T&)
+        {
+        }
+
+        template <typename CLOSURE_T> constexpr void _else(const CLOSURE_T& f)
+        {
+            f();
+        }
+    };
+
+    template <> struct constexpr_if<true>
+    {
+        template <typename CLOSURE_T> constexpr constexpr_if(const CLOSURE_T& f)
+        {
+            f();
+        }
+
+        template <typename CLOSURE_T> constexpr void _else(const CLOSURE_T&) {}
+    };
 }
 }
 

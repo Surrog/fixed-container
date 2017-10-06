@@ -10,6 +10,7 @@ template <template <typename, fixed::_impl::container_size_type,
     typename Alloc_pattern>
 void test_canonical_constructor()
 {
+    // default constructor
     {
         CONTAINER_T<int, 20, Alloc_pattern> l;
         CONTAINER_T<test_move, 20, Alloc_pattern> lm;
@@ -21,7 +22,9 @@ void test_canonical_constructor()
         CONTAINER_T<int, 20, Alloc_pattern> l(alloc_source_inst);
         CONTAINER_T<test_move, 20, Alloc_pattern> lm(alloc_source_inst);
     }
+    //! default constructor
 
+    // copy constructor
     {
         auto exp = {1, 2, 3};
         CONTAINER_T<int, 20, Alloc_pattern> l;
@@ -83,7 +86,8 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
-
+    //! copy constructors
+    // move constructors
     {
         auto exp = {1, 2, 3};
         CONTAINER_T<int, 20, Alloc_pattern> l;
@@ -206,7 +210,48 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
+    //! test move constructors
+    // test init list constructors
+    {
+        auto exp = {0, 1, 2};
+        CONTAINER_T<int, 20, Alloc_pattern> l{0, 1, 2};
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+    }
 
+    {
+        auto exp = {0, 1, 2};
+        try
+        {
+            CONTAINER_T<int, 1, Alloc_pattern> l{0, 1, 2};
+            CHECK(false);
+        }
+        catch(const std::exception&)
+        {
+        }
+    }
+
+    {
+        auto exp = {0, 1, 2};
+        CONTAINER_T<int, 20, Alloc_pattern> l(exp, alloc_source_inst);
+        CHECK(l.size() == 3);
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+    }
+
+    {
+        auto exp = {0, 1, 2};
+        try
+        {
+            CONTAINER_T<int, 1, Alloc_pattern> l(exp, alloc_source_inst);
+            CHECK(false);
+        }
+        catch(const std::exception&)
+        {
+        }
+    }
+    //! test init list constructors
+
+    // test copy assignment
     {
         auto exp = {1, 2, 3};
         CONTAINER_T<int, 20, Alloc_pattern> l;
@@ -214,25 +259,57 @@ void test_canonical_constructor()
         l.push_back(2);
         l.push_back(3);
 
-        CHECK(l.size() == 3);
+        CHECK(l.size() == exp.size());
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 
-        CONTAINER_T<int, 20, Alloc_pattern> r;
-        r = std::move(l);
+		{
+			CONTAINER_T<int, 20, Alloc_pattern> r;
+			r.push_back(4);
+			r.push_back(5);
+			r.push_back(6);
+			r.push_back(7);
 
-        CHECK(l.size() == 0);
+			auto r_exp = { 4, 5, 6, 7 };
+			CHECK(r.size() == r_exp.size());
+			CHECK(std::equal(r.begin(), r.end(), r_exp.begin(), r_exp.end()));
 
-        CHECK(r.size() == 3);
-        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+			r = l;
 
-		CONTAINER_T<int, 1, Alloc_pattern> m;
-		CHECK_THROWS(m = std::move(r));
+			CHECK(l.size() == exp.size());
+			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 
-		CHECK(r.size() == 3);
-		CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+			CHECK(r.size() == exp.size());
+			CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+			CONTAINER_T<int, 1, Alloc_pattern> m;
+			CHECK_THROWS(m = r);
+
+			CHECK(r.size() == 3);
+			CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+		}
+		{
+			CONTAINER_T<int, 10, Alloc_pattern> r1;
+			r1.push_back(4);
+			r1.push_back(5);
+			r1.push_back(6);
+			r1.push_back(7);
+
+			auto r_exp = { 4, 5, 6, 7 };
+			CHECK(r1.size() == r_exp.size());
+			CHECK(std::equal(r1.begin(), r1.end(), r_exp.begin(), r_exp.end()));
+
+			r1 = l;
+
+			CHECK(l.size() == exp.size());
+			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+			CHECK(r1.size() == exp.size());
+			CHECK(std::equal(r1.begin(), r1.end(), exp.begin(), exp.end()));
+		}
     }
+    //! test copy assignement
 
+    // test move assignement
     {
         auto exp = {"test", "titi", "toto"};
         CONTAINER_T<test_move, 20, Alloc_pattern> l;
@@ -240,17 +317,46 @@ void test_canonical_constructor()
         l.emplace_back("titi");
         l.emplace_back("toto");
 
-        CHECK(l.size() == 3);
+        CHECK(l.size() == exp.size());
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 
         CONTAINER_T<test_move, 20, Alloc_pattern> r;
         r = std::move(l);
 
         CHECK(l.size() == 0);
+        CHECK(r.size() == exp.size());
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
-        CHECK(r.size() == 3);
+        CONTAINER_T<test_move, 1, Alloc_pattern> m;
+        CHECK_THROWS(m = std::move(r));
+        CHECK(r.size() == exp.size());
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
+
+	{
+		auto exp = { "test", "titi", "toto" };
+		CONTAINER_T<test_move, 20, Alloc_pattern> l;
+		l.emplace_back("test");
+		l.emplace_back("titi");
+		l.emplace_back("toto");
+
+		CHECK(l.size() == exp.size());
+		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+		CONTAINER_T<test_move, 10, Alloc_pattern> r;
+		r = std::move(l);
+
+		CHECK(l.size() == 0);
+		CHECK(r.size() == exp.size());
+		CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+		CONTAINER_T<test_move, 1, Alloc_pattern> m;
+		CHECK_THROWS(m = std::move(r));
+		CHECK(r.size() == exp.size());
+		CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+	}
+
+    //! test move assignement
 }
 
 template <template <typename, fixed::_impl::container_size_type,
@@ -560,25 +666,17 @@ template <template <typename, fixed::_impl::container_size_type,
     typename Alloc_pattern>
 void test_begin_end()
 {
-    CONTAINER_T<int, 20, Alloc_pattern> vec{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    using fiterator = typename CONTAINER_T<int, 20, Alloc_pattern>::iterator;
-    using fciterator =
-        typename CONTAINER_T<int, 20, Alloc_pattern>::const_iterator;
-
     {
-        fiterator it;
-        fciterator cit(it);
-
-        CHECK(it == fiterator());
-        CHECK(cit == fciterator());
-    }
-
-    {
+		CONTAINER_T<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+		CHECK(std::distance(vec.begin(), vec.end()) > 0);
         CHECK(static_cast<std::size_t>(std::distance(vec.begin(), vec.end()))
             == vec.size());
     }
 
-    {
+    
+	{
+		CONTAINER_T<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
         auto beg = vec.begin();
         auto end = vec.end();
         std::size_t i = 0;
@@ -594,6 +692,8 @@ void test_begin_end()
     }
 
     {
+		CONTAINER_T<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
         auto beg = vec.begin();
         auto end = vec.end();
 

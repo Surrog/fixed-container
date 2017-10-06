@@ -44,165 +44,293 @@ namespace _impl
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-        // Basic function
+        // destructor
         ~basic_vector() { clear(); }
-
-        basic_vector()
+        //! destructor
+        // default constructor
+        basic_vector() noexcept(
+            std::is_nothrow_constructible<allocator_type_impl>::value)
             : _size(0)
             , _data_container()
         {
         }
 
-        template <typename Alloc_source = empty_source,
+        template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
         explicit basic_vector(Alloc_source& alloc)
             : _size(0)
             , _data_container(alloc)
         {
         }
-
+        //! default constructor
+        // constructor with count copies
         basic_vector(size_type count, const T& value)
             : basic_vector()
         {
-            uninitialized_assign(count, value);
+            FIXED_CHECK_FULL(count <= max_size());
+            for(size_type i = 0; i < count; i++)
+            {
+                push_back(value);
+            }
         }
 
-        template <typename Alloc_source = empty_source,
+        template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_vector(size_type count, const T& value, Alloc_source& alloc)
-            : basic_vector(alloc)
+        basic_vector(size_type count, const T& value, Alloc_source& source)
+            : basic_vector(source)
         {
-            uninitialized_assign(count, value);
+            FIXED_CHECK_FULL(count <= max_size());
+            for(size_type i = 0; i < count; i++)
+            {
+                push_back(value);
+            }
         }
 
-        explicit basic_vector(size_type count)
-            : basic_vector()
+        basic_vector(size_type count)
+            : basic_vector(count, T())
         {
-            uninitialized_assign(count);
         }
 
-        template <typename Alloc_source = empty_source,
+        template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        explicit basic_vector(size_type count, Alloc_source& alloc)
-            : basic_vector(alloc)
+        basic_vector(size_type count, Alloc_source& alloc)
+            : basic_vector(count, T(), alloc)
         {
-            uninitialized_assign(count);
         }
-
-        template <class InputIt,
+        //! constructor with count copies
+        // constructor with iterators
+        template <typename InputIt,
             std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
         basic_vector(InputIt first, InputIt last)
             : basic_vector()
         {
-            uninitialized_assign(first, last);
+            FIXED_CHECK_BADRANGE(std::distance(first, last) >= 0);
+            FIXED_CHECK_FULL(
+                size_type(std::distance(first, last)) <= max_size());
+
+            while(first != last)
+            {
+                push_back(*first);
+                ++first;
+            }
         }
 
-        template <class InputIt, typename Alloc_source = empty_source,
+        template <typename InputIt, typename Alloc_source,
             std::enable_if_t<is_iterator<InputIt>::value, int> = 0,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_vector(InputIt first, InputIt last, Alloc_source& alloc)
-            : basic_vector(alloc)
+        basic_vector(InputIt first, InputIt last, Alloc_source& source)
+            : basic_vector(source)
         {
-            uninitialized_assign(first, last);
+            FIXED_CHECK_BADRANGE(std::distance(first, last) >= 0);
+            FIXED_CHECK_FULL(
+                size_type(std::distance(first, last)) <= max_size());
+
+            while(first != last)
+            {
+                push_back(*first);
+                ++first;
+            }
         }
-
-        basic_vector(const basic_vector& orig)
-        {
-            uninitialized_assign(orig.begin(), orig.end());
-        }
-
-        basic_vector(basic_vector&& orig) { operator=(std::move(orig)); }
-
-        template <size_type RSIZE,
-            template <typename, size_type> typename RAllocator>
-        basic_vector(const basic_vector<T, RSIZE, RAllocator>& orig)
+        //! constructor with iterators
+        // copy constructors
+        basic_vector(const basic_vector& other) noexcept(
+            std::is_nothrow_constructible<allocator_type_impl>::value&&
+                std::is_nothrow_constructible<T>::value)
             : basic_vector()
         {
-            uninitialized_assign(orig.begin(), orig.end());
-        }
-
-        template <size_type RSIZE,
-            template <typename, size_type> typename RAllocator,
-            class Alloc_source = empty_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_vector(
-            const basic_vector<T, RSIZE, RAllocator>& orig, Alloc_source& alloc)
-            : basic_vector(alloc)
-        {
-            uninitialized_assign(orig.begin(), orig.end());
-        }
-
-        template <size_type RSIZE>
-        basic_vector(basic_vector<T, RSIZE, Alloc_pattern>&& other)
-            : _size(0)
-            , _data_container()
-        {
-            FIXED_CHECK_FULL(other.size() <= max_size());
-
-            // constexpr if (Alloc_pattern::allocation_movable()){
-            // _data_container = std::move(other._data_container);
-            // _size = other.size();
-            //} else {
-            for(auto& elem : other)
+            for(const auto& val : other)
             {
-                push_back(std::move_if_noexcept(elem));
+                push_back(val);
             }
-            other.clear();
-            //}
         }
 
-        template <size_type RSIZE, typename Alloc_source,
+        template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_vector(
-            basic_vector<T, RSIZE, Alloc_pattern>&& other, Alloc_source& alloc)
-            : _size(0)
-            , _data_container(alloc)
+        basic_vector(const basic_vector& other, Alloc_source& source)
+            : basic_vector(source)
         {
-            FIXED_CHECK_FULL(other.size() <= max_size());
-
-            // constexpr if (Alloc_pattern::allocation_movable()){
-            // _data_container = std::move(other._data_container);
-            // _size = other.size();
-            //} else {
-            for(auto& elem : other)
+            for(const auto& val : other)
             {
-                push_back(std::move_if_noexcept(elem));
+                push_back(val);
             }
-            other.clear();
-            //}
         }
 
-        basic_vector(std::initializer_list<T> list)
+        template <container_size_type RSIZE,
+            template <typename, container_size_type> typename RAlloc_pattern>
+        basic_vector(
+            const basic_vector<T, RSIZE, RAlloc_pattern>& other) noexcept(SIZE
+                >= RSIZE
+            && std::is_nothrow_constructible<allocator_type_impl>::value
+            && std::is_nothrow_copy_constructible<T>::value)
             : basic_vector()
         {
-			FIXED_CHECK_FULL(list.size() <= max_size());
-            uninitialized_assign(list.begin(), list.end());
+			constexpr_if<(SIZE < RSIZE)>(
+				[rs = other.size(), mxs = max_size()]() {
+				FIXED_CHECK_FULL(rs <= mxs);
+			});
+			for(const auto& val : other)
+            {
+                push_back(val);
+            }
         }
 
-        template <typename Alloc_source = empty_source,
+        template <container_size_type RSIZE,
+            template <typename, container_size_type> typename RAlloc_pattern,
+            typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        basic_vector(
-            std::initializer_list<T> list, Alloc_source& alloc = empty_source())
-            : basic_vector(alloc)
+        basic_vector(const basic_vector<T, RSIZE, RAlloc_pattern>& other,
+            Alloc_source& source)
+            : basic_vector(source)
         {
-			FIXED_CHECK_FULL(list.size() <= max_size());
-            uninitialized_assign(list.begin(), list.end());
+			constexpr_if<(SIZE < RSIZE)>(
+				[rs = other.size(), mxs = max_size()]() {
+				FIXED_CHECK_FULL(rs <= mxs);
+			});
+			for(const auto& val : other)
+            {
+                push_back(val);
+            }
+        }
+        //! copy constructors
+
+        // move constructors
+        basic_vector(basic_vector&& other) noexcept(
+            std::is_nothrow_constructible<allocator_type_impl>::value
+            && (std::is_nothrow_move_constructible<T>::value
+                   || std::is_nothrow_copy_constructible<T>::value))
+            : basic_vector()
+        {
+            for(auto& val : other)
+            {
+                push_back(std::move_if_noexcept(val));
+            }
+            other.clear();
         }
 
-        basic_vector& operator=(const basic_vector& rval)
+        template <typename Alloc_source,
+            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+        basic_vector(basic_vector&& other, Alloc_source& source)
+            : basic_vector(source)
+        {
+            for(auto& val : other)
+            {
+                push_back(std::move_if_noexcept(val));
+            }
+            other.clear();
+        }
+
+        template <container_size_type RSIZE,
+            template <typename, container_size_type> typename RAlloc_pattern>
+        basic_vector(basic_vector<T, RSIZE, RAlloc_pattern>&& other) noexcept(
+            SIZE >= RSIZE
+            && std::is_nothrow_constructible<allocator_type_impl>::value
+            && (std::is_nothrow_move_constructible<T>::value
+                   || std::is_nothrow_copy_constructible<T>::value))
+            : basic_vector()
+        {
+			constexpr_if<(SIZE < RSIZE)>(
+				[rs = other.size(), mxs = max_size()]() {
+				FIXED_CHECK_FULL(rs <= mxs);
+			});
+			for(auto& val : other)
+            {
+                push_back(std::move_if_noexcept(val));
+            }
+            other.clear();
+        }
+
+        template <container_size_type RSIZE,
+            template <typename, container_size_type> typename RAlloc_pattern,
+            typename Alloc_source,
+            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+        basic_vector(basic_vector<T, RSIZE, RAlloc_pattern>&& other,
+            Alloc_source& source)
+            : basic_vector(source)
+        {
+			constexpr_if<(SIZE < RSIZE)>(
+				[rs = other.size(), mxs = max_size()]() {
+				FIXED_CHECK_FULL(rs <= mxs);
+			});
+			for(auto& val : other)
+            {
+                push_back(std::move_if_noexcept(val));
+            }
+            other.clear();
+        }
+        //! move contructors
+        // init_list constructors
+        basic_vector(std::initializer_list<T> init)
+            : basic_vector()
+        {
+            FIXED_CHECK_FULL(init.size() <= max_size());
+            for(const auto& val : init)
+            {
+                push_back(val);
+            }
+        }
+
+        template <typename Alloc_source,
+            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+        basic_vector(std::initializer_list<T> init, Alloc_source& source)
+            : basic_vector(source)
+        {
+            FIXED_CHECK_FULL(init.size() <= max_size());
+            for(const auto& val : init)
+            {
+                push_back(val);
+            }
+        }
+        //! init_list constructors
+
+        // copy operator assign
+        basic_vector& operator=(const basic_vector& rval) noexcept(
+            std::is_nothrow_copy_constructible<T>::value)
         {
             if(this != &rval)
             {
-                return operator=<SIZE, Alloc_pattern>(rval);
+                size_type i = 0;
+                for(auto& val : rval)
+                {
+                    set_at(i, val);
+                    ++i;
+                }
+                resize(rval.size());
             }
             return *this;
         }
 
-        basic_vector& operator=(basic_vector&& rval) noexcept
+        template <container_size_type RSIZE,
+            template <typename, container_size_type> typename RAlloc_pattern>
+        basic_vector&
+        operator=(const basic_vector<T, RSIZE, RAlloc_pattern>& rval) noexcept(
+            SIZE >= RSIZE && std::is_nothrow_copy_constructible<T>::value)
+        {
+            size_type i = 0;
+            for(auto& val : rval)
+            {
+                set_at(i, val);
+                ++i;
+            }
+            resize(rval.size());
+            return *this;
+        }
+        //! copy operator assign
+        // move operator assign
+        basic_vector& operator=(basic_vector&& rval) noexcept(
+            std::is_nothrow_copy_constructible<T>::value
+            || std::is_nothrow_move_constructible<T>::value)
         {
             if(this != &rval)
             {
-                return operator=<SIZE, Alloc_pattern>(std::move(rval));
+                size_type i = 0;
+                for(auto& val : rval)
+                {
+                    set_at(i, std::move(val));
+                    ++i;
+                }
+                while(size() > rval.size())
+                    pop_back();
+                rval.clear();
             }
             return *this;
         }
@@ -210,68 +338,26 @@ namespace _impl
         template <size_type RSIZE,
             template <typename, size_type> typename RAllocator>
         basic_vector& operator=(
-            basic_vector<T, RSIZE, RAllocator>&& rval)
+            basic_vector<T, RSIZE, RAllocator>&& rval) noexcept(SIZE >= RSIZE
+            && (std::is_nothrow_copy_constructible<T>::value
+                   || std::is_nothrow_move_constructible<T>::value))
         {
-			FIXED_CHECK_FULL(rval.size() <= max_size());
-			auto rbeg = rval.begin();
-            auto rend = rval.end();
-            auto lbeg = begin();
-            auto lend = end();
-
-            while(rbeg != rend && lbeg != lend)
+            constexpr_if<(SIZE < RSIZE)>(
+                [ rs = rval.size(), mxs = max_size() ]() {
+                    FIXED_CHECK_FULL(rs <= mxs);
+                });
+            size_type i = 0;
+            for(auto& val : rval)
             {
-                *lbeg = std::move(*rbeg);
-                ++lbeg;
-                ++rbeg;
+                set_at(i, std::move(val));
+                ++i;
             }
-
-            while(rbeg != rend)
-            {
-                push_back(std::move(*rbeg));
-                ++rbeg;
-            }
-
-            while(lbeg != lend)
-            {
-                (*lbeg).~T();
-                ++lbeg;
-                --_size;
-            }
-
+            while(size() > rval.size())
+                pop_back();
             rval.clear();
             return *this;
         }
-
-        template <size_type RSIZE,
-            template <typename, size_type> typename RAllocator>
-        basic_vector& operator=(const basic_vector<T, RSIZE, RAllocator>& rval)
-        {
-            auto rbeg = rval.begin();
-            auto rend = rval.end();
-            auto lbeg = begin();
-            auto lend = end();
-
-            while(rbeg != rend && lbeg != lend)
-            {
-                *lbeg = *rbeg;
-                ++lbeg;
-                ++rbeg;
-            }
-
-            while(rbeg != rend)
-            {
-                push_back(*rbeg);
-                ++rbeg;
-            }
-
-            while(lbeg != lend)
-            {
-                (*lbeg).~T();
-                ++lbeg;
-                --_size;
-            }
-            return *this;
-        }
+        //! move operator assign
 
         // element access
         T& at(size_type n)
@@ -596,18 +682,17 @@ namespace _impl
             }
         }
 
-		void set_at(size_type index, T&& value)
-		{
-			if (index < _size)
-			{
-				at(index) = std::move(value);
-			}
-			else
-			{
-				push_back(std::move(value));
-			}
-		}
-
+        void set_at(size_type index, T&& value)
+        {
+            if(index < _size)
+            {
+                at(index) = std::move(value);
+            }
+            else
+            {
+                push_back(std::move(value));
+            }
+        }
 
         void uninitialized_assign(size_type count, const T& value)
         {
