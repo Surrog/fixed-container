@@ -2,7 +2,7 @@
 #define FIXED_BASIC_LIST_HPP
 
 #include "basic_listed_vector_iterator.hpp"
-#include "fixed/impl/basic_allocation_pattern.hpp"
+#include "fixed/impl/aligned_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
 #include <algorithm>
 #include <array>
@@ -147,7 +147,7 @@ namespace _impl
         }
 
         template <class InputIt,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         basic_listed_vector(InputIt first, InputIt last)
             : basic_listed_vector()
         {
@@ -159,7 +159,7 @@ namespace _impl
         }
 
         template <class InputIt, class Alloc_source = empty_source,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0,
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
         basic_listed_vector(InputIt first, InputIt last, Alloc_source& alloc)
             : basic_listed_vector(alloc)
@@ -358,7 +358,7 @@ namespace _impl
         }
 
         template <class InputIt,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         void assign(InputIt first, InputIt last)
         {
             size_type i = 0;
@@ -499,7 +499,7 @@ namespace _impl
         }
 
         template <class InputIt,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         iterator insert(const_iterator pos, InputIt first, InputIt last)
         {
             container_size_type index = std::distance(cbegin(), pos);

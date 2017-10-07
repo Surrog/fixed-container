@@ -5,7 +5,7 @@
 #include <iterator>
 #include <vector>
 
-#include "fixed/impl/basic_allocation_pattern.hpp"
+#include "fixed/impl/aligned_allocation_pattern.hpp"
 #include "fixed/impl/basic_pointer_iterator.hpp"
 
 namespace fixed
@@ -100,7 +100,7 @@ namespace _impl
         //! constructor with count copies
         // constructor with iterators
         template <typename InputIt,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         basic_vector(InputIt first, InputIt last)
             : basic_vector()
         {
@@ -116,7 +116,7 @@ namespace _impl
         }
 
         template <typename InputIt, typename Alloc_source,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0,
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
         basic_vector(InputIt first, InputIt last, Alloc_source& source)
             : basic_vector(source)
@@ -164,7 +164,7 @@ namespace _impl
             && std::is_nothrow_copy_constructible<T>::value)
             : basic_vector()
         {
-			constexpr_if<(SIZE < RSIZE)>(
+			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
 				[rs = other.size(), mxs = max_size()]() {
 				FIXED_CHECK_FULL(rs <= mxs);
 			});
@@ -182,7 +182,7 @@ namespace _impl
             Alloc_source& source)
             : basic_vector(source)
         {
-			constexpr_if<(SIZE < RSIZE)>(
+			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
 				[rs = other.size(), mxs = max_size()]() {
 				FIXED_CHECK_FULL(rs <= mxs);
 			});
@@ -228,7 +228,7 @@ namespace _impl
                    || std::is_nothrow_copy_constructible<T>::value))
             : basic_vector()
         {
-			constexpr_if<(SIZE < RSIZE)>(
+			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
 				[rs = other.size(), mxs = max_size()]() {
 				FIXED_CHECK_FULL(rs <= mxs);
 			});
@@ -247,7 +247,7 @@ namespace _impl
             Alloc_source& source)
             : basic_vector(source)
         {
-			constexpr_if<(SIZE < RSIZE)>(
+			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
 				[rs = other.size(), mxs = max_size()]() {
 				FIXED_CHECK_FULL(rs <= mxs);
 			});
@@ -342,7 +342,7 @@ namespace _impl
             && (std::is_nothrow_copy_constructible<T>::value
                    || std::is_nothrow_move_constructible<T>::value))
         {
-            constexpr_if<(SIZE < RSIZE)>(
+			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
                 [ rs = rval.size(), mxs = max_size() ]() {
                     FIXED_CHECK_FULL(rs <= mxs);
                 });
@@ -452,7 +452,7 @@ namespace _impl
         }
 
         template <class InputIt,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         void assign(InputIt first, InputIt last)
         {
             container_size_type size = std::distance(first, last);
@@ -535,7 +535,7 @@ namespace _impl
         }
 
         template <class InputIt,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         iterator insert(const_iterator pos, InputIt first, InputIt last)
         {
             auto pivot_index = _size;
@@ -659,7 +659,7 @@ namespace _impl
     private:
         // managing uninitialized memory
         template <class InputIt,
-            std::enable_if_t<is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         void uninitialized_assign(InputIt begin, InputIt end)
         {
             FIXED_CHECK_FULL(std::distance(end, begin) <= int(max_size()));

@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include "test_functions_iterators.hpp"
 #include "fixed/impl/basic_listed_vector_iterator.hpp"
-#include "fixed/impl/basic_allocation_pattern.hpp"
+#include "fixed/impl/aligned_allocation_pattern.hpp"
 
 template <template <typename, typename> typename ITERATOR_TYPE>
 void test_basic_list_iterator()

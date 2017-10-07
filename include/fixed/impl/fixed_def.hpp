@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <exception>
 
+#include "fixed/impl/fixed_type_traits.hpp"
+
 namespace fixed
 {
 namespace _impl
@@ -31,27 +33,46 @@ namespace _impl
 #define FIXED_CHECK(ex) ((void)0)
 #endif // defined(NDEBUG) && !defined(FIXED_CONTAINER_CHECK_BOUND)
 
-    template <bool val> struct constexpr_if
-    {
-        template <typename CLOSURE_T> constexpr constexpr_if(const CLOSURE_T&)
-        {
-        }
+	struct allocation_pattern_tag
+	{
+	};
 
-        template <typename CLOSURE_T> constexpr void _else(const CLOSURE_T& f)
-        {
-            f();
-        }
-    };
+	template <typename T, class = void>
+	struct is_allocation_pattern : public std::false_type
+	{
+	};
 
-    template <> struct constexpr_if<true>
-    {
-        template <typename CLOSURE_T> constexpr constexpr_if(const CLOSURE_T& f)
-        {
-            f();
-        }
+	template <typename T>
+	struct is_allocation_pattern<T,
+		fixed::astd::void_t<typename T::allocation_pattern>>
+		: public std::true_type
+	{
+	};
 
-        template <typename CLOSURE_T> constexpr void _else(const CLOSURE_T&) {}
-    };
+	template <typename T, class = void>
+	struct is_allocation_movable : public std::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_allocation_movable<T,
+		fixed::astd::void_t<typename T::allocation_movable>>
+		: public T::allocation_movable
+	{
+	};
+
+	template <typename T, class = void>
+	struct is_allocation_contiguous : public std::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_allocation_contiguous<T,
+		fixed::astd::void_t<typename T::allocation_linear>>
+		: public T::allocation_contiguous
+	{
+	};
+
 }
 }
 

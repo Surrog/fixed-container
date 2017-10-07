@@ -1,13 +1,11 @@
-#ifndef FIXED_BASIC_ALLOCATION_PATTERN_HPP
-#define FIXED_BASIC_ALLOCATION_PATTERN_HPP
+#ifndef FIXED_ALIGNED_ALLOCATION_PATTERN_HPP
+#define FIXED_ALIGNED_ALLOCATION_PATTERN_HPP
 
-#include "basic_allocation_sources.hpp"
-#include "basic_pointer_iterator.hpp"
-#include "fixed_def.hpp"
-#include "fixed_type_traits.hpp"
-#include <cassert>
 #include <memory>
-#include <type_traits>
+
+#include "fixed/impl/fixed_def.hpp"
+#include "fixed/impl/basic_allocation_sources.hpp"
+#include "fixed/impl/basic_pointer_iterator.hpp"
 
 namespace fixed
 {
@@ -15,19 +13,20 @@ namespace _impl
 {
     // Allocate your container on the stack
     template <typename T, container_size_type SIZE>
-    struct basic_stack_allocator
+    struct aligned_stack_allocator
     {
     public:
         static_assert(SIZE > 0, "zero sized container not allowed !");
 
-        basic_stack_allocator() = default;
-        basic_stack_allocator(const empty_source&)
+        aligned_stack_allocator() = default;
+        aligned_stack_allocator(const empty_source&)
             : aligned_stack_allocator()
         {
         }
 
         typedef T value_type;
-        typedef T aligned_type;
+        typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
+            aligned_type;
         typedef allocation_pattern_tag allocation_pattern;
         typedef std::false_type allocation_movable;
         typedef std::true_type allocation_contiguous;
@@ -79,17 +78,17 @@ namespace _impl
 
     // When your size is too big to being correctly stored on the stack
     template <typename T, container_size_type SIZE>
-    struct basic_heap_allocator
+    struct aligned_heap_allocator
     {
     public:
         static_assert(SIZE > 0, "zero sized container not allowed !");
 
-		basic_heap_allocator() noexcept = default;
-		basic_heap_allocator(basic_heap_allocator&&) noexcept = default;
-		basic_heap_allocator& operator=(basic_heap_allocator&&) noexcept
+        aligned_heap_allocator() noexcept = default;
+        aligned_heap_allocator(aligned_heap_allocator&&) noexcept = default;
+        aligned_heap_allocator& operator=(aligned_heap_allocator&&) noexcept
             = default;
 
-		basic_heap_allocator(const empty_source&) noexcept
+        aligned_heap_allocator(const empty_source&) noexcept
             : aligned_heap_allocator()
         {
         }
@@ -99,7 +98,8 @@ namespace _impl
         typedef std::true_type allocation_contiguous;
 
         typedef T value_type;
-        typedef T aligned_type;
+        typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
+            aligned_type;
         typedef pointer_iterator<T> iterator;
         typedef const_pointer_iterator<T> const_iterator;
 
@@ -142,10 +142,10 @@ namespace _impl
 
         T& operator[](container_size_type i)
         {
-			FIXED_CHECK_INBOUND(i < SIZE);
-			if (!_data)
-				_data = std::make_unique<aligned_type[]>(SIZE);
-			return reinterpret_cast<T&>(data()[i]);
+            FIXED_CHECK_INBOUND(i < SIZE);
+            if(!_data)
+                _data = std::make_unique<aligned_type[]>(SIZE);
+            return reinterpret_cast<T&>(data()[i]);
         }
         const T& operator[](container_size_type i) const
         {
@@ -166,4 +166,4 @@ namespace _impl
 }
 }
 
-#endif //! FIXED_BASIC_ALLOCATION_PATTERN_HPP
+#endif //! FIXED_ALIGNED_ALLOCATION_PATTERN_HPP

@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "fixed/impl/basic_allocation_pattern.hpp"
+#include "fixed/impl/aligned_allocation_pattern.hpp"
 #include "fixed/impl/basic_pointer_iterator.hpp"
 #include "test_functions_iterators.hpp"
 #include <type_traits>
