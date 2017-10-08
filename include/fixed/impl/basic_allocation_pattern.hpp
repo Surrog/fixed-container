@@ -29,8 +29,7 @@ namespace _impl
         typedef T value_type;
         typedef T aligned_type;
         typedef allocation_pattern_tag allocation_pattern;
-        typedef std::false_type allocation_movable;
-        typedef std::true_type allocation_contiguous;
+		typedef std::true_type noexcept_iterators;
         typedef pointer_iterator<T> iterator;
         typedef const_pointer_iterator<T> const_iterator;
 
@@ -95,8 +94,7 @@ namespace _impl
         }
 
         typedef allocation_pattern_tag allocation_pattern;
-        typedef std::true_type allocation_movable;
-        typedef std::true_type allocation_contiguous;
+		typedef std::false_type noexcept_iterators;
 
         typedef T value_type;
         typedef T aligned_type;

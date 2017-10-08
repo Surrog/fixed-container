@@ -82,6 +82,7 @@ template <template <typename, fixed::_impl::container_size_type,
     typename Alloc_pattern>
 void test_vector()
 {
+	test_noexcept_constructor<VECTOR_T, Alloc_pattern>();
     test_vector_constructor<VECTOR_T, Alloc_pattern>();
     test_vector_element_access<VECTOR_T, Alloc_pattern>();
     test_vector_iterator<VECTOR_T, Alloc_pattern>();

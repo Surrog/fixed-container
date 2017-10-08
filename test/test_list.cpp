@@ -458,6 +458,7 @@ template <template <typename, fixed::_impl::container_size_type,
     typename Alloc_pattern>
 void test_list()
 {
+	test_noexcept_constructor<LIST_T, Alloc_pattern>();
     test_list_contructors<LIST_T, Alloc_pattern>();
     test_list_element_access<LIST_T, Alloc_pattern>();
     test_list_iterator<LIST_T, Alloc_pattern>();

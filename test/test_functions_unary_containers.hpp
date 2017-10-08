@@ -4,6 +4,22 @@
 #include "test_struct.hpp"
 
 template <template <typename, fixed::_impl::container_size_type,
+	template <typename, fixed::_impl::container_size_type> typename>
+typename CONTAINER_T,
+template <typename, fixed::_impl::container_size_type>
+typename Alloc_pattern>
+void test_noexcept_constructor()
+{
+	static_assert(std::is_nothrow_default_constructible<CONTAINER_T<int, 10, Alloc_pattern>>::value, "Not noexcept default constructible");
+	static_assert(std::is_nothrow_move_constructible<CONTAINER_T<int, 10, Alloc_pattern>>::value, "Not noexcept move constructible");
+	static_assert(std::is_nothrow_move_assignable<CONTAINER_T<int, 10, Alloc_pattern>>::value, "Not noexcept move assignable");
+
+	static_assert(std::is_nothrow_default_constructible<CONTAINER_T<test_move, 10, Alloc_pattern>>::value, "Not noexcept default constructible");
+	static_assert(std::is_nothrow_move_constructible<CONTAINER_T<test_move, 10, Alloc_pattern>>::value, "Not noexcept move constructible");
+	static_assert(std::is_nothrow_move_assignable<CONTAINER_T<test_move, 10, Alloc_pattern>>::value, "Not noexcept move assignable");
+}
+
+template <template <typename, fixed::_impl::container_size_type,
               template <typename, fixed::_impl::container_size_type> typename>
           typename CONTAINER_T,
     template <typename, fixed::_impl::container_size_type>

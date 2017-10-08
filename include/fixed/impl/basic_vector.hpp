@@ -48,8 +48,8 @@ namespace _impl
         ~basic_vector() { clear(); }
         //! destructor
         // default constructor
-        basic_vector() noexcept(
-            std::is_nothrow_constructible<allocator_type_impl>::value)
+        basic_vector() 
+			noexcept(is_nothrow_default_constructible_v<allocator_type_impl>)
             : _size(0)
             , _data_container()
         {
@@ -57,7 +57,8 @@ namespace _impl
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
-        explicit basic_vector(Alloc_source& alloc)
+        basic_vector(Alloc_source& alloc)
+			noexcept(std::is_nothrow_constructible<allocator_type_impl, Alloc_source&>::value)
             : _size(0)
             , _data_container(alloc)
         {
@@ -133,9 +134,10 @@ namespace _impl
         }
         //! constructor with iterators
         // copy constructors
-        basic_vector(const basic_vector& other) noexcept(
-            std::is_nothrow_constructible<allocator_type_impl>::value&&
-                std::is_nothrow_constructible<T>::value)
+        basic_vector(const basic_vector& other) 
+			noexcept(is_nothrow_default_constructible_v<allocator_type_impl>
+				&& is_nothrow_copy_constructible_v<T>
+				&& is_nothrow_iterator_v<allocator_type_impl>)
             : basic_vector()
         {
             for(const auto& val : other)
@@ -158,17 +160,19 @@ namespace _impl
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RAlloc_pattern>
         basic_vector(
-            const basic_vector<T, RSIZE, RAlloc_pattern>& other) noexcept(SIZE
-                >= RSIZE
-            && std::is_nothrow_constructible<allocator_type_impl>::value
-            && std::is_nothrow_copy_constructible<T>::value)
+            const basic_vector<T, RSIZE, RAlloc_pattern>& other) 
+			noexcept(SIZE >= RSIZE
+            && is_nothrow_default_constructible_v<allocator_type_impl>
+            && is_nothrow_iterator_v<allocator_type_impl>
+            && is_nothrow_copy_constructible_v<T>)
             : basic_vector()
         {
-			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-				[rs = other.size(), mxs = max_size()]() {
-				FIXED_CHECK_FULL(rs <= mxs);
-			});
-			for(const auto& val : other)
+            fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+                [ rs = other.size(), mxs = max_size() ]() {
+                    FIXED_CHECK_FULL(rs <= mxs);
+                });
+
+            for(const auto& val : other)
             {
                 push_back(val);
             }
@@ -182,11 +186,11 @@ namespace _impl
             Alloc_source& source)
             : basic_vector(source)
         {
-			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-				[rs = other.size(), mxs = max_size()]() {
-				FIXED_CHECK_FULL(rs <= mxs);
-			});
-			for(const auto& val : other)
+            fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+                [ rs = other.size(), mxs = max_size() ]() {
+                    FIXED_CHECK_FULL(rs <= mxs);
+                });
+            for(const auto& val : other)
             {
                 push_back(val);
             }
@@ -195,16 +199,28 @@ namespace _impl
 
         // move constructors
         basic_vector(basic_vector&& other) noexcept(
-            std::is_nothrow_constructible<allocator_type_impl>::value
-            && (std::is_nothrow_move_constructible<T>::value
-                   || std::is_nothrow_copy_constructible<T>::value))
+            is_nothrow_default_constructible_v<allocator_type_impl>
+            && (is_nothrow_move_constructible_v<allocator_type_impl>
+                   || (is_nothrow_iterator_v<allocator_type_impl>
+                          && (is_nothrow_move_constructible_v<T>
+                                 || is_nothrow_copy_constructible_v<T>))))
             : basic_vector()
         {
-            for(auto& val : other)
-            {
-                push_back(std::move_if_noexcept(val));
-            }
-            other.clear();
+			if (this != &other)
+			{
+				fixed::astd::constexpr_if<std::is_nothrow_move_constructible<allocator_type_impl>::value>(
+					[this, &other]() {
+					std::swap(_data_container, other._data_container);
+					std::swap(_size, other._size);
+				}
+					)._else([this, &other]() {
+					for (auto& val : other)
+					{
+						push_back(std::move_if_noexcept(val));
+					}
+					other.clear();
+				});
+			}
         }
 
         template <typename Alloc_source,
@@ -228,11 +244,11 @@ namespace _impl
                    || std::is_nothrow_copy_constructible<T>::value))
             : basic_vector()
         {
-			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-				[rs = other.size(), mxs = max_size()]() {
-				FIXED_CHECK_FULL(rs <= mxs);
-			});
-			for(auto& val : other)
+            fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+                [ rs = other.size(), mxs = max_size() ]() {
+                    FIXED_CHECK_FULL(rs <= mxs);
+                });
+            for(auto& val : other)
             {
                 push_back(std::move_if_noexcept(val));
             }
@@ -247,11 +263,11 @@ namespace _impl
             Alloc_source& source)
             : basic_vector(source)
         {
-			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-				[rs = other.size(), mxs = max_size()]() {
-				FIXED_CHECK_FULL(rs <= mxs);
-			});
-			for(auto& val : other)
+            fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+                [ rs = other.size(), mxs = max_size() ]() {
+                    FIXED_CHECK_FULL(rs <= mxs);
+                });
+            for(auto& val : other)
             {
                 push_back(std::move_if_noexcept(val));
             }
@@ -342,7 +358,7 @@ namespace _impl
             && (std::is_nothrow_copy_constructible<T>::value
                    || std::is_nothrow_move_constructible<T>::value))
         {
-			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+            fixed::astd::constexpr_if<(SIZE < RSIZE)>(
                 [ rs = rval.size(), mxs = max_size() ]() {
                     FIXED_CHECK_FULL(rs <= mxs);
                 });
@@ -390,11 +406,11 @@ namespace _impl
 
         // iterators
         iterator begin() { return _data_container.begin(); }
-        const_iterator begin() const { return _data_container.begin(); }
+		const_iterator begin() const { return cbegin(); }
         const_iterator cbegin() const { return _data_container.cbegin(); }
-        iterator end() { return begin() + _size; }
-        const_iterator end() const { return begin() + _size; }
-        const_iterator cend() const { return cbegin() + _size; }
+        iterator end() { return iterator(_data_container.data() + _size); }
+		const_iterator end() const { return cend(); }
+        const_iterator cend() const { return const_iterator(_data_container.data() + _size); }
 
         reverse_iterator rbegin() { return reverse_iterator(end()); }
         const_reverse_iterator rbegin() const

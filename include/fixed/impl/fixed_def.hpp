@@ -49,30 +49,28 @@ namespace _impl
 	{
 	};
 
-	template <typename T, class = void>
-	struct is_allocation_movable : public std::false_type
-	{
-	};
+	template <typename T>
+	constexpr bool is_nothrow_default_constructible_v = std::is_nothrow_default_constructible<T>::value;
 
 	template <typename T>
-	struct is_allocation_movable<T,
-		fixed::astd::void_t<typename T::allocation_movable>>
-		: public T::allocation_movable
-	{
-	};
-
-	template <typename T, class = void>
-	struct is_allocation_contiguous : public std::false_type
-	{
-	};
+	constexpr bool is_nothrow_copy_constructible_v = std::is_nothrow_copy_constructible<T>::value;
 
 	template <typename T>
-	struct is_allocation_contiguous<T,
-		fixed::astd::void_t<typename T::allocation_linear>>
-		: public T::allocation_contiguous
-	{
-	};
+	constexpr bool is_nothrow_move_constructible_v = std::is_nothrow_move_constructible<T>::value;
 
+#if __cplusplus > 201402L
+	template <typename T>
+	constexpr bool is_nothrow_iterator_v = std::is_nothrow_invocable_r<T, decltype(&T::begin)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(&T::end)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(&T::cbegin())>::value
+		&& std::is_nothrow_invocable_r<T, decltype(&T::cend())>::value;
+#else
+	template <typename T>
+	constexpr bool is_nothrow_iterator_v = T::noexcept_iterators::value;
+#endif
+
+	template <typename T>
+	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(&A::data)>::value;
 }
 }
 

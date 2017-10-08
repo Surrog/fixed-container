@@ -28,8 +28,7 @@ namespace _impl
         typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
             aligned_type;
         typedef allocation_pattern_tag allocation_pattern;
-        typedef std::false_type allocation_movable;
-        typedef std::true_type allocation_contiguous;
+		typedef std::true_type noexcept_iterators;
         typedef pointer_iterator<T> iterator;
         typedef const_pointer_iterator<T> const_iterator;
 
@@ -93,9 +92,8 @@ namespace _impl
         {
         }
 
-        typedef allocation_pattern_tag allocation_pattern;
-        typedef std::true_type allocation_movable;
-        typedef std::true_type allocation_contiguous;
+        typedef allocation_pattern_tag allocation_pattern;;
+		typedef std::false_type noexcept_iterators;
 
         typedef T value_type;
         typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
@@ -105,7 +103,7 @@ namespace _impl
 
         aligned_type* data()
         {
-            if(!_data)
+			if (!_data)
                 _data = std::make_unique<aligned_type[]>(SIZE);
             return _data.get();
         }
@@ -132,7 +130,6 @@ namespace _impl
         {
             return const_iterator(_data.get() + SIZE);
         }
-
         const_iterator cbegin() const { return const_iterator(_data.get()); }
 
         const_iterator cend() const
@@ -143,8 +140,6 @@ namespace _impl
         T& operator[](container_size_type i)
         {
             FIXED_CHECK_INBOUND(i < SIZE);
-            if(!_data)
-                _data = std::make_unique<aligned_type[]>(SIZE);
             return reinterpret_cast<T&>(data()[i]);
         }
         const T& operator[](container_size_type i) const

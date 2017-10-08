@@ -41,6 +41,7 @@ namespace _impl
         void push_back()
         {
             FIXED_CHECK_FULL(_size < max_size());
+			if (_size == 0) initialize_ptrs();
             new(_ptrs[_size].get()) T();
             ++_size;
         }
@@ -69,6 +70,15 @@ namespace _impl
             }
         }
 
+		void initialize_ptrs() 
+			noexcept(is_nothrow_iterator_v<allocator_type_data_impl>)
+		{
+			for (size_type i = 0; i < _data_holder.max_size(); i++)
+			{
+				_ptrs[i] = _data_holder.begin() + i;
+			}
+		}
+
     public:
         typedef basic_listed_vector_iterator<T,
             typename allocator_type_ptrs_impl::iterator>
@@ -79,32 +89,28 @@ namespace _impl
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+		// default constructor
         basic_listed_vector() noexcept(
-            std::is_nothrow_constructible<allocator_type_data_impl>::value &&
-                std::is_nothrow_constructible<allocator_type_ptrs_impl>::value)
+            std::is_nothrow_default_constructible<allocator_type_data_impl>::value &&
+                std::is_nothrow_default_constructible<allocator_type_ptrs_impl>::value)
             : _data_holder()
             , _ptrs()
             , _size(0)
         {
-            for(size_type i = 0; i < _data_holder.max_size(); i++)
-            {
-                _ptrs[i] = _data_holder.begin() + i;
-            }
         }
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
         explicit basic_listed_vector(Alloc_source& alloc)
+			noexcept(
+				std::is_nothrow_constructible<allocator_type_data_impl, Alloc_source&>::value &&
+				std::is_nothrow_constructible<allocator_type_ptrs_impl, Alloc_source&>::value)
             : _data_holder(alloc)
-            , _ptrs()
+            , _ptrs(alloc)
             , _size(0)
-        {
-            for(size_type i = 0; i < SIZE; i++)
-            {
-                _ptrs[i] = _data_holder.data() + i;
-            }
-        }
-
+        {}
+		//!default constructor
+		// constructor with count copies
         explicit basic_listed_vector(size_type count)
             : basic_listed_vector()
         {
@@ -145,7 +151,8 @@ namespace _impl
                 push_back(value);
             }
         }
-
+		//!constructor with count copies
+		// constructor with iterators
         template <class InputIt,
             std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
         basic_listed_vector(InputIt first, InputIt last)
@@ -170,35 +177,72 @@ namespace _impl
                 ++first;
             }
         }
-
+		//!constructor with iterators
+		// copy constructors
         basic_listed_vector(const basic_listed_vector& other)
-            : basic_listed_vector(other.begin(), other.end())
+			noexcept(is_nothrow_default_constructible_v<allocator_type_data_impl>
+				&& is_nothrow_default_constructible_v<allocator_type_ptrs_impl>
+				&& is_nothrow_copy_constructible_v<T>
+				&& is_nothrow_iterator_v<allocator_type_data_impl>
+				&& is_nothrow_iterator_v<allocator_type_ptrs_impl>)
+			: basic_listed_vector()
         {
+			for (const auto& val : other)
+			{
+				push_back(val);
+			}
         }
 
-        template <class Alloc_source = empty_source,
+        template <class Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
         basic_listed_vector(
             const basic_listed_vector& other, Alloc_source& alloc)
-            : basic_listed_vector(other.begin(), other.end(), alloc)
+            : basic_listed_vector(alloc)
         {
+			for (const auto& val : other)
+			{
+				push_back(val);
+			}
         }
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC>
         basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other)
-            : basic_listed_vector(other.begin(), other.end())
+			noexcept(SIZE >= RSIZE &&
+				is_nothrow_default_constructible_v<allocator_type_data_impl>
+				&& is_nothrow_default_constructible_v<allocator_type_ptrs_impl>
+				&& is_nothrow_copy_constructible_v<T>
+				&& is_nothrow_iterator_v<allocator_type_data_impl>
+				&& is_nothrow_iterator_v<allocator_type_ptrs_impl>)
+			: basic_listed_vector()
         {
+			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+				[rs = other.size(), mxs = max_size()]() {
+				FIXED_CHECK_FULL(rs <= mxs);
+			});
+
+			for (const auto& val : other)
+			{
+				push_back(val);
+			}
         }
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC,
-            class Alloc_source = empty_source,
+            class Alloc_source,
             std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
         basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other,
             Alloc_source& alloc)
-            : basic_listed_vector(other.begin(), other.end(), alloc)
+            : basic_listed_vector(alloc)
         {
+			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+				[rs = other.size(), mxs = max_size()]() {
+				FIXED_CHECK_FULL(rs <= mxs);
+			});
+			for (const auto& val : other)
+			{
+				push_back(val);
+			}
         }
 
         basic_listed_vector(basic_listed_vector&& other) noexcept
@@ -572,6 +616,7 @@ namespace _impl
 
         void push_back(const T& value)
         {
+			if (_size == 0) initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
             new(_ptrs[_size].get()) T(value);
             ++_size;
@@ -579,6 +624,7 @@ namespace _impl
 
         void push_back(T&& value)
         {
+			if (_size == 0) initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
             new(_ptrs[_size].get()) T(std::move(value));
             ++_size;
@@ -586,6 +632,7 @@ namespace _impl
 
         template <class... Args> reference emplace_back(Args&&... args)
         {
+			if (_size == 0) initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
             new(_ptrs[_size].get()) T(std::forward<Args>(args)...);
             ++_size;
