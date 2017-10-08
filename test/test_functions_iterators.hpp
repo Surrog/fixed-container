@@ -18,7 +18,7 @@ template <typename ITERATOR_TYPE> void test_not_const()
 
 template <typename ITERATOR_TYPE> void test_is_const()
 {
-    static_assert(fixed::is_iterator<ITERATOR_TYPE>::value,
+    static_assert(fixed::astd::is_iterator<ITERATOR_TYPE>::value,
         "supposed to be an iterator");
     static_assert(!std::is_const<typename ITERATOR_TYPE::value_type>::value,
         "supposed to be const");
