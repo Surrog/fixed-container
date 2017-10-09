@@ -58,7 +58,7 @@ namespace _impl
 	template <typename T>
 	constexpr bool is_nothrow_move_constructible_v = std::is_nothrow_move_constructible<T>::value;
 
-#if __cplusplus > 201402L
+#if __cplusplus > 201602L
 	template <typename T>
 	constexpr bool is_nothrow_iterator_v = std::is_nothrow_invocable_r<T, decltype(&T::begin)>::value
 		&& std::is_nothrow_invocable_r<T, decltype(&T::end)>::value
