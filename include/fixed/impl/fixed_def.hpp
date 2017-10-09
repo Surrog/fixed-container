@@ -50,6 +50,9 @@ namespace _impl
 	};
 
 	template <typename T>
+	constexpr bool is_allocation_pattern_v = is_allocation_pattern<T>::value;
+
+	template <typename T>
 	constexpr bool is_nothrow_default_constructible_v = std::is_nothrow_default_constructible<T>::value;
 
 	template <typename T>

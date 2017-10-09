@@ -92,7 +92,7 @@ namespace _impl
         {
         }
 
-        typedef allocation_pattern_tag allocation_pattern;;
+        typedef allocation_pattern_tag allocation_pattern;
 		typedef std::false_type noexcept_iterators;
 
         typedef T value_type;
