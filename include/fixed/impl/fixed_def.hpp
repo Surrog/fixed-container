@@ -70,7 +70,7 @@ namespace _impl
 #endif
 
 	template <typename T>
-	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(&A::data)>::value;
+	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(&T::data)>::value;
 }
 }
 
