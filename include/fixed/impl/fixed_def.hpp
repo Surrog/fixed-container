@@ -73,7 +73,7 @@ namespace _impl
 #endif
 
 	template <typename T>
-	struct continous_helper
+	struct alloc_pattern_contiguous_helper
 	{
 		typedef const typename T::aligned_type* (T::*const_function)() const ;
 		typedef typename T::aligned_type* (T::*function)() ;
@@ -81,10 +81,10 @@ namespace _impl
 
 	template <typename T>
 	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(
-		continous_helper<T>::function(&T::data)
+		alloc_pattern_contiguous_helper<T>::function(&T::data)
 		)>::value
 		&& std::is_member_function_pointer<decltype(
-			continous_helper<T>::const_function(&T::data)
+			alloc_pattern_contiguous_helper<T>::const_function(&T::data)
 			)>::value;
 }
 }
