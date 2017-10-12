@@ -31,7 +31,7 @@ namespace _impl
 
         typedef T value_type;
 		typedef typename std::conditional<
-			sizeof(std::aligned_storage<sizeof(T), alignof(T)>::type) == sizeof(T),
+			sizeof(typename std::aligned_storage<sizeof(T), alignof(T)>::type) == sizeof(T),
 			T,
 			typename std::aligned_storage<sizeof(T), alignof(T)>::type
 		>::type aligned_type;
@@ -95,7 +95,7 @@ namespace _impl
 
         typedef T value_type;
 		typedef typename std::conditional<
-			sizeof(std::aligned_storage<sizeof(T), alignof(T)>::type) == sizeof(T),
+			sizeof(typename std::aligned_storage<sizeof(T), alignof(T)>::type) == sizeof(T),
 			T, 
 			typename std::aligned_storage<sizeof(T), alignof(T)>::type
 		>::type aligned_type;
