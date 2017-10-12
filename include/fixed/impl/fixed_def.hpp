@@ -61,14 +61,14 @@ namespace _impl
 	template <typename T>
 	constexpr bool is_nothrow_move_constructible_v = std::is_nothrow_move_constructible<T>::value;
 
-#if __cplusplus > 201602L
+#if __cplusplus > 201602L || _HAS_CXX17 == 1
 
 	template <typename T>
 	struct _nothrow_allocator_iterator_helper
 	{
-		typedef const typename T::const_iterator* (T::*const_function)() const noexcept;
-		typedef typename T::iterator* (T::*function)() noexcept;
-	}
+		typedef const typename T::const_iterator (T::*const_function)() const;
+		typedef typename T::iterator (T::*function)();
+	};
 
 	template <typename T>
 	constexpr bool is_nothrow_allocator_iterator_v = 
