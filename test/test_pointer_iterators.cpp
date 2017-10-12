@@ -7,12 +7,12 @@
 template <typename T>
 using aligned_type = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
 
-template <template <typename> typename ITERATOR_TYPE>
+template <template <typename, typename> typename ITERATOR_TYPE>
 void test_pointer_iterator()
 {
     {
-        ITERATOR_TYPE<char> it;
-        ITERATOR_TYPE<char> it2;
+        ITERATOR_TYPE<char, char> it;
+        ITERATOR_TYPE<char, char> it2;
         CHECK(it == it2);
         CHECK(!(it != it2));
     }
@@ -24,13 +24,13 @@ void test_pointer_iterator()
         mem[2] = 's';
         mem[3] = 't';
 
-        ITERATOR_TYPE<char> it(mem.begin());
+        auto it = mem.begin();
         CHECK(*it == 't');
-        ITERATOR_TYPE<char> it1 = it;
+        auto it1 = it;
         CHECK(*it1 == 't');
-        ITERATOR_TYPE<char> it2(std::move(it));
+        typename fixed::_impl::aligned_stack_allocator<char, 256>::iterator it2(std::move(it));
         CHECK(*it2 == 't');
-        ITERATOR_TYPE<char> it3 = std::move(it1);
+		typename fixed::_impl::aligned_stack_allocator<char, 256>::iterator it3 = std::move(it1);
         CHECK(*it3 == 't');
     }
 
@@ -41,7 +41,7 @@ void test_pointer_iterator()
         mem[2] = '3';
         mem[3] = '4';
 
-        ITERATOR_TYPE<char> it(mem.begin());
+        auto it = mem.begin();
 
         CHECK(*it == '1');
         it++;
@@ -72,8 +72,8 @@ void test_pointer_iterator()
         mem[2] = '3';
         mem[3] = '4';
 
-        ITERATOR_TYPE<char> it(mem.begin());
-        ITERATOR_TYPE<char> it1(mem.begin() + 1);
+        auto it = mem.begin();
+        auto it1 = mem.begin() + 1;
         CHECK((it1 - it) == 1);
         CHECK((it - it1) == -1);
     }
@@ -85,7 +85,7 @@ void test_pointer_iterator()
         mem[2] = '3';
         mem[3] = '4';
 
-        ITERATOR_TYPE<char> it(mem.begin());
+        auto it = mem.begin();
         CHECK(it[0] == '1');
         CHECK(it[1] == '2');
         CHECK(it[2] == '3');
@@ -99,8 +99,8 @@ void test_pointer_iterator()
         mem[2] = '3';
         mem[3] = '4';
 
-        ITERATOR_TYPE<char> it(mem.begin());
-        ITERATOR_TYPE<char> it1(mem.begin() + 1);
+        auto it = mem.begin();
+        auto it1 = mem.begin() + 1;
 
         CHECK(it < it1);
         CHECK(it1 > it);
@@ -118,8 +118,8 @@ void test_pointer_iterator()
         mem[3] = '4';
         char test[5] = "1234";
 
-        ITERATOR_TYPE<char> beg(mem.begin());
-        ITERATOR_TYPE<char> end(mem.begin() + 4);
+        auto beg = mem.begin();
+        auto end = mem.begin() + 4;
 
         CHECK(std::equal(beg, end, test, test + 4));
     }

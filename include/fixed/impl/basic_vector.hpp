@@ -137,7 +137,7 @@ namespace _impl
         basic_vector(const basic_vector& other) 
 			noexcept(is_nothrow_default_constructible_v<allocator_type_impl>
 				&& is_nothrow_copy_constructible_v<T>
-				&& is_nothrow_iterator_v<allocator_type_impl>)
+				&& is_nothrow_allocator_iterator_v<allocator_type_impl>)
             : basic_vector()
         {
             for(const auto& val : other)
@@ -163,7 +163,7 @@ namespace _impl
             const basic_vector<T, RSIZE, RAlloc_pattern>& other) 
 			noexcept(SIZE >= RSIZE
             && is_nothrow_default_constructible_v<allocator_type_impl>
-            && is_nothrow_iterator_v<allocator_type_impl>
+            && is_nothrow_allocator_iterator_v<allocator_type_impl>
             && is_nothrow_copy_constructible_v<T>)
             : basic_vector()
         {
@@ -201,7 +201,7 @@ namespace _impl
         basic_vector(basic_vector&& other) noexcept(
             is_nothrow_default_constructible_v<allocator_type_impl>
             && (is_nothrow_move_constructible_v<allocator_type_impl>
-                   || (is_nothrow_iterator_v<allocator_type_impl>
+                   || (is_nothrow_allocator_iterator_v<allocator_type_impl>
                           && (is_nothrow_move_constructible_v<T>
                                  || is_nothrow_copy_constructible_v<T>))))
             : basic_vector()

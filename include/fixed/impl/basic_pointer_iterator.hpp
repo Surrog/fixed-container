@@ -7,12 +7,11 @@ namespace fixed
 {
 namespace _impl
 {
-    template <typename T> struct pointer_iterator
+    template <typename T, typename POINTER = T> struct pointer_iterator
     {
     public:
         typedef T value_type;
-        typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
-            aligned_type;
+        typedef POINTER inner_type;
         typedef value_type* pointer;
         typedef value_type& reference;
         typedef std::ptrdiff_t difference_type;
@@ -43,17 +42,16 @@ namespace _impl
 		value_type* operator->() { return get(); }
         const value_type* operator->() const { return get(); }
 
-        pointer_iterator() = default;
+        constexpr pointer_iterator() noexcept = default;
 
-        pointer_iterator(aligned_type* val)
+		constexpr pointer_iterator(inner_type* val) noexcept
             : _value(val)
-        {
-        }
+        {}
 
-        pointer_iterator(const pointer_iterator&) = default;
-        pointer_iterator(pointer_iterator&&) noexcept = default;
-        pointer_iterator& operator=(const pointer_iterator&) = default;
-        pointer_iterator& operator=(pointer_iterator&&) noexcept = default;
+		constexpr pointer_iterator(const pointer_iterator&) noexcept = default;
+		constexpr pointer_iterator(pointer_iterator&&) noexcept = default;
+		constexpr pointer_iterator& operator=(const pointer_iterator&) noexcept = default;
+		constexpr pointer_iterator& operator=(pointer_iterator&&) noexcept = default;
 
         pointer_iterator& operator++()
         {
@@ -95,7 +93,7 @@ namespace _impl
         pointer_iterator operator+(difference_type n) const
         {
             assert(_value != nullptr);
-            return {_value + n};
+            return pointer_iterator(_value + n);
         }
 
         pointer_iterator& operator-=(difference_type n)
@@ -108,7 +106,7 @@ namespace _impl
         pointer_iterator operator-(difference_type n) const
         {
             assert(_value != nullptr);
-            return {_value - n};
+			return pointer_iterator(_value - n);
         }
 
         difference_type operator-(const pointer_iterator& rval) const
@@ -143,15 +141,14 @@ namespace _impl
         }
 
     private:
-        aligned_type* _value = nullptr;
+        inner_type* _value = nullptr;
     };
 
-    template <typename T> struct const_pointer_iterator
+    template <typename T, typename POINTER = T> struct const_pointer_iterator
     {
     public:
         typedef T value_type;
-        typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
-            aligned_type;
+        typedef POINTER inner_type;
         typedef const T* pointer;
         typedef const T& reference;
         typedef std::ptrdiff_t difference_type;
@@ -179,8 +176,8 @@ namespace _impl
 
         const_pointer_iterator() = default;
 
-        const_pointer_iterator(const aligned_type* val)
-            : _value(const_cast<aligned_type*>(val))
+        const_pointer_iterator(const inner_type* val)
+            : _value(const_cast<inner_type*>(val))
         {
         }
 
@@ -192,13 +189,13 @@ namespace _impl
             = default;
 
 		const_pointer_iterator(pointer_iterator<value_type>&& orig)
-			: const_pointer_iterator(reinterpret_cast<const aligned_type*>(orig.get()))
+			: const_pointer_iterator(reinterpret_cast<const inner_type*>(orig.get()))
 		{
 			orig = pointer_iterator<value_type>();
 		}
 
         const_pointer_iterator(const pointer_iterator<value_type>& orig)
-            : const_pointer_iterator(reinterpret_cast<const aligned_type*>(orig.get()))
+            : const_pointer_iterator(reinterpret_cast<const inner_type*>(orig.get()))
         {
         }
 
@@ -290,7 +287,7 @@ namespace _impl
         }
 
     private:
-        aligned_type* _value = nullptr;
+        inner_type* _value = nullptr;
     };
 
 	template <typename T>

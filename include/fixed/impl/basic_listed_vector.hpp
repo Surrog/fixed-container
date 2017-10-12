@@ -71,7 +71,7 @@ namespace _impl
         }
 
 		void initialize_ptrs() 
-			noexcept(is_nothrow_iterator_v<allocator_type_data_impl>)
+			noexcept(is_nothrow_allocator_iterator_v<allocator_type_data_impl>)
 		{
 			for (size_type i = 0; i < _data_holder.max_size(); i++)
 			{
@@ -183,8 +183,8 @@ namespace _impl
 			noexcept(is_nothrow_default_constructible_v<allocator_type_data_impl>
 				&& is_nothrow_default_constructible_v<allocator_type_ptrs_impl>
 				&& is_nothrow_copy_constructible_v<T>
-				&& is_nothrow_iterator_v<allocator_type_data_impl>
-				&& is_nothrow_iterator_v<allocator_type_ptrs_impl>)
+				&& is_nothrow_allocator_iterator_v<allocator_type_data_impl>
+				&& is_nothrow_allocator_iterator_v<allocator_type_ptrs_impl>)
 			: basic_listed_vector()
         {
 			for (const auto& val : other)
@@ -212,8 +212,8 @@ namespace _impl
 				is_nothrow_default_constructible_v<allocator_type_data_impl>
 				&& is_nothrow_default_constructible_v<allocator_type_ptrs_impl>
 				&& is_nothrow_copy_constructible_v<T>
-				&& is_nothrow_iterator_v<allocator_type_data_impl>
-				&& is_nothrow_iterator_v<allocator_type_ptrs_impl>)
+				&& is_nothrow_allocator_iterator_v<allocator_type_data_impl>
+				&& is_nothrow_allocator_iterator_v<allocator_type_ptrs_impl>)
 			: basic_listed_vector()
         {
 			fixed::astd::constexpr_if<(SIZE < RSIZE)>(

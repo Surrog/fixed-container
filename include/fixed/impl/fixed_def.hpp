@@ -63,17 +63,29 @@ namespace _impl
 
 #if __cplusplus > 201602L
 	template <typename T>
-	constexpr bool is_nothrow_iterator_v = std::is_nothrow_invocable_r<T, decltype(&T::begin)>::value
+	constexpr bool is_nothrow_allocator_iterator_v = std::is_nothrow_invocable_r<T, decltype(&T::begin)>::value
 		&& std::is_nothrow_invocable_r<T, decltype(&T::end)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(&T::cbegin())>::value
-		&& std::is_nothrow_invocable_r<T, decltype(&T::cend())>::value;
+		&& std::is_nothrow_invocable_r<T, decltype(&T::cbegin)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(&T::cend)>::value;
 #else
 	template <typename T>
-	constexpr bool is_nothrow_iterator_v = T::noexcept_iterators::value;
+	constexpr bool is_nothrow_allocator_iterator_v = T::noexcept_iterators::value;
 #endif
 
 	template <typename T>
-	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(&T::data)>::value;
+	struct continous_helper
+	{
+		typedef typename const T::aligned_type* (T::*const_function)() const ;
+		typedef typename T::aligned_type* (T::*function)() ;
+	};
+
+	template <typename T>
+	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(
+		continous_helper<T>::function(&T::data)
+		)>::value
+		&& std::is_member_function_pointer<decltype(
+			continous_helper<T>::const_function(&T::data)
+			)>::value;
 }
 }
 
