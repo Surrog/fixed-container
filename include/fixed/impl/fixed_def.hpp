@@ -62,18 +62,41 @@ namespace _impl
 	constexpr bool is_nothrow_move_constructible_v = std::is_nothrow_move_constructible<T>::value;
 
 #if __cplusplus > 201602L
+
 	template <typename T>
-	constexpr bool is_nothrow_allocator_iterator_v = std::is_nothrow_invocable_r<T, decltype(&T::begin)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(&T::end)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(&T::cbegin)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(&T::cend)>::value;
+	struct _nothrow_allocator_iterator_helper
+	{
+		typedef const typename T::const_iterator* (T::*const_function)() const noexcept;
+		typedef typename T::iterator* (T::*function)() noexcept;
+	}
+
+	template <typename T>
+	constexpr bool is_nothrow_allocator_iterator_v = 
+		std::is_nothrow_invocable_r<T, decltype(
+			_nothrow_allocator_iterator_helper<T>::function(&T::begin)
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
+			_nothrow_allocator_iterator_helper<T>::function(&T::end)
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
+			_nothrow_allocator_iterator_helper<T>::const_function(&T::begin)
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
+			_nothrow_allocator_iterator_helper<T>::const_function(&T::end)
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
+			_nothrow_allocator_iterator_helper<T>::const_function(&T::cbegin)
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
+			_nothrow_allocator_iterator_helper<T>::const_function(&T::cend)
+			)>::value;
 #else
 	template <typename T>
 	constexpr bool is_nothrow_allocator_iterator_v = T::noexcept_iterators::value;
 #endif
 
 	template <typename T>
-	struct alloc_pattern_contiguous_helper
+	struct _alloc_pattern_contiguous_helper
 	{
 		typedef const typename T::aligned_type* (T::*const_function)() const ;
 		typedef typename T::aligned_type* (T::*function)() ;
@@ -81,10 +104,10 @@ namespace _impl
 
 	template <typename T>
 	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(
-		alloc_pattern_contiguous_helper<T>::function(&T::data)
+		_alloc_pattern_contiguous_helper<T>::function(&T::data)
 		)>::value
 		&& std::is_member_function_pointer<decltype(
-			alloc_pattern_contiguous_helper<T>::const_function(&T::data)
+			_alloc_pattern_contiguous_helper<T>::const_function(&T::data)
 			)>::value;
 }
 }
