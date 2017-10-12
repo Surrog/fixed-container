@@ -75,7 +75,7 @@ namespace _impl
 	template <typename T>
 	struct continous_helper
 	{
-		typedef typename const T::aligned_type* (T::*const_function)() const ;
+		typedef const typename T::aligned_type* (T::*const_function)() const ;
 		typedef typename T::aligned_type* (T::*function)() ;
 	};
 
