@@ -1198,7 +1198,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin());
         auto exp = {1, 2, 3, 4};
@@ -1208,7 +1208,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 1);
         auto exp = {0, 2, 3, 4};
@@ -1218,7 +1218,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 2);
         auto exp = {0, 1, 3, 4};
@@ -1228,7 +1228,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 3);
         auto exp = {0, 1, 2, 4};
@@ -1238,7 +1238,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 4);
         auto exp = {0, 1, 2, 3};
@@ -1248,7 +1248,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 0, v.begin() + 2);
         auto exp = {2, 3, 4};
@@ -1258,7 +1258,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 1, v.begin() + 3);
         auto exp = {0, 3, 4};
@@ -1268,7 +1268,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 2, v.begin() + 4);
         auto exp = {0, 1, 4};
@@ -1278,7 +1278,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
+        CONTAINER_T<int, 10, Alloc_pattern> v
             = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 3, v.begin() + 5);
         auto exp = {0, 1, 2};
@@ -1329,7 +1329,7 @@ void test_resize()
         int v = 0;
         {
             CONTAINER_T<test_construct, 5, Alloc_pattern> l;
-            for(std::size_t i = 0; i < 5u; i++)
+            for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
             {
                 l.resize(i, test_construct(v));
                 CHECK(l.size() == i);
@@ -1341,12 +1341,27 @@ void test_resize()
 
     {
         CONTAINER_T<int, 5, Alloc_pattern> l;
-        for(std::size_t i = 0; i < 5u; i++)
+        for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
         {
             l.resize(i);
             CHECK(l.size() == i);
         }
     }
+
+	{
+		CONTAINER_T<int, 5, Alloc_pattern> l;
+
+		for (typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0; i <= l.max_size(); i++)
+		{
+			l.resize(i);
+			CHECK(l.size() == i);
+		}
+		for (typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = l.max_size(); i > 0; i--)
+		{
+			l.resize(i);
+			CHECK(l.size() == i);
+		}
+	}
 
     {
         CONTAINER_T<int, 5, Alloc_pattern> l;
@@ -1504,6 +1519,8 @@ void test_push_back()
             CHECK(l.size() == exp.size());
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
+
+		CHECK_THROWS(l.push_back(5));
     }
 
     {
@@ -1583,6 +1600,8 @@ void test_emplace_back()
             CHECK(l.size() == exp.size());
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
+
+		CHECK_THROWS(l.emplace_back(5));
     }
 
     {
