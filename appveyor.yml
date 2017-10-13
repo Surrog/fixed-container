@@ -10,6 +10,8 @@ build_script:
     cmake C:\project\fixed-container\test -G "Visual Studio 15"
     
     cmake --build .
+
+    cmake --build . --config Release
     
     C:\project\fixed-container\build\Debug\fixed_test.exe
 
