@@ -382,7 +382,7 @@ namespace _impl
 
         basic_listed_vector& operator=(std::initializer_list<T> ilist)
         {
-            FIXED_CHECK_FULL(ilist.size() <= max_size());
+            FIXED_CHECK_FULL(ilist.size() <= std::size_t(max_size()));
 
             size_type i = 0;
             for(auto& val : ilist)
@@ -763,7 +763,7 @@ namespace _impl
                 (void*)this != (void*)&other, "Splice with itself");
             auto elem_i = std::distance(other.cbegin(), it);
             FIXED_CHECK_INBOUND(elem_i > 0);
-            FIXED_CHECK_INBOUND(std::size_t(elem_i) <= other.size());
+            FIXED_CHECK_INBOUND(container_size_type(elem_i) <= other.size());
 
             insert(pos, std::move(*(other.begin() + elem_i)));
             other.erase(it);
@@ -780,7 +780,7 @@ namespace _impl
             auto pos_i = std::distance(cbegin(), pos);
             auto initial_size = size();
             FIXED_CHECK_INBOUND(pos_i >= 0);
-            FIXED_CHECK_INBOUND(std::size_t(pos_i) <= _size);
+            FIXED_CHECK_INBOUND(container_size_type(pos_i) <= _size);
 
             auto first_i = std::distance(other.cbegin(), first);
             auto last_i = std::distance(other.cbegin(), last);
@@ -790,9 +790,9 @@ namespace _impl
             {
                 FIXED_CHECK_FULL(size() + range_size <= max_size());
                 FIXED_CHECK_INBOUND(first_i >= 0);
-                FIXED_CHECK_INBOUND(std::size_t(first_i) <= other.size());
+                FIXED_CHECK_INBOUND(container_size_type(first_i) <= other.size());
                 FIXED_CHECK_INBOUND(last_i >= 0);
-                FIXED_CHECK_INBOUND(std::size_t(last_i) <= other.size());
+                FIXED_CHECK_INBOUND(container_size_type(last_i) <= other.size());
 
                 auto first_m_it = other.begin() + first_i;
                 auto last_m_it = other.begin() + last_i;

@@ -384,7 +384,7 @@ void test_unique()
 	{
 		int i = 0;
 		LIST_T<test_construct, 10, Alloc_pattern> c;
-		for (std::size_t v = 0; v < c.max_size(); v++)
+		for (typename LIST_T<std::size_t, 5, Alloc_pattern>::size_type v = 0; v < c.max_size(); v++)
 		{
 			c.push_back(test_construct(i));
 		}

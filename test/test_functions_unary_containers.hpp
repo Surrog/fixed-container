@@ -663,7 +663,7 @@ void test_destructor()
         int i = 0;
         {
             CONTAINER_T<test_construct, 5, Alloc_pattern> c;
-            for(std::size_t v = 0; v < c.max_size(); v++)
+            for(typename CONTAINER_T<test_construct, 5, Alloc_pattern>::size_type v = 0; v < c.max_size(); v++)
             {
                 c.push_back(test_construct(i));
             }
@@ -696,7 +696,7 @@ void test_begin_end()
 
         auto beg = vec.begin();
         auto end = vec.end();
-        std::size_t i = 0;
+        typename CONTAINER_T<int, 20, Alloc_pattern>::size_type i = 0;
 
         CHECK(beg != end);
 
@@ -1463,7 +1463,7 @@ void test_push_back()
     {
         CONTAINER_T<std::size_t, 5, Alloc_pattern> l;
 
-        for(std::size_t i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
         {
             l.push_back(i);
             CHECK(l.size() == i + 1);
@@ -1542,7 +1542,7 @@ void test_emplace_back()
     {
         CONTAINER_T<std::size_t, 5, Alloc_pattern> l;
 
-        for(std::size_t i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
         {
             l.emplace_back(i);
             CHECK(l.size() == i + 1);
@@ -1615,13 +1615,13 @@ void test_pop_back()
     {
         CONTAINER_T<std::size_t, 5, Alloc_pattern> l;
 
-        for(std::size_t i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
         {
             l.emplace_back(i);
             CHECK(l.size() == i + 1);
             CHECK(l.back() == i);
         }
-        for(std::size_t i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
         {
             CHECK(l.size() == 5 - i);
             CHECK(l.back() == 4 - i);
