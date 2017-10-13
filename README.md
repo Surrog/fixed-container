@@ -10,7 +10,13 @@ Emphasis of this implementation are:
 - Most of iterators are Random-access iterators   
 
 Containers interface mirror the standard library at the C++17 update, but are implemented with different allocator design (allowing customized memory sources).  
-The container implementation does not allow dynamic expansion, it assume that you can put an upper bound on the number of element you need to work with.
+The container implementation does not allow dynamic expansion, it assume that you can put an upper bound on the number of element you need to work with.   
+Patchs are welcome, templated tests can be found in the test/ directory.
+
+## Usage
+- Clone the project in your source file
+- Add the path of the include directory to your project file
+- All the major classes are now available to be include as "fixed/<class name>.hpp" 
 
 ## Current container finished and released:
 - vector
