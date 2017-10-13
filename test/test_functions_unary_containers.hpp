@@ -11,24 +11,24 @@ template <template <typename, fixed::_impl::container_size_type,
     typename Alloc_pattern>
 void test_noexcept_constructor()
 {
-    static_assert(std::is_nothrow_default_constructible<
-                      CONTAINER_T<int, 10, Alloc_pattern>>::value,
+    static_assert(fixed::_impl::is_nothrow_default_constructible_v<
+                      CONTAINER_T<int, 10, Alloc_pattern>>,
         "Not noexcept default constructible");
-    static_assert(std::is_nothrow_move_constructible<
-                      CONTAINER_T<int, 10, Alloc_pattern>>::value,
+    static_assert(fixed::_impl::is_nothrow_move_constructible_v<
+                      CONTAINER_T<int, 10, Alloc_pattern>>,
         "Not noexcept move constructible");
-    static_assert(std::is_nothrow_move_assignable<
-                      CONTAINER_T<int, 10, Alloc_pattern>>::value,
+    static_assert(fixed::_impl::is_nothrow_move_assignable_v<
+                      CONTAINER_T<int, 10, Alloc_pattern>>,
         "Not noexcept move assignable");
 
-    static_assert(std::is_nothrow_default_constructible<
-                      CONTAINER_T<test_move, 10, Alloc_pattern>>::value,
+    static_assert(fixed::_impl::is_nothrow_default_constructible_v<
+                      CONTAINER_T<test_move, 10, Alloc_pattern>>,
         "Not noexcept default constructible");
-    static_assert(std::is_nothrow_move_constructible<
-                      CONTAINER_T<test_move, 10, Alloc_pattern>>::value,
+    static_assert(fixed::_impl::is_nothrow_move_constructible_v<
+                      CONTAINER_T<test_move, 10, Alloc_pattern>>,
         "Not noexcept move constructible");
-    static_assert(std::is_nothrow_move_assignable<
-                      CONTAINER_T<test_move, 10, Alloc_pattern>>::value,
+    static_assert(fixed::_impl::is_nothrow_move_assignable_v<
+                      CONTAINER_T<test_move, 10, Alloc_pattern>>,
         "Not noexcept move assignable");
 }
 

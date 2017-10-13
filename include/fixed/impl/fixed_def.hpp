@@ -88,6 +88,9 @@ namespace _impl
 	template <typename T>
 	constexpr bool is_nothrow_move_constructible_v = std::is_nothrow_move_constructible<T>::value;
 
+	template <typename T>
+	constexpr bool is_nothrow_move_assignable_v = std::is_nothrow_move_assignable<T>::value;
+
 #if __cplusplus > 201602L || _HAS_CXX17 == 1
 
 	template <typename T>
