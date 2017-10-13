@@ -1,23 +1,35 @@
 #ifndef FIXED_TEST_FUNCTIONS_UNARY_CONTAINERS_HPP
 #define FIXED_TEST_FUNCTIONS_UNARY_CONTAINERS_HPP
 
-#include "test_struct.hpp"
 #include "fixed/impl/fixed_def.hpp"
+#include "test_struct.hpp"
 
 template <template <typename, fixed::_impl::container_size_type,
-	template <typename, fixed::_impl::container_size_type> typename>
-typename CONTAINER_T,
-template <typename, fixed::_impl::container_size_type>
-typename Alloc_pattern>
+              template <typename, fixed::_impl::container_size_type> typename>
+          typename CONTAINER_T,
+    template <typename, fixed::_impl::container_size_type>
+    typename Alloc_pattern>
 void test_noexcept_constructor()
 {
-	static_assert(std::is_nothrow_default_constructible<CONTAINER_T<int, 10, Alloc_pattern>>::value, "Not noexcept default constructible");
-	static_assert(std::is_nothrow_move_constructible<CONTAINER_T<int, 10, Alloc_pattern>>::value, "Not noexcept move constructible");
-	static_assert(std::is_nothrow_move_assignable<CONTAINER_T<int, 10, Alloc_pattern>>::value, "Not noexcept move assignable");
+    static_assert(std::is_nothrow_default_constructible<
+                      CONTAINER_T<int, 10, Alloc_pattern>>::value,
+        "Not noexcept default constructible");
+    static_assert(std::is_nothrow_move_constructible<
+                      CONTAINER_T<int, 10, Alloc_pattern>>::value,
+        "Not noexcept move constructible");
+    static_assert(std::is_nothrow_move_assignable<
+                      CONTAINER_T<int, 10, Alloc_pattern>>::value,
+        "Not noexcept move assignable");
 
-	static_assert(std::is_nothrow_default_constructible<CONTAINER_T<test_move, 10, Alloc_pattern>>::value, "Not noexcept default constructible");
-	static_assert(std::is_nothrow_move_constructible<CONTAINER_T<test_move, 10, Alloc_pattern>>::value, "Not noexcept move constructible");
-	static_assert(std::is_nothrow_move_assignable<CONTAINER_T<test_move, 10, Alloc_pattern>>::value, "Not noexcept move assignable");
+    static_assert(std::is_nothrow_default_constructible<
+                      CONTAINER_T<test_move, 10, Alloc_pattern>>::value,
+        "Not noexcept default constructible");
+    static_assert(std::is_nothrow_move_constructible<
+                      CONTAINER_T<test_move, 10, Alloc_pattern>>::value,
+        "Not noexcept move constructible");
+    static_assert(std::is_nothrow_move_assignable<
+                      CONTAINER_T<test_move, 10, Alloc_pattern>>::value,
+        "Not noexcept move assignable");
 }
 
 template <template <typename, fixed::_impl::container_size_type,
@@ -279,50 +291,50 @@ void test_canonical_constructor()
         CHECK(l.size() == exp.size());
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 
-		{
-			CONTAINER_T<int, 20, Alloc_pattern> r;
-			r.push_back(4);
-			r.push_back(5);
-			r.push_back(6);
-			r.push_back(7);
+        {
+            CONTAINER_T<int, 20, Alloc_pattern> r;
+            r.push_back(4);
+            r.push_back(5);
+            r.push_back(6);
+            r.push_back(7);
 
-			auto r_exp = { 4, 5, 6, 7 };
-			CHECK(r.size() == r_exp.size());
-			CHECK(std::equal(r.begin(), r.end(), r_exp.begin(), r_exp.end()));
+            auto r_exp = {4, 5, 6, 7};
+            CHECK(r.size() == r_exp.size());
+            CHECK(std::equal(r.begin(), r.end(), r_exp.begin(), r_exp.end()));
 
-			r = l;
+            r = l;
 
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+            CHECK(l.size() == exp.size());
+            CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 
-			CHECK(r.size() == exp.size());
-			CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+            CHECK(r.size() == exp.size());
+            CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
-			CONTAINER_T<int, 1, Alloc_pattern> m;
-			CHECK_THROWS(m = r);
+            CONTAINER_T<int, 1, Alloc_pattern> m;
+            CHECK_THROWS(m = r);
 
-			CHECK(r.size() == 3);
-			CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
-		}
-		{
-			CONTAINER_T<int, 10, Alloc_pattern> r1;
-			r1.push_back(4);
-			r1.push_back(5);
-			r1.push_back(6);
-			r1.push_back(7);
+            CHECK(r.size() == 3);
+            CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+        }
+        {
+            CONTAINER_T<int, 10, Alloc_pattern> r1;
+            r1.push_back(4);
+            r1.push_back(5);
+            r1.push_back(6);
+            r1.push_back(7);
 
-			auto r_exp = { 4, 5, 6, 7 };
-			CHECK(r1.size() == r_exp.size());
-			CHECK(std::equal(r1.begin(), r1.end(), r_exp.begin(), r_exp.end()));
+            auto r_exp = {4, 5, 6, 7};
+            CHECK(r1.size() == r_exp.size());
+            CHECK(std::equal(r1.begin(), r1.end(), r_exp.begin(), r_exp.end()));
 
-			r1 = l;
+            r1 = l;
 
-			CHECK(l.size() == exp.size());
-			CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+            CHECK(l.size() == exp.size());
+            CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 
-			CHECK(r1.size() == exp.size());
-			CHECK(std::equal(r1.begin(), r1.end(), exp.begin(), exp.end()));
-		}
+            CHECK(r1.size() == exp.size());
+            CHECK(std::equal(r1.begin(), r1.end(), exp.begin(), exp.end()));
+        }
     }
     //! test copy assignement
 
@@ -350,28 +362,28 @@ void test_canonical_constructor()
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
 
-	{
-		auto exp = { "test", "titi", "toto" };
-		CONTAINER_T<test_move, 20, Alloc_pattern> l;
-		l.emplace_back("test");
-		l.emplace_back("titi");
-		l.emplace_back("toto");
+    {
+        auto exp = {"test", "titi", "toto"};
+        CONTAINER_T<test_move, 20, Alloc_pattern> l;
+        l.emplace_back("test");
+        l.emplace_back("titi");
+        l.emplace_back("toto");
 
-		CHECK(l.size() == exp.size());
-		CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+        CHECK(l.size() == exp.size());
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
 
-		CONTAINER_T<test_move, 10, Alloc_pattern> r;
-		r = std::move(l);
+        CONTAINER_T<test_move, 10, Alloc_pattern> r;
+        r = std::move(l);
 
-		CHECK(l.size() == 0);
-		CHECK(r.size() == exp.size());
-		CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+        CHECK(l.size() == 0);
+        CHECK(r.size() == exp.size());
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
-		CONTAINER_T<test_move, 1, Alloc_pattern> m;
-		CHECK_THROWS(m = std::move(r));
-		CHECK(r.size() == exp.size());
-		CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
-	}
+        CONTAINER_T<test_move, 1, Alloc_pattern> m;
+        CHECK_THROWS(m = std::move(r));
+        CHECK(r.size() == exp.size());
+        CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+    }
 
     //! test move assignement
 }
@@ -650,6 +662,50 @@ void test_operator_assignment()
             std::equal(l3.begin(), l3.end(), expected.begin(), expected.end()));
         CHECK(l2.empty());
     }
+
+    {
+        CONTAINER_T<int, 20, Alloc_pattern> l1 = {1, 2, 3, 4, 5};
+        CONTAINER_T<int, 20, Alloc_pattern> l2 = {1, 2, 3};
+
+        l1 = l2;
+        auto exp = {1, 2, 3};
+        CHECK(l1.size() == l2.size());
+        CHECK(std::equal(l1.begin(), l1.end(), l2.begin(), l2.end()));
+        CHECK(std::equal(exp.begin(), exp.end(), l2.begin(), l2.end()));
+    }
+
+    {
+        CONTAINER_T<int, 20, Alloc_pattern> l1 = {1, 2, 3, 4, 5};
+        CONTAINER_T<int, 20, Alloc_pattern> l2 = {9, 8, 6, 4, 3, 5, 6};
+
+        l1 = l2;
+        auto exp = {9, 8, 6, 4, 3, 5, 6};
+        CHECK(l1.size() == l2.size());
+        CHECK(std::equal(l1.begin(), l1.end(), l2.begin(), l2.end()));
+        CHECK(std::equal(exp.begin(), exp.end(), l2.begin(), l2.end()));
+    }
+
+    {
+        CONTAINER_T<int, 20, Alloc_pattern> l1 = {1, 2, 3, 4, 5};
+        CONTAINER_T<int, 10, Alloc_pattern> l2 = {1, 2, 3};
+
+        l1 = l2;
+        auto exp = {1, 2, 3};
+        CHECK(l1.size() == l2.size());
+        CHECK(std::equal(l1.begin(), l1.end(), l2.begin(), l2.end()));
+        CHECK(std::equal(exp.begin(), exp.end(), l2.begin(), l2.end()));
+    }
+
+    {
+        CONTAINER_T<int, 20, Alloc_pattern> l1 = {1, 2, 3, 4, 5};
+        CONTAINER_T<int, 10, Alloc_pattern> l2 = {9, 8, 6, 4, 3, 5, 6};
+
+        l1 = l2;
+        auto exp = {9, 8, 6, 4, 3, 5, 6};
+        CHECK(l1.size() == l2.size());
+        CHECK(std::equal(l1.begin(), l1.end(), l2.begin(), l2.end()));
+        CHECK(std::equal(exp.begin(), exp.end(), l2.begin(), l2.end()));
+    }
 }
 
 template <template <typename, fixed::_impl::container_size_type,
@@ -663,7 +719,10 @@ void test_destructor()
         int i = 0;
         {
             CONTAINER_T<test_construct, 5, Alloc_pattern> c;
-            for(typename CONTAINER_T<test_construct, 5, Alloc_pattern>::size_type v = 0; v < c.max_size(); v++)
+            for(typename CONTAINER_T<test_construct, 5,
+                    Alloc_pattern>::size_type v
+                = 0;
+                v < c.max_size(); v++)
             {
                 c.push_back(test_construct(i));
             }
@@ -684,15 +743,16 @@ template <template <typename, fixed::_impl::container_size_type,
 void test_begin_end()
 {
     {
-		CONTAINER_T<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-		CHECK(std::distance(vec.begin(), vec.end()) > 0);
+        CONTAINER_T<int, 20, Alloc_pattern> vec{
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        CHECK(std::distance(vec.begin(), vec.end()) > 0);
         CHECK(static_cast<std::size_t>(std::distance(vec.begin(), vec.end()))
             == vec.size());
     }
 
-    
-	{
-		CONTAINER_T<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    {
+        CONTAINER_T<int, 20, Alloc_pattern> vec{
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         auto beg = vec.begin();
         auto end = vec.end();
@@ -709,7 +769,8 @@ void test_begin_end()
     }
 
     {
-		CONTAINER_T<int, 20, Alloc_pattern> vec{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        CONTAINER_T<int, 20, Alloc_pattern> vec{
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         auto beg = vec.begin();
         auto end = vec.end();
@@ -1035,6 +1096,27 @@ void test_assign()
     }
 
     {
+        CONTAINER_T<int, 15, Alloc_pattern> l;
+        for(auto i = l.size(); i <= l.max_size(); i++)
+        {
+            l.assign(i, 1);
+            CHECK(l.size() == i);
+            CHECK(std::all_of(
+                l.begin(), l.end(), [](auto& val) { return val == 1; }));
+        }
+
+        for(auto i = l.max_size(); i > 0; i--)
+        {
+            l.assign(i, 1);
+            CHECK(l.size() == i);
+            CHECK(std::all_of(
+                l.begin(), l.end(), [](auto& val) { return val == 1; }));
+        }
+
+        CHECK_THROWS(l.assign(l.max_size() + 1, 1));
+    }
+
+    {
         CONTAINER_T<int, 30, Alloc_pattern> l;
         auto expected = {1, 1, 1, 1, 1};
         l.assign(expected.begin(), expected.end());
@@ -1043,11 +1125,9 @@ void test_assign()
     }
 
     {
-        CONTAINER_T<int, 30, Alloc_pattern> l;
+        CONTAINER_T<int, 1, Alloc_pattern> l;
         auto expected = {1, 1, 1, 1, 1};
-        l.assign(expected);
-        CHECK(l.size() == 5);
-        CHECK(std::equal(l.begin(), l.end(), expected.begin(), expected.end()));
+        CHECK_THROWS(l.assign(expected));
     }
 
     {
@@ -1142,6 +1222,58 @@ void test_insert()
     }
 
     {
+        CONTAINER_T<int, 10, Alloc_pattern> l;
+
+        for(auto i = l.size(); i < l.max_size(); i++)
+        {
+            l.insert(l.begin(), int(i));
+        }
+        auto exp = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+        CHECK(l.size() == exp.size());
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+        CHECK_THROWS(l.insert(l.begin(), int(1)));
+    }
+
+    {
+        CONTAINER_T<int, 10, Alloc_pattern> l;
+
+        for(auto i = l.size(); i < l.max_size(); i++)
+        {
+            l.insert(l.end(), int(i));
+        }
+        auto exp = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        CHECK(l.size() == exp.size());
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+        CHECK_THROWS(l.insert(l.end(), int(1)));
+    }
+
+    {
+        CONTAINER_T<int, 10, Alloc_pattern> l;
+
+        for(auto i = l.size(); i < l.max_size(); i++)
+        {
+            l.insert(l.end(), int(i));
+        }
+        auto exp = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        CHECK(l.size() == exp.size());
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+        CHECK_THROWS(l.insert(l.end(), int(1)));
+    }
+
+    {
+        CONTAINER_T<int, 10, Alloc_pattern> l = {0};
+
+        for(auto i = l.size(); i < l.max_size(); i++)
+        {
+            l.insert(l.begin() + 1, int(i));
+        }
+        auto exp = {0, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+        CHECK(l.size() == exp.size());
+        CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+        CHECK_THROWS(l.insert(l.end(), int(1)));
+    }
+
+    {
         CONTAINER_T<int, 30, Alloc_pattern> l = {1, 2, 3, 4, 5};
 
         auto to_insert = {10, 11, 12};
@@ -1198,8 +1330,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin());
         auto exp = {1, 2, 3, 4};
         CHECK(v.size() == exp.size());
@@ -1208,8 +1339,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 1);
         auto exp = {0, 2, 3, 4};
         CHECK(v.size() == exp.size());
@@ -1218,8 +1348,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 2);
         auto exp = {0, 1, 3, 4};
         CHECK(v.size() == exp.size());
@@ -1228,8 +1357,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 3);
         auto exp = {0, 1, 2, 4};
         CHECK(v.size() == exp.size());
@@ -1238,8 +1366,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 4);
         auto exp = {0, 1, 2, 3};
         CHECK(v.size() == exp.size());
@@ -1248,8 +1375,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 0, v.begin() + 2);
         auto exp = {2, 3, 4};
         CHECK(v.size() == exp.size());
@@ -1258,8 +1384,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 1, v.begin() + 3);
         auto exp = {0, 3, 4};
         CHECK(v.size() == exp.size());
@@ -1268,8 +1393,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 2, v.begin() + 4);
         auto exp = {0, 1, 4};
         CHECK(v.size() == exp.size());
@@ -1278,8 +1402,7 @@ void test_erase()
     }
 
     {
-        CONTAINER_T<int, 10, Alloc_pattern> v
-            = {0, 1, 2, 3, 4};
+        CONTAINER_T<int, 10, Alloc_pattern> v = {0, 1, 2, 3, 4};
         auto it = v.erase(v.begin() + 3, v.begin() + 5);
         auto exp = {0, 1, 2};
         CHECK(v.size() == exp.size());
@@ -1329,7 +1452,8 @@ void test_resize()
         int v = 0;
         {
             CONTAINER_T<test_construct, 5, Alloc_pattern> l;
-            for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
+            for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0;
+                i < l.max_size(); i++)
             {
                 l.resize(i, test_construct(v));
                 CHECK(l.size() == i);
@@ -1341,27 +1465,31 @@ void test_resize()
 
     {
         CONTAINER_T<int, 5, Alloc_pattern> l;
-        for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0;
+            i < l.max_size(); i++)
         {
             l.resize(i);
             CHECK(l.size() == i);
         }
     }
 
-	{
-		CONTAINER_T<int, 5, Alloc_pattern> l;
+    {
+        CONTAINER_T<int, 5, Alloc_pattern> l;
 
-		for (typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0; i <= l.max_size(); i++)
-		{
-			l.resize(i);
-			CHECK(l.size() == i);
-		}
-		for (typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = l.max_size(); i > 0; i--)
-		{
-			l.resize(i);
-			CHECK(l.size() == i);
-		}
-	}
+        for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i = 0;
+            i <= l.max_size(); i++)
+        {
+            l.resize(i);
+            CHECK(l.size() == i);
+        }
+        for(typename CONTAINER_T<int, 5, Alloc_pattern>::size_type i
+            = l.max_size();
+            i > 0; i--)
+        {
+            l.resize(i);
+            CHECK(l.size() == i);
+        }
+    }
 
     {
         CONTAINER_T<int, 5, Alloc_pattern> l;
@@ -1478,7 +1606,9 @@ void test_push_back()
     {
         CONTAINER_T<std::size_t, 5, Alloc_pattern> l;
 
-        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i
+            = 0;
+            i < l.max_size(); i++)
         {
             l.push_back(i);
             CHECK(l.size() == i + 1);
@@ -1520,7 +1650,7 @@ void test_push_back()
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
 
-		CHECK_THROWS(l.push_back(5));
+        CHECK_THROWS(l.push_back(5));
     }
 
     {
@@ -1559,7 +1689,9 @@ void test_emplace_back()
     {
         CONTAINER_T<std::size_t, 5, Alloc_pattern> l;
 
-        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i
+            = 0;
+            i < l.max_size(); i++)
         {
             l.emplace_back(i);
             CHECK(l.size() == i + 1);
@@ -1601,7 +1733,7 @@ void test_emplace_back()
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
 
-		CHECK_THROWS(l.emplace_back(5));
+        CHECK_THROWS(l.emplace_back(5));
     }
 
     {
@@ -1634,13 +1766,17 @@ void test_pop_back()
     {
         CONTAINER_T<std::size_t, 5, Alloc_pattern> l;
 
-        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i
+            = 0;
+            i < l.max_size(); i++)
         {
             l.emplace_back(i);
             CHECK(l.size() == i + 1);
             CHECK(l.back() == i);
         }
-        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i = 0; i < l.max_size(); i++)
+        for(typename CONTAINER_T<std::size_t, 5, Alloc_pattern>::size_type i
+            = 0;
+            i < l.max_size(); i++)
         {
             CHECK(l.size() == 5 - i);
             CHECK(l.back() == 4 - i);

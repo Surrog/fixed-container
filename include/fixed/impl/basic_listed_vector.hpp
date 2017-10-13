@@ -318,6 +318,7 @@ namespace _impl
         {
             if(this != &other)
             {
+				shrink_to_size(other.size());
                 size_type i = 0;
                 for(auto& val : other)
                 {
@@ -334,6 +335,7 @@ namespace _impl
         basic_listed_vector& operator=(
             const basic_listed_vector<T, RSIZE, RALLOC>& other)
         {
+			shrink_to_size(other.size());
             size_type i = 0;
             for(auto& val : other)
             {
@@ -348,6 +350,7 @@ namespace _impl
         {
             if(this != &other)
             {
+				shrink_to_size(other.size());
                 size_type i = 0;
 
                 for(auto& val : other)
@@ -355,8 +358,8 @@ namespace _impl
                     set_at(i, std::move_if_noexcept(val));
                     ++i;
                 }
+				other.clear();
             }
-            other.clear();
             return *this;
         }
 
@@ -365,9 +368,12 @@ namespace _impl
         basic_listed_vector& operator=(
             basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
-            FIXED_CHECK_FULL(other.size() <= max_size());
             if((void*)this != (void*)&other)
             {
+				FIXED_CHECK_FULL(other.size() <= max_size());
+
+				shrink_to_size(other.size());
+
                 size_type i = 0;
 
                 for(auto& val : other)
@@ -375,8 +381,9 @@ namespace _impl
                     set_at(i, std::move_if_noexcept(val));
                     ++i;
                 }
+
+				other.clear();
             }
-            other.clear();
             return *this;
         }
 
@@ -384,6 +391,7 @@ namespace _impl
         {
             FIXED_CHECK_FULL(ilist.size() <= std::size_t(max_size()));
 
+			shrink_to_size(ilist.size());
             size_type i = 0;
             for(auto& val : ilist)
             {
@@ -395,16 +403,15 @@ namespace _impl
 
         void assign(size_type count, const T& value)
         {
-            for(size_type i = 0; i < count; i++)
-            {
-                set_at(i, value);
-            }
+			FIXED_CHECK_FULL(count <= max_size());
+			resize(count, value);
         }
 
         template <class InputIt,
             std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         void assign(InputIt first, InputIt last)
         {
+			shrink_to_size(std::distance(first, last));
             size_type i = 0;
             while(first != last)
             {
@@ -605,10 +612,8 @@ namespace _impl
             if(end_i != _size)
                 std::rotate(_ptrs.begin() + beg_i, _ptrs.begin() + end_i,
                     _ptrs.begin() + _size);
-            for(container_size_type i = 0; i < (end_i - beg_i); ++i)
-            {
-                pop_back();
-            }
+			auto size_to_shrink = end_i - beg_i;
+			shrink_to_size(_size - size_to_shrink);
             if(_size)
                 return begin() + std::min(beg_i, _size);
             return end();
@@ -667,10 +672,7 @@ namespace _impl
 
         void resize(size_type count, const value_type& value)
         {
-            while(_size > count)
-            {
-                pop_back();
-            }
+			shrink_to_size(count);
 
             while(_size < count)
             {
@@ -855,16 +857,14 @@ namespace _impl
         }
 
     private:
-        void erase_local_ptr(T** ptr)
-        {
-            FIXED_CHECK_EMPTY(_size > 0);
-            (*ptr)->~T();
-            if(ptr != _ptrs.begin() + _size - 1)
-            {
-                std::rotate(ptr, ptr + 1, _ptrs.begin() + _size - 1);
-            }
-            _size--;
-        }
+		void shrink_to_size(size_type count)
+		{
+			while (_size > count)
+			{
+				_ptrs[_size - 1].get()->~T();
+				--_size;
+			}
+		}
     };
 }
 }
