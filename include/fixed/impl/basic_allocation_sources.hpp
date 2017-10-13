@@ -2,28 +2,13 @@
 #define FIXED_BASIC_ALLOCATION_SOURCES
 
 #include "fixed_type_traits.hpp"
+#include "fixed_def.hpp"
 #include <type_traits>
 
 namespace fixed
 {
 namespace _impl
 {
-    template <typename T, class = void>
-    struct is_allocator_source : public std::false_type
-    {
-    };
-
-    template <typename T>
-    struct is_allocator_source<T,
-        fixed::astd::void_t<typename T::allocator_source>>
-        : public std::true_type
-    {
-    };
-
-    struct allocator_source_tag
-    {
-    };
-
     struct empty_source
     {
         typedef allocator_source_tag allocator_source;

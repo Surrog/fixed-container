@@ -2,6 +2,7 @@
 #define FIXED_TEST_FUNCTIONS_UNARY_CONTAINERS_HPP
 
 #include "test_struct.hpp"
+#include "fixed/impl/fixed_def.hpp"
 
 template <template <typename, fixed::_impl::container_size_type,
 	template <typename, fixed::_impl::container_size_type> typename>

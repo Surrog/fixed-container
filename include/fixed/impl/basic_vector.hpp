@@ -56,7 +56,7 @@ namespace _impl
         }
 
         template <typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<fixed::_impl::is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(Alloc_source& alloc)
 			noexcept(std::is_nothrow_constructible<allocator_type_impl, Alloc_source&>::value)
             : _size(0)
@@ -76,7 +76,7 @@ namespace _impl
         }
 
         template <typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(size_type count, const T& value, Alloc_source& source)
             : basic_vector(source)
         {
@@ -93,7 +93,7 @@ namespace _impl
         }
 
         template <typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(size_type count, Alloc_source& alloc)
             : basic_vector(count, T(), alloc)
         {
@@ -101,7 +101,7 @@ namespace _impl
         //! constructor with count copies
         // constructor with iterators
         template <typename InputIt,
-            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         basic_vector(InputIt first, InputIt last)
             : basic_vector()
         {
@@ -117,8 +117,8 @@ namespace _impl
         }
 
         template <typename InputIt, typename Alloc_source,
-            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0,
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(InputIt first, InputIt last, Alloc_source& source)
             : basic_vector(source)
         {
@@ -147,7 +147,7 @@ namespace _impl
         }
 
         template <typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(const basic_vector& other, Alloc_source& source)
             : basic_vector(source)
         {
@@ -181,7 +181,7 @@ namespace _impl
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RAlloc_pattern,
             typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(const basic_vector<T, RSIZE, RAlloc_pattern>& other,
             Alloc_source& source)
             : basic_vector(source)
@@ -224,7 +224,7 @@ namespace _impl
         }
 
         template <typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(basic_vector&& other, Alloc_source& source)
             : basic_vector(source)
         {
@@ -258,7 +258,7 @@ namespace _impl
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RAlloc_pattern,
             typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(basic_vector<T, RSIZE, RAlloc_pattern>&& other,
             Alloc_source& source)
             : basic_vector(source)
@@ -286,7 +286,7 @@ namespace _impl
         }
 
         template <typename Alloc_source,
-            std::enable_if_t<is_allocator_source<Alloc_source>::value, int> = 0>
+            std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(std::initializer_list<T> init, Alloc_source& source)
             : basic_vector(source)
         {
@@ -468,7 +468,7 @@ namespace _impl
         }
 
         template <class InputIt,
-            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         void assign(InputIt first, InputIt last)
         {
             container_size_type size = std::distance(first, last);
@@ -551,7 +551,7 @@ namespace _impl
         }
 
         template <class InputIt,
-            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         iterator insert(const_iterator pos, InputIt first, InputIt last)
         {
             auto pivot_index = _size;
@@ -675,7 +675,7 @@ namespace _impl
     private:
         // managing uninitialized memory
         template <class InputIt,
-            std::enable_if_t<fixed::astd::is_iterator<InputIt>::value, int> = 0>
+            std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         void uninitialized_assign(InputIt begin, InputIt end)
         {
             FIXED_CHECK_FULL(std::distance(end, begin) <= int(max_size()));

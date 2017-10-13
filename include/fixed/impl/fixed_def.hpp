@@ -52,6 +52,25 @@ namespace _impl
 	template <typename T>
 	constexpr bool is_allocation_pattern_v = is_allocation_pattern<T>::value;
 
+	template <typename T, class = void>
+	struct is_allocation_source : public std::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_allocation_source<T,
+		fixed::astd::void_t<typename T::allocator_source>>
+		: public std::true_type
+	{
+	};
+
+	struct allocator_source_tag
+	{
+	};
+
+	template <typename T>
+	constexpr bool is_allocation_source_v = is_allocation_source<T>::value;
+
 	template <typename T>
 	constexpr bool is_nothrow_default_constructible_v = std::is_nothrow_default_constructible<T>::value;
 

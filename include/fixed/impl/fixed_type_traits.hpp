@@ -43,6 +43,9 @@ namespace astd
 		: public std::true_type
 	{
 	};
+
+	template <typename T>
+	constexpr bool is_iterator_v = is_iterator<T>::value;
 }
 
 }
