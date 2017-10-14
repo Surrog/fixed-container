@@ -32,9 +32,9 @@ before_install:
 
 script:
   - cmake ./test
-  - scan-build cmake --build . --config Release -- -j2
-  - rm -r CMakeFiles/fixed_test.dir/*.o
-  - rm fixed_test
   - scan-build cmake --build . --config Debug -- -j2
   - ./fixed_test
+  - rm -r CMakeFiles/fixed_test.dir/*.o
+  - rm fixed_test
+  - scan-build cmake --build . --config Release -- -j2
   - cppcheck --quiet --error-exitcode=1 -f -I include/ ./test/*.cpp
