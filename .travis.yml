@@ -27,14 +27,13 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
   
-    env:
+    - env:
       - CONFIG=Release
-    env:
+    - env:
       - CONFIG=Debug
 
 before_install:
     - eval "${MATRIX_EVAL}"
-    - eval "${BUILD_CONFIG}"
 
 script:
   - cmake ./test
