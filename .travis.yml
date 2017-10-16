@@ -59,4 +59,3 @@ script:
   - cmake -DCHECK_BOUND:BOOL=TRUE ./test 
   - scan-build cmake --build . --config ${CONFIG} -- -j2
   - ./fixed_test
-  - exit
