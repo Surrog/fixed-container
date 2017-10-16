@@ -22,8 +22,6 @@ else ()
 	endif()
 endif()
 
-add_compi
-
 set(INCLUDE_DIRS 
 	"${PROJECT_SOURCE_DIR}/../include/")
 
