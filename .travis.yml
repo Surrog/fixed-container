@@ -59,3 +59,4 @@ script:
   - cmake ./test
   - scan-build cmake --build . --config ${CONFIG} --D= -- -j2 -DFIXED_CONTAINER_CHECK_BOUND
   - ./fixed_test
+  - exit
