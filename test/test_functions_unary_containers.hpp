@@ -72,6 +72,7 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         try
         {
             CONTAINER_T<int, 1, Alloc_pattern> m(r);
@@ -80,6 +81,7 @@ void test_canonical_constructor()
         catch(std::exception&)
         {
         }
+#endif
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -103,6 +105,7 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         try
         {
             CONTAINER_T<int, 1, Alloc_pattern> m(r, alloc_source_inst);
@@ -111,6 +114,7 @@ void test_canonical_constructor()
         catch(std::exception&)
         {
         }
+#endif
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -134,6 +138,7 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         try
         {
             CONTAINER_T<int, 1, Alloc_pattern> m(std::move(r));
@@ -142,6 +147,7 @@ void test_canonical_constructor()
         catch(std::exception&)
         {
         }
+#endif
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -164,6 +170,7 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         try
         {
             CONTAINER_T<int, 1, Alloc_pattern> m(
@@ -173,6 +180,7 @@ void test_canonical_constructor()
         catch(std::exception&)
         {
         }
+#endif
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -195,6 +203,7 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         try
         {
             CONTAINER_T<test_move, 1, Alloc_pattern> m(std::move(r));
@@ -203,6 +212,7 @@ void test_canonical_constructor()
         catch(std::exception&)
         {
         }
+#endif
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -226,6 +236,7 @@ void test_canonical_constructor()
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         try
         {
             CONTAINER_T<test_move, 1, Alloc_pattern> m(
@@ -235,6 +246,7 @@ void test_canonical_constructor()
         catch(std::exception&)
         {
         }
+#endif
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -249,6 +261,7 @@ void test_canonical_constructor()
     }
 
     {
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         auto exp = {0, 1, 2};
         try
         {
@@ -258,6 +271,7 @@ void test_canonical_constructor()
         catch(const std::exception&)
         {
         }
+#endif
     }
 
     {
@@ -267,6 +281,7 @@ void test_canonical_constructor()
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
     }
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
     {
         auto exp = {0, 1, 2};
         try
@@ -278,6 +293,7 @@ void test_canonical_constructor()
         {
         }
     }
+#endif
     //! test init list constructors
 
     // test copy assignment
@@ -311,7 +327,9 @@ void test_canonical_constructor()
             CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
             CONTAINER_T<int, 1, Alloc_pattern> m;
+#ifdef FIXED_CONTAINER_CHECK_BOUND
             CHECK_THROWS(m = r);
+#endif //!NDEBUG
 
             CHECK(r.size() == 3);
             CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
@@ -357,7 +375,9 @@ void test_canonical_constructor()
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
         CONTAINER_T<test_move, 1, Alloc_pattern> m;
-        CHECK_THROWS(m = std::move(r));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(m = std::move(r));
+#endif
         CHECK(r.size() == exp.size());
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
@@ -380,7 +400,9 @@ void test_canonical_constructor()
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
 
         CONTAINER_T<test_move, 1, Alloc_pattern> m;
-        CHECK_THROWS(m = std::move(r));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(m = std::move(r));
+#endif
         CHECK(r.size() == exp.size());
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
     }
@@ -608,7 +630,9 @@ void test_operator_assignment()
     {
         CONTAINER_T<int, 10, Alloc_pattern> nums1{3, 1, 4, 6, 5, 9};
         CONTAINER_T<int, 2, Alloc_pattern> nums2;
-        CHECK_THROWS(nums2 = nums1);
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(nums2 = nums1);
+#endif
     }
 
     {
@@ -883,7 +907,9 @@ void test_front()
 
     {
         CONTAINER_T<int, 10, Alloc_pattern> c;
-        CHECK_THROWS(c.front());
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(c.front());
+#endif
     }
 }
 
@@ -911,7 +937,9 @@ void test_back()
 
     {
         CONTAINER_T<int, 10, Alloc_pattern> c;
-        CHECK_THROWS(c.back());
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(c.back());
+#endif
     }
 }
 
@@ -962,7 +990,9 @@ void test_at()
 
         CHECK(myvector.front() == 10);
         CHECK(myvector.back() == 50);
-        CHECK_THROWS(myvector.at(myvector.max_size() + 1));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(myvector.at(myvector.max_size() + 1));
+#endif
     }
 
     {
@@ -977,7 +1007,9 @@ void test_at()
 
         CHECK(myvector.front() == 10);
         CHECK(myvector.back() == 50);
-        CHECK_THROWS(myvector.at(myvector.max_size() + 1));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(myvector.at(myvector.max_size() + 1));
+#endif
     }
 }
 
@@ -1112,8 +1144,9 @@ void test_assign()
             CHECK(std::all_of(
                 l.begin(), l.end(), [](auto& val) { return val == 1; }));
         }
-
-        CHECK_THROWS(l.assign(l.max_size() + 1, 1));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.assign(l.max_size() + 1, 1));
+#endif
     }
 
     {
@@ -1127,7 +1160,9 @@ void test_assign()
     {
         CONTAINER_T<int, 1, Alloc_pattern> l;
         auto expected = {1, 1, 1, 1, 1};
-        CHECK_THROWS(l.assign(expected));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.assign(expected));
+#endif
     }
 
     {
@@ -1171,7 +1206,9 @@ void test_generic_capacity()
         c.clear();
         CHECK(c.empty());
         CHECK(c.max_size() >= 10);
-        CHECK_THROWS(c.resize(c.max_size() + 1));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(c.resize(c.max_size() + 1));
+#endif
     }
 }
 
@@ -1231,7 +1268,9 @@ void test_insert()
         auto exp = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
         CHECK(l.size() == exp.size());
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-        CHECK_THROWS(l.insert(l.begin(), int(1)));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.insert(l.begin(), int(1)));
+#endif
     }
 
     {
@@ -1244,7 +1283,9 @@ void test_insert()
         auto exp = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         CHECK(l.size() == exp.size());
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-        CHECK_THROWS(l.insert(l.end(), int(1)));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.insert(l.end(), int(1)));
+#endif
     }
 
     {
@@ -1257,7 +1298,9 @@ void test_insert()
         auto exp = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         CHECK(l.size() == exp.size());
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-        CHECK_THROWS(l.insert(l.end(), int(1)));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.insert(l.end(), int(1)));
+#endif
     }
 
     {
@@ -1270,7 +1313,9 @@ void test_insert()
         auto exp = {0, 9, 8, 7, 6, 5, 4, 3, 2, 1};
         CHECK(l.size() == exp.size());
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
-        CHECK_THROWS(l.insert(l.end(), int(1)));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.insert(l.end(), int(1)));
+#endif
     }
 
     {
@@ -1306,8 +1351,9 @@ void test_erase()
     {
         CONTAINER_T<int, 10, fixed::_impl::aligned_stack_allocator> v
             = {0, 1, 2, 3, 4};
-
-        CHECK_THROWS(v.erase(v.end()));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(v.erase(v.end()));
+#endif
     }
 
     {
@@ -1422,8 +1468,9 @@ void test_erase()
         {
             l.erase(l.begin());
         }
-
-        CHECK_THROWS(l.erase(l.end()));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.erase(l.end()));
+#endif
     }
 
     {
@@ -1493,7 +1540,9 @@ void test_resize()
 
     {
         CONTAINER_T<int, 5, Alloc_pattern> l;
-        CHECK_THROWS(l.resize(l.max_size() + 1));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.resize(l.max_size() + 1));
+#endif
     }
 }
 
@@ -1536,7 +1585,9 @@ void test_push_front()
             CHECK(l.size() == exp.size());
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
-        CHECK_THROWS(l.push_front(5));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.push_front(5));
+#endif
     }
 
     {
@@ -1586,7 +1637,9 @@ void test_emplace_front()
             CHECK(l.size() == exp.size());
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
-        CHECK_THROWS(l.emplace_front(5));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.emplace_front(5));
+#endif
     }
 
     {
@@ -1614,7 +1667,9 @@ void test_push_back()
             CHECK(l.size() == i + 1);
             CHECK(l.back() == i);
         }
-        CHECK_THROWS(l.push_back(0u));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.push_back(0u));
+#endif
     }
 
     {
@@ -1649,8 +1704,9 @@ void test_push_back()
             CHECK(l.size() == exp.size());
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
-
-        CHECK_THROWS(l.push_back(5));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.push_back(5));
+#endif
     }
 
     {
@@ -1697,7 +1753,9 @@ void test_emplace_back()
             CHECK(l.size() == i + 1);
             CHECK(l.back() == i);
         }
-        CHECK_THROWS(l.emplace_back(0u));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.emplace_back(0u));
+#endif
     }
 
     {
@@ -1732,8 +1790,9 @@ void test_emplace_back()
             CHECK(l.size() == exp.size());
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
-
-        CHECK_THROWS(l.emplace_back(5));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.emplace_back(5));
+#endif
     }
 
     {
@@ -1812,7 +1871,9 @@ void test_pop_back()
         }
         l.pop_back();
         CHECK(l.size() == 0);
-        CHECK_THROWS(l.pop_back());
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(l.pop_back());
+#endif
     }
 
     {
@@ -1852,8 +1913,9 @@ void test_swap()
     {
         CONTAINER_T<int, 5, Alloc_pattern> lval{1, 2, 3, 4, 5};
         CONTAINER_T<int, 4, Alloc_pattern> rval{3, 4};
-
-        CHECK_THROWS(lval.swap(rval));
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		CHECK_THROWS(lval.swap(rval));
+#endif
     }
 }
 
@@ -1900,7 +1962,9 @@ void test_emplace()
             CHECK(l.size() == exp.size());
             CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
         }
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         CHECK_THROWS(l.emplace(l.end(), 5, 'y', &val));
+#endif
     }
 
     {
@@ -2157,7 +2221,9 @@ void test_pop_front()
 
     {
         CONTAINER_T<int, 10, Alloc_pattern> c;
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         CHECK_THROWS(c.pop_front());
+#endif
     }
 
     {

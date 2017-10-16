@@ -18,6 +18,10 @@ namespace _impl
 #endif
 
 #if !defined(NDEBUG) || defined(FIXED_CONTAINER_CHECK_BOUND)
+#ifndef FIXED_CONTAINER_CHECK_BOUND
+#define FIXED_CONTAINER_CHECK_BOUND 1
+#endif //!FIXED_CONTAINER_CHECK_BOUND
+
 #define FIXED_CHECK_INBOUND(ex)                                                \
     (!(ex)) ? throw std::out_of_range("Iterator out of range") : ((void)0)
 #define FIXED_CHECK_BADRANGE(ex)                                               \

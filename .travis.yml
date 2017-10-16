@@ -27,20 +27,15 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
   
-    - env:
-      - CONFIG=Release
-    - env:
-      - CONFIG=Debug
+  env:
+    - CONFIG=Release
+    - CONFIG=Debug
 
 before_install:
     - eval "${MATRIX_EVAL}"
 
 script:
-  - cmake ./test
-  - scan-build cmake --build . --config Debug -- -j2
-  - ./fixed_test
-  - rm -r CMakeFiles/fixed_test.dir/*.o
-  - rm fixed_test
-  - echo ${CONFIG}
-  - scan-build cmake --build . --config Release -- -j2
   - cppcheck --quiet --error-exitcode=1 -f -I include/ ./test/*.cpp
+  - cmake ./test
+  - scan-build cmake --build . --config ${CONFIG} -- -j2
+  - ./fixed_test

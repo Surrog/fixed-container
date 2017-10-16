@@ -168,7 +168,9 @@ static void test_limit()
 	hash.insert({ 3, 'a' });
 	hash.insert({ 4, 'a' });
 	hash.insert({ 5, 'a' });
+#ifdef FIXED_CONTAINER_CHECK_BOUND
 	CHECK_THROWS(hash.insert({ 6, 'a' }));
+#endif
 }
 
 TEST_CASE("testing hashmap", "[statics]")

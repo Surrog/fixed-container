@@ -109,8 +109,9 @@ void test_merge()
     {
         CONTAINER_T<int, 5, Alloc_pattern> lval{1, 2, 3};
         CONTAINER_T<int, 4, Alloc_pattern> rval{4, 5, 6};
-
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         CHECK_THROWS(lval.merge(std::move(rval)));
+#endif
     }
 
     {
@@ -179,22 +180,26 @@ void test_splice()
     {
         LIST_T<int, 4, Alloc_pattern> lc = {2, 3, 4, 5};
         LIST_T<int, 4, Alloc_pattern> rc = {0, 1};
-
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         CHECK_THROWS(lc.splice(lc.begin(), std::move(rc)));
+#endif
     }
 
     {
         LIST_T<int, 4, Alloc_pattern> lc = {2, 3, 4, 5};
         LIST_T<int, 4, Alloc_pattern> rc = {0, 1};
-
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         CHECK_THROWS(lc.splice(lc.begin(), std::move(rc), rc.begin() + 1));
+#endif
     }
 
     {
         LIST_T<int, 4, Alloc_pattern> lc = {2, 3, 4, 5};
         LIST_T<int, 4, Alloc_pattern> rc = {0, 1};
 
+#ifdef FIXED_CONTAINER_CHECK_BOUND
         CHECK_THROWS(lc.splice(lc.begin(), std::move(rc), rc.begin(), rc.begin() + 2));
+#endif
     }
 
     {
