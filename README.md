@@ -20,7 +20,12 @@ Patchs are welcome, templated tests can be found in the test/ directory.
 
 ## Current container finished and released:
 - vector
-- list
+- listed_vector
+
+## Current allocator pattern:
+- aligned_stack_allocator
+- aligned_heap_allocator
+- constexpr_stack_allocator
 
 ## Current work on:
 - string
