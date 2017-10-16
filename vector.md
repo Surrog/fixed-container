@@ -24,7 +24,7 @@ template <typename T, _impl::container_size_type SIZE,
     template <typename, _impl::container_size_type> typename Alloc_pattern
     = _impl::aligned_stack_allocator>
 class vector;
-`
+`   
 Guarrantee the container support, atleast, SIZE of elements T in continous memory.
 
 ### Member types
