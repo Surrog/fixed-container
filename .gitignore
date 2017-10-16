@@ -44,3 +44,4 @@ CMakeCache.txt
 *CMakeFiles*
 *.vs*
 *.ilk
+*.user

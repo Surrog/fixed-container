@@ -6,14 +6,23 @@ endif()
 
 project (fixed_test)
 
+set (CHECK_BOUND FALSE CACHE BOOL "Activate bound checking")
 
 #compiler requirement
 if (MSVC)
 	add_compile_options(/W4)
 	set (CMAKE_CXX_STANDARD 14)
+	if (CHECK_BOUND)
+		add_compile_options(/DFIXED_CONTAINER_CHECK_BOUND)
+	endif()
 else ()
 	add_compile_options(-Wall -Wextra -Wpedantic -std=c++1z)
+	if (CHECK_BOUND)
+		add_compile_options(-DFIXED_CONTAINER_CHECK_BOUND)
+	endif()
 endif()
+
+add_compi
 
 set(INCLUDE_DIRS 
 	"${PROJECT_SOURCE_DIR}/../include/")
