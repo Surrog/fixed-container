@@ -15,11 +15,6 @@ matrix:
             - cppcheck
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-      matrix:
-        - env:
-          - BUILD_CONFIG="CONFIG=Release"
-        - env:
-          - BUILD_CONFIG="CONFIG=Debug"
 
     - os: linux
       addons:
@@ -31,11 +26,11 @@ matrix:
             - cppcheck
       env:
         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-      matrix:
-        - env:
-          - BUILD_CONFIG="CONFIG=Release"
-        - env:
-          - BUILD_CONFIG="CONFIG=Debug"
+  
+    env:
+      - CONFIG=Release
+    env:
+      - CONFIG=Debug
 
 before_install:
     - eval "${MATRIX_EVAL}"
