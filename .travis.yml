@@ -15,6 +15,11 @@ matrix:
             - cppcheck
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+      matrix:
+        - env:
+          - BUILD_CONFIG="CONFIG=Release"
+        - env:
+          - BUILD_CONFIG="CONFIG=Debug"
 
     - os: linux
       addons:
@@ -26,9 +31,15 @@ matrix:
             - cppcheck
       env:
         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+      matrix:
+        - env:
+          - BUILD_CONFIG="CONFIG=Release"
+        - env:
+          - BUILD_CONFIG="CONFIG=Debug"
 
 before_install:
     - eval "${MATRIX_EVAL}"
+    - eval "${BUILD_CONFIG}"
 
 script:
   - cmake ./test
@@ -36,5 +47,6 @@ script:
   - ./fixed_test
   - rm -r CMakeFiles/fixed_test.dir/*.o
   - rm fixed_test
+  - echo ${CONFIG}
   - scan-build cmake --build . --config Release -- -j2
   - cppcheck --quiet --error-exitcode=1 -f -I include/ ./test/*.cpp
