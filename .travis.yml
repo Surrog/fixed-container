@@ -57,6 +57,6 @@ before_install:
 script:
   - cppcheck --quiet --error-exitcode=1 -f -I include/ ./test/*.cpp
   - cmake ./test
-  - scan-build cmake --build . --config ${CONFIG} --D= -- -j2 -DFIXED_CONTAINER_CHECK_BOUND
+  - scan-build cmake --build . --config ${CONFIG} -- -j2 -DFIXED_CONTAINER_CHECK_BOUND
   - ./fixed_test
   - exit
