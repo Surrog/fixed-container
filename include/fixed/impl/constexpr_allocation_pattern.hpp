@@ -19,10 +19,6 @@ namespace _impl
 		constexpr constexpr_stack_allocator() noexcept
 			: _data()
 		{}
-        constexpr constexpr_stack_allocator(const empty_source&) noexcept
-            : constexpr_stack_allocator()
-        {
-        }
 
         typedef T value_type;
         typedef T aligned_type;

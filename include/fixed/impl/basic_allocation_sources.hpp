@@ -1,8 +1,8 @@
 #ifndef FIXED_BASIC_ALLOCATION_SOURCES
 #define FIXED_BASIC_ALLOCATION_SOURCES
 
-#include "fixed_type_traits.hpp"
 #include "fixed_def.hpp"
+#include "fixed_type_traits.hpp"
 #include <type_traits>
 
 namespace fixed
