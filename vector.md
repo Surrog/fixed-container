@@ -15,7 +15,7 @@ Iterator invalidation:
 - Iterators before inserting or removing elements will still be valid.
 
 Thread safety:
-- Accessing concurrently the container will create a data race situation.
+- Accessing concurrently the container may create a data race situation.
 
 ## Interface
 
