@@ -50,48 +50,43 @@ Guarrantee the container support, atleast, SIZE of elements T in continous memor
 ```
 vector() noexcept(Alloc_pattern()); //(1)
 template <typename Alloc_source> vector(Alloc_source& source) noexcept(Alloc_pattern(Alloc_source&));
-```   
-
+```
 ```
 vector(size_type count); //(2)
 `template <typename Alloc_source> vector(size_type count, Alloc_source&);
-```   
-
+```
 ```
 vector(size_type count, const T& value); //(3)
 `template <typename Alloc_source> vector(size_type count, const T& value, Alloc_source&)
-```   
-
+```
 ```
 template <typename InputIt> vector(InputIt first, InputIt last) //(4)
 template <typename InputIt, typename Alloc_source> vector(InputIt first, InputIt last, Alloc_source& source)
-```   
-
+```
 ```
 vector(const vector& other) //(5)
 template <typename Alloc_source> vector(const vector& other, Alloc_source& source)
 template <size_type RSIZE, RAlloc_source> vector(const vector<T, RSIZE, RAlloc_source>& other)
 template <size_type RSIZE, typename RAlloc_source, typename Alloc_source> vector(const vector<T, RSIZE, RAlloc_source>& other, Alloc_source& source)
-```   
-
+```
 ```
 vector(vector&& other) noexcept(*see description*) //(6)
 template <typename Alloc_source> vector(vector&& other, Alloc_source& source) noexcept(Alloc_pattern(Alloc_source&))
 template <size_type RSIZE, RAlloc_source> vector(vector<T, RSIZE, RAlloc_source>&& other)
 template <size_type RSIZE, typename RAlloc_source, typename Alloc_source> vector(vector<T, RSIZE, RAlloc_source>&& other, Alloc_source& source)
-```   
-
+```
 ```
 vector(std::initializer_list<T> init) //(7)
 template <typename Allocator_source> vector(std::initializer_list<T> init, Allocator_source& source);
-```   
+```
 
 (1) Default constructors : construct an empty container. Should you pass a Allocation source, it will construct the Allocation pattern with it.   
 (2) Constructs the container with count default-inserted instances of T. No copies are made.   
 (3) Constructs the container with count copies of elements with value value.   
 (4) Constructs the container with the contents of the range [first, last).   
 (5) Copy constructor. Constructs a copy of the container `other` passed in parameters.   
-(6) Move constructor. Constructs the container with the contents of other using move semantics. Should SIZE and Allocator_pattern are the same, and that Allocator_pattern offer a move constructor, it will use it instead of moving each element. the Allocator pattern After the move, other is guaranteed to be empty().   
+(6) Move constructor. Constructs the container with the contents of other using move semantics.   
+Should SIZE and Allocator_pattern are the same, and that Allocator_pattern offer a move constructor, it will use it instead of moving individually each elements. `other` is guaranteed to be empty at the end of move constructor.   
 Noexcept is guarantee if Alloc_source is nothrow default constructible AND either Alloc_source is nothrow move assignable OR moving each element from the container is guarrantee to be noexcept.   
 (7) Constructs the container with the contents of the initializer list init.
 
@@ -124,17 +119,14 @@ Linear in the size of the container.
 ```
 vector& operator=(const vector& other); //(1)
 template <size_type RSIZE, typename Allocator_source> vector& operator=(const vector<RSIZE, Allocator_source>& other);
-```   
-
+```
 ```
 vector& operator=(vector&& other) noexcept(*see description*); //(2)
 template <size_type RSIZE, typename RAllocator_source> vector& operator=(const vector<RSIZE, RAllocator_source>&& other);
-```   
-
+```
 ```
 vector& operator=(std::initializer_list<T> ilist); //(3)
-```   
-
+```
 (1) Copy assignment operator. Replaces the contents with a copy of the contents of other.
 (2) Move assignment operator. Replaces the contents with those of `other` using move semantics (i.e. the data in `other` is moved from other into this container). `other` is in a valid state and empty afterwards.
 (3) Replaces the contents with those identified by initializer list ilist.
@@ -147,7 +139,7 @@ vector& operator=(std::initializer_list<T> ilist); //(3)
 `*this`
 
 ##### Complexity
-(1) Linear in the size of `*this` and `other`
-(2) Linear in the size of `*this` and `other`
-(3) Linear in the size of `*this` and `ilist`
+(1) Linear in the size of `*this` and `other`   
+(2) Linear in the size of `*this` and `other`   
+(3) Linear in the size of `*this` and `ilist`   
 
