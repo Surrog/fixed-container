@@ -55,7 +55,6 @@ before_install:
     - eval "${MATRIX_EVAL}"
 
 script:
-  - cppcheck --quiet --error-exitcode=1 -f -I include/ ./test/*.cpp
   - cmake -DCHECK_BOUND:BOOL=TRUE ./test 
   - scan-build cmake --build . --config ${CONFIG} -- -j2
   - ./fixed_test
