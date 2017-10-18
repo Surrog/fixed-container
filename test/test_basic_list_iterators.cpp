@@ -12,7 +12,7 @@ void test_basic_list_iterator()
 	fixed::_impl::aligned_stack_allocator<mem_iterator, 4> ref_test;
 	typedef typename fixed::_impl::aligned_stack_allocator<mem_iterator, 4>::iterator ref_iterator;
 
-	typedef typename ITERATOR_TYPE<char, ref_iterator> iterator;
+	typedef ITERATOR_TYPE<char, ref_iterator> iterator;
 	 
 	auto ref_it = ref_test.begin();
 	auto mem_it = mem.begin();
