@@ -38,19 +38,13 @@ namespace _impl
         allocator_type_ptrs_impl _ptrs;
         size_type _size = 0;
 
-        void push_back()
-        {
-            FIXED_CHECK_FULL(_size < max_size());
-			if (_size == 0) initialize_ptrs();
-            new(_ptrs[_size].get()) T();
-            ++_size;
-        }
-
         void set_at(size_type index, const T& value)
         {
             if(index < _size)
             {
-                *_ptrs[index] = value;
+				auto it = begin();
+				std::advance(it, index);
+                (*it) = value;
             }
             else
             {
@@ -62,8 +56,10 @@ namespace _impl
         {
             if(index < _size)
             {
-                *_ptrs[index] = std::move(value);
-            }
+				auto it = begin();
+				std::advance(it, index);
+				(*it) = std::move(value);
+			}
             else
             {
                 push_back(std::move(value));
@@ -73,9 +69,18 @@ namespace _impl
 		void initialize_ptrs() 
 			noexcept(is_nothrow_allocator_iterator_v<allocator_type_data_impl>)
 		{
-			for (size_type i = 0; i < _data_holder.max_size(); i++)
+			auto data_beg = _data_holder.begin();
+			auto data_end = _data_holder.end();
+			auto ptrs_beg = _ptrs.begin();
+			auto ptrs_end = _ptrs.end();
+			auto i = size();
+			auto max = max_size();
+
+			while (data_beg != data_end && ptrs_beg != ptrs_end && i < max)
 			{
-				_ptrs[i] = _data_holder.begin() + i;
+				*ptrs_beg = data_beg;
+				std::advance(data_beg, 1);
+				std::advance(ptrs_beg, 1);
 			}
 		}
 
@@ -116,7 +121,7 @@ namespace _impl
         {
             for(size_type i = 0; i < count; i++)
             {
-                push_back();
+                emplace_back();
             }
         }
 
@@ -127,7 +132,7 @@ namespace _impl
         {
             for(size_type i = 0; i < count; i++)
             {
-                push_back();
+                emplace_back();
             }
         }
 
@@ -430,58 +435,54 @@ namespace _impl
         reference front()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            return *_ptrs[0];
+            return *begin();
         }
 
         const_reference front() const
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            return *_ptrs[0];
+            return *begin();
         }
 
         reference back()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            return *_ptrs[_size - 1];
+			auto it = begin();
+			std::advance(it, _size - 1);
+            return *it;
         }
 
         const_reference back() const
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            return *_ptrs[_size - 1];
-        }
+			auto it = begin();
+			std::advance(it, _size - 1);
+			return *it;
+		}
 
         // Iterators
-        iterator begin() noexcept
+        iterator begin()
         {
-            if(_size > 0)
-                return iterator(_ptrs.begin());
-            return end();
+			return iterator(_ptrs.begin());
         }
 
         const_iterator begin() const noexcept { return cbegin(); }
 
         const_iterator cbegin() const noexcept
         {
-            if(_size > 0)
-                return const_iterator(_ptrs.begin());
-            return end();
+			return const_iterator(_ptrs.begin());
         }
 
-        iterator end() noexcept
+        iterator end()
         {
-            if(_size > 0)
-                return iterator(_ptrs.begin() + _size);
-            return iterator();
+            return iterator(_ptrs.begin() + _size);            
         }
 
         const_iterator end() const noexcept { return cend(); }
 
         const_iterator cend() const noexcept
         {
-            if(_size > 0)
-                return const_iterator(_ptrs.begin() + _size);
-            return const_iterator();
+			return const_iterator(_ptrs.begin() + _size);
         }
 
         reverse_iterator rbegin() { return reverse_iterator(end()); }
@@ -512,11 +513,7 @@ namespace _impl
         // Modifiers
         void clear()
         {
-            for(size_type i = 0; i < _size; i++)
-            {
-                _ptrs[i].get()->~T();
-            }
-            _size = 0;
+			shrink_to_size(0);
         }
 
         iterator insert(const_iterator pos, const T& value)
@@ -623,7 +620,7 @@ namespace _impl
         {
 			if (_size == 0) initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
-            new(_ptrs[_size].get()) T(value);
+            new(&*end()) T(value);
             ++_size;
         }
 
@@ -631,7 +628,7 @@ namespace _impl
         {
 			if (_size == 0) initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
-            new(_ptrs[_size].get()) T(std::move(value));
+            new(&*end()) T(std::move(value));
             ++_size;
         }
 
@@ -639,7 +636,7 @@ namespace _impl
         {
 			if (_size == 0) initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
-            new(_ptrs[_size].get()) T(std::forward<Args>(args)...);
+            new(&*end()) T(std::forward<Args>(args)...);
             ++_size;
             return back();
         }
@@ -647,9 +644,11 @@ namespace _impl
         void pop_back()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            _ptrs[_size - 1].get()->~T();
-            --_size;
-        }
+			auto it = begin();
+			std::advance(it, _size - 1);
+			(*it).~T();
+			--_size;
+		}
 
         void push_front(const T& value) { insert(cbegin(), value); }
 
@@ -861,7 +860,9 @@ namespace _impl
 		{
 			while (_size > count)
 			{
-				_ptrs[_size - 1].get()->~T();
+				auto it = begin();
+				std::advance(it, _size - 1);
+				(*it).~T();
 				--_size;
 			}
 		}

@@ -22,6 +22,7 @@ namespace _impl
 
         typedef T value_type;
         typedef T aligned_type;
+		typedef container_size_type size_type;
         typedef allocation_pattern_tag allocation_pattern;
         typedef std::true_type noexcept_iterators;
         typedef pointer_iterator<T, aligned_type> iterator;
@@ -44,23 +45,12 @@ namespace _impl
             return const_iterator(_data + SIZE);
         }
 
-        constexpr T& operator[](container_size_type i)
-        {
-            FIXED_CHECK_INBOUND(i < SIZE);
-            return reinterpret_cast<T&>(_data[i]);
-        }
-        constexpr const T& operator[](container_size_type i) const
-        {
-            FIXED_CHECK_INBOUND(i < SIZE);
-            return reinterpret_cast<const T&>(_data[i]);
-        }
-
         constexpr bool valid_pointer(const T* ptr) const noexcept
         {
             return ptr >= data() && ptr < data() + max_size();
         }
 
-        constexpr container_size_type max_size() const noexcept { return SIZE; }
+        constexpr size_type max_size() const noexcept { return SIZE; }
 
     private:
         aligned_type _data[SIZE];

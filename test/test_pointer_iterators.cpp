@@ -19,10 +19,11 @@ void test_pointer_iterator()
 
     {
         fixed::_impl::aligned_stack_allocator<char, 256> mem;
-        mem[0] = 't';
-        mem[1] = 'e';
-        mem[2] = 's';
-        mem[3] = 't';
+		auto beg = mem.begin();
+        beg[0] = 't';
+		beg[1] = 'e';
+		beg[2] = 's';
+		beg[3] = 't';
 
         auto it = mem.begin();
         CHECK(*it == 't');
@@ -36,10 +37,10 @@ void test_pointer_iterator()
 
     {
         fixed::_impl::aligned_stack_allocator<char, 256> mem;
-        mem[0] = '1';
-        mem[1] = '2';
-        mem[2] = '3';
-        mem[3] = '4';
+        mem.begin()[0] = '1';
+		mem.begin()[1] = '2';
+		mem.begin()[2] = '3';
+		mem.begin()[3] = '4';
 
         auto it = mem.begin();
 
@@ -67,10 +68,10 @@ void test_pointer_iterator()
 
     {
         fixed::_impl::aligned_stack_allocator<char, 256> mem;
-        mem[0] = '1';
-        mem[1] = '2';
-        mem[2] = '3';
-        mem[3] = '4';
+		mem.begin()[0] = '1';
+		mem.begin()[1] = '2';
+		mem.begin()[2] = '3';
+		mem.begin()[3] = '4';
 
         auto it = mem.begin();
         auto it1 = mem.begin() + 1;
@@ -80,10 +81,10 @@ void test_pointer_iterator()
 
     {
         fixed::_impl::aligned_stack_allocator<char, 256> mem;
-        mem[0] = '1';
-        mem[1] = '2';
-        mem[2] = '3';
-        mem[3] = '4';
+		mem.begin()[0] = '1';
+		mem.begin()[1] = '2';
+		mem.begin()[2] = '3';
+		mem.begin()[3] = '4';
 
         auto it = mem.begin();
         CHECK(it[0] == '1');
@@ -94,10 +95,10 @@ void test_pointer_iterator()
 
     {
         fixed::_impl::aligned_stack_allocator<char, 256> mem;
-        mem[0] = '1';
-        mem[1] = '2';
-        mem[2] = '3';
-        mem[3] = '4';
+		mem.begin()[0] = '1';
+		mem.begin()[1] = '2';
+		mem.begin()[2] = '3';
+		mem.begin()[3] = '4';
 
         auto it = mem.begin();
         auto it1 = mem.begin() + 1;
@@ -112,10 +113,10 @@ void test_pointer_iterator()
 
     {
         fixed::_impl::aligned_stack_allocator<char, 256> mem;
-        mem[0] = '1';
-        mem[1] = '2';
-        mem[2] = '3';
-        mem[3] = '4';
+		mem.begin()[0] = '1';
+		mem.begin()[1] = '2';
+		mem.begin()[2] = '3';
+		mem.begin()[3] = '4';
         char test[5] = "1234";
 
         auto beg = mem.begin();

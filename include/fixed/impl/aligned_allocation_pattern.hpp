@@ -38,6 +38,7 @@ namespace _impl
                 == sizeof(T),
             T, typename std::aligned_storage<sizeof(T), alignof(T)>::type>::type
             aligned_type;
+		typedef container_size_type size_type;
         typedef allocation_pattern_tag allocation_pattern;
         typedef std::true_type noexcept_iterators;
         typedef pointer_iterator<T, aligned_type> iterator;
@@ -66,22 +67,11 @@ namespace _impl
             return const_iterator(data() + SIZE);
         }
 
-        T& operator[](container_size_type i)
-        {
-            FIXED_CHECK_INBOUND(i < SIZE);
-            return reinterpret_cast<T&>(_data[i]);
-        }
-        const T& operator[](container_size_type i) const
-        {
-            FIXED_CHECK_INBOUND(i < SIZE);
-            return reinterpret_cast<const T&>(_data[i]);
-        }
-
         bool valid_pointer(const T* ptr) const noexcept
         {
             return ptr >= data() && ptr < data() + max_size();
         }
-        constexpr container_size_type max_size() const noexcept { return SIZE; }
+        constexpr size_type max_size() const noexcept { return SIZE; }
 
     private:
         inner_type _data[SIZE];
@@ -116,6 +106,7 @@ namespace _impl
                 == sizeof(T),
             T, typename std::aligned_storage<sizeof(T), alignof(T)>::type>::type
             aligned_type;
+		typedef container_size_type size_type;
         typedef pointer_iterator<T, aligned_type> iterator;
         typedef const_pointer_iterator<T, aligned_type> const_iterator;
 
@@ -140,35 +131,21 @@ namespace _impl
         const_iterator begin() const { return cbegin(); }
         const_iterator end() const { return cend(); }
 
-        T& operator[](container_size_type i)
-        {
-            FIXED_CHECK_INBOUND(i < SIZE);
-            return reinterpret_cast<T&>(data()[i]);
-        }
-
-        const T& operator[](container_size_type i) const
-        {
-            FIXED_CHECK_INBOUND(i < SIZE);
-            return reinterpret_cast<const T&>(data()[i]);
-        }
-
         bool valid_pointer(const T* ptr) const noexcept
         {
             return ptr >= data() && ptr < data() + max_size();
         }
 
-        void resize(container_size_type to_size)
+        void resize(size_type to_size)
         {
             to_size = std::max(SIZE, to_size);
             _data = std::make_unique<inner_type[]>(to_size);
-            _size = to_size;
         }
 
-        constexpr container_size_type max_size() const { return SIZE; }
+        constexpr size_type max_size() const { return SIZE; }
 
     private:
         std::unique_ptr<inner_type[]> _data;
-        std::size_t _size;
     };
 }
 }

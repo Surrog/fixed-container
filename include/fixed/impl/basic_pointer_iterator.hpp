@@ -17,30 +17,30 @@ namespace _impl
         typedef std::ptrdiff_t difference_type;
         typedef std::random_access_iterator_tag iterator_category;
 
-        bool operator==(const pointer_iterator& rval) const
+        constexpr bool operator==(const pointer_iterator& rval) const
         {
             return _value == rval._value;
         }
 
-        bool operator!=(const pointer_iterator& rval) const
+		constexpr bool operator!=(const pointer_iterator& rval) const
         {
             return !operator==(rval);
         }
 
-		value_type* get() { return reinterpret_cast<value_type*>(_value); }
-        const value_type* get() const
+		constexpr value_type* get() { return reinterpret_cast<value_type*>(_value); }
+		constexpr const value_type* get() const
         {
             return reinterpret_cast<const value_type*>(_value);
         }
 
-        reference operator*() const
+		constexpr reference operator*() const
         {
             assert(_value != nullptr);
             return reinterpret_cast<reference>(*_value);
         }
 
-		value_type* operator->() { return get(); }
-        const value_type* operator->() const { return get(); }
+		constexpr value_type* operator->() { return get(); }
+		constexpr const value_type* operator->() const { return get(); }
 
         constexpr pointer_iterator() noexcept = default;
 
@@ -53,14 +53,14 @@ namespace _impl
 		constexpr pointer_iterator& operator=(const pointer_iterator&) noexcept = default;
 		constexpr pointer_iterator& operator=(pointer_iterator&&) noexcept = default;
 
-        pointer_iterator& operator++()
+		constexpr pointer_iterator& operator++()
         {
             assert(_value != nullptr);
             ++_value;
             return *this;
         }
 
-        pointer_iterator operator++(int)
+		constexpr pointer_iterator operator++(int)
         {
             assert(_value != nullptr);
             pointer_iterator result = *this;
@@ -68,14 +68,14 @@ namespace _impl
             return result;
         }
 
-        pointer_iterator& operator--()
+		constexpr pointer_iterator& operator--()
         {
             assert(_value != nullptr);
             --_value;
             return *this;
         }
 
-        pointer_iterator operator--(int)
+		constexpr pointer_iterator operator--(int)
         {
             assert(_value != nullptr);
             pointer_iterator result = *this;
@@ -83,59 +83,59 @@ namespace _impl
             return result;
         }
 
-        pointer_iterator& operator+=(difference_type n)
+		constexpr pointer_iterator& operator+=(difference_type n)
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
             _value += n;
             return *this;
         }
 
-        pointer_iterator operator+(difference_type n) const
+		constexpr pointer_iterator operator+(difference_type n) const
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
             return pointer_iterator(_value + n);
         }
 
-        pointer_iterator& operator-=(difference_type n)
+		constexpr pointer_iterator& operator-=(difference_type n)
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
             _value -= n;
             return *this;
         }
 
-        pointer_iterator operator-(difference_type n) const
+		constexpr pointer_iterator operator-(difference_type n) const
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
 			return pointer_iterator(_value - n);
         }
 
-        difference_type operator-(const pointer_iterator& rval) const
+		constexpr difference_type operator-(const pointer_iterator& rval) const
         {
             return _value - rval._value;
         }
 
-        reference operator[](difference_type n)
+		constexpr reference operator[](difference_type n)
         {
             assert(_value != nullptr);
             return reinterpret_cast<reference>(_value[n]);
         }
 
-        bool operator<(const pointer_iterator& rval) const
+		constexpr bool operator<(const pointer_iterator& rval) const
         {
             return _value < rval._value;
         }
 
-        bool operator>(const pointer_iterator& rval) const
+		constexpr bool operator>(const pointer_iterator& rval) const
         {
             return _value > rval._value;
         }
 
-        bool operator<=(const pointer_iterator& rval) const
+		constexpr bool operator<=(const pointer_iterator& rval) const
         {
             return _value <= rval._value;
         }
 
-        bool operator>=(const pointer_iterator& rval) const
+		constexpr bool operator>=(const pointer_iterator& rval) const
         {
             return _value >= rval._value;
         }
@@ -154,59 +154,58 @@ namespace _impl
         typedef std::ptrdiff_t difference_type;
         typedef std::random_access_iterator_tag iterator_category;
 
-        bool operator==(const const_pointer_iterator& rval) const
+		constexpr bool operator==(const const_pointer_iterator& rval) const
         {
             return _value == rval._value;
         }
 
-        bool operator!=(const const_pointer_iterator& rval) const
+		constexpr bool operator!=(const const_pointer_iterator& rval) const
         {
             return !operator==(rval);
         }
 
-        const value_type* get() const { return reinterpret_cast<value_type*>(_value); }
+		constexpr const value_type* get() const { return reinterpret_cast<value_type*>(_value); }
 
-        const reference operator*() const
+		constexpr const reference operator*() const
         {
             assert(_value != nullptr);
             return reinterpret_cast<const reference>(*_value);
         }
 
-        const value_type* operator->() const { return get(); }
+		constexpr const value_type* operator->() const { return get(); }
 
-        const_pointer_iterator() = default;
+		constexpr const_pointer_iterator() = default;
 
-        const_pointer_iterator(const inner_type* val)
+		constexpr const_pointer_iterator(const inner_type* val)
             : _value(const_cast<inner_type*>(val))
-        {
-        }
+        {}
 
-        const_pointer_iterator(const const_pointer_iterator&) = default;
-        const_pointer_iterator(const_pointer_iterator&&) noexcept = default;
-        const_pointer_iterator& operator=(const const_pointer_iterator&)
+		constexpr const_pointer_iterator(const const_pointer_iterator&) = default;
+		constexpr const_pointer_iterator(const_pointer_iterator&&) noexcept = default;
+		constexpr const_pointer_iterator& operator=(const const_pointer_iterator&)
             = default;
-        const_pointer_iterator& operator=(const_pointer_iterator&&) noexcept
+		constexpr const_pointer_iterator& operator=(const_pointer_iterator&&) noexcept
             = default;
 
-		const_pointer_iterator(pointer_iterator<value_type>&& orig)
+		constexpr const_pointer_iterator(pointer_iterator<value_type>&& orig)
 			: const_pointer_iterator(reinterpret_cast<const inner_type*>(orig.get()))
 		{
 			orig = pointer_iterator<value_type>();
 		}
 
-        const_pointer_iterator(const pointer_iterator<value_type>& orig)
+		constexpr const_pointer_iterator(const pointer_iterator<value_type>& orig)
             : const_pointer_iterator(reinterpret_cast<const inner_type*>(orig.get()))
         {
         }
 
-        const_pointer_iterator& operator++()
+		constexpr const_pointer_iterator& operator++()
         {
             assert(_value != nullptr);
             ++_value;
             return *this;
         }
 
-        const_pointer_iterator operator++(int)
+		constexpr const_pointer_iterator operator++(int)
         {
             assert(_value != nullptr);
             const_pointer_iterator result = (*this);
@@ -214,14 +213,14 @@ namespace _impl
             return result;
         }
 
-        const_pointer_iterator& operator--()
+		constexpr const_pointer_iterator& operator--()
         {
             assert(_value != nullptr);
             _value--;
             return *this;
         }
 
-        const_pointer_iterator operator--(int)
+		constexpr const_pointer_iterator operator--(int)
         {
             assert(_value != nullptr);
             const_pointer_iterator result = (*this);
@@ -229,59 +228,59 @@ namespace _impl
             return result;
         }
 
-        const_pointer_iterator& operator+=(difference_type n)
+		constexpr const_pointer_iterator& operator+=(difference_type n)
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
             _value += n;
             return *this;
         }
 
-        const_pointer_iterator operator+(difference_type n) const
+		constexpr const_pointer_iterator operator+(difference_type n) const
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
             return {_value + n};
         }
 
-        const_pointer_iterator& operator-=(difference_type n)
+		constexpr const_pointer_iterator& operator-=(difference_type n)
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
             _value -= n;
             return *this;
         }
 
-        const_pointer_iterator operator-(difference_type n) const
+		constexpr const_pointer_iterator operator-(difference_type n) const
         {
-            assert(_value != nullptr);
+            assert(_value != nullptr || n == 0);
             return const_pointer_iterator(_value - n);
         }
 
-        difference_type operator-(const const_pointer_iterator& rval) const
+		constexpr difference_type operator-(const const_pointer_iterator& rval) const
         {
             return _value - rval._value;
         }
 
-        reference operator[](difference_type n)
+		constexpr reference operator[](difference_type n)
         {
             assert(_value != nullptr);
             return reinterpret_cast<reference>(_value[n]);
         }
 
-        bool operator<(const const_pointer_iterator& rval) const
+		constexpr bool operator<(const const_pointer_iterator& rval) const
         {
             return _value < rval._value;
         }
 
-        bool operator>(const const_pointer_iterator& rval) const
+		constexpr bool operator>(const const_pointer_iterator& rval) const
         {
             return _value > rval._value;
         }
 
-        bool operator<=(const const_pointer_iterator& rval) const
+		constexpr bool operator<=(const const_pointer_iterator& rval) const
         {
             return _value <= rval._value;
         }
 
-        bool operator>=(const const_pointer_iterator& rval) const
+		constexpr bool operator>=(const const_pointer_iterator& rval) const
         {
             return _value >= rval._value;
         }

@@ -8,37 +8,40 @@ void test_basic_list_iterator()
 {
 
 	fixed::_impl::aligned_stack_allocator<char, 4> mem;
-	mem[0] = '1';
-	mem[1] = '2';
-	mem[2] = '3';
-	mem[3] = '4';
-	fixed::_impl::aligned_stack_allocator<char*, 4> ref_test;
-	ref_test[0] = &mem[0];
-	ref_test[1] = &mem[1];
-	ref_test[2] = &mem[2];
-	ref_test[3] = &mem[3];
+	typedef typename fixed::_impl::aligned_stack_allocator<char, 4>::iterator mem_iterator;
+	fixed::_impl::aligned_stack_allocator<mem_iterator, 4> ref_test;
+	typedef typename fixed::_impl::aligned_stack_allocator<mem_iterator, 4>::iterator ref_iterator;
 
-	typedef typename fixed::_impl::aligned_stack_allocator<char*, 4>::iterator iterator;
-
-	using Iterator = ITERATOR_TYPE<char, iterator>;
+	typedef typename ITERATOR_TYPE<char, ref_iterator> iterator;
+	 
+	auto ref_it = ref_test.begin();
+	auto mem_it = mem.begin();
+	for (std::size_t i = 0u; i < 4u; i++)
 	{
-		Iterator it1;
-		Iterator it2;
+		*mem_it = '1' + char(i);
+		*ref_it = mem_it;
+		std::advance(ref_it, 1);
+		std::advance(mem_it, 1);
+	}
+
+	{
+		iterator it1;
+		iterator it2;
 		CHECK(it1 == it2);
 		CHECK(!(it1 != it2));
 	}
 
 	{
-		Iterator it(ref_test.begin());
+		iterator it(ref_test.begin());
 		CHECK(*it == '1');
-		Iterator copy(it);
+		iterator copy(it);
 		CHECK(*copy == '1');
-		Iterator move(std::move(it));
+		iterator move(std::move(it));
 		CHECK(*move == '1');
 	}
 
 	{
-		Iterator it(ref_test.begin());
+		iterator it(ref_test.begin());
 		CHECK(*it == '1');
 		it++;
 		CHECK(*it == '2');
@@ -51,13 +54,13 @@ void test_basic_list_iterator()
 	}
 
 	{
-		Iterator it(ref_test.begin());
+		iterator it(ref_test.begin());
 		CHECK(*it == '1');
 		it += 2;
 		CHECK(*it == '3');
 		it -= 1;
 		CHECK(*it == '2');
-		Iterator copy = it + 2;
+		iterator copy = it + 2;
 		CHECK(*copy == '4');
 		CHECK(*it == '2');
 		copy = it - 1;
@@ -66,14 +69,14 @@ void test_basic_list_iterator()
 	}
 
 	{
-		Iterator it0(ref_test.begin());
-		Iterator it1(ref_test.begin() + 1);
+		iterator it0(ref_test.begin());
+		iterator it1(ref_test.begin() + 1);
 		CHECK((it1 - it0) == 1);
 		CHECK((it0 - it1) == -1);
 	}
 
 	{
-		Iterator it(ref_test.begin());
+		iterator it(ref_test.begin());
 		CHECK(*it == '1');
 		CHECK(it[0] == '1');
 		CHECK(it[1] == '2');
@@ -82,8 +85,8 @@ void test_basic_list_iterator()
 	}
 
 	{
-		Iterator it(ref_test.begin());
-		Iterator it1(ref_test.begin() + 1);
+		iterator it(ref_test.begin());
+		iterator it1(ref_test.begin() + 1);
 
 		CHECK(it < it1);
 		CHECK(it1 > it);
@@ -94,8 +97,8 @@ void test_basic_list_iterator()
 	}
 
 	{
-		Iterator beg(ref_test.begin());
-		Iterator end(beg + 4);
+		iterator beg(ref_test.begin());
+		iterator end(beg + 4);
 		CHECK(std::equal(beg, end, mem.begin(), mem.begin() + 4));
 	}
 }
