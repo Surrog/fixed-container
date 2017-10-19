@@ -48,6 +48,9 @@ namespace astd
     };
 
     template <typename T> constexpr bool is_iterator_v = is_iterator<T>::value;
+
+	template <typename T> constexpr bool is_trivial_v = std::is_trivial<T>::value;
+
 }
 }
 

@@ -21,26 +21,32 @@ void test_noexcept_constructor()
     static_assert(
         std::is_nothrow_move_assignable<Alloc_pattern<char, 10>>::value,
         "Not noexcept move assignable");
+}
 
-    static_assert(std::is_nothrow_default_constructible<
-                      Alloc_pattern<test_move, 10>>::value,
-        "Not noexcept default constructible");
-    static_assert(
-        std::is_nothrow_move_constructible<Alloc_pattern<test_move, 10>>::value,
-        "Not noexcept move constructible");
-    static_assert(
-        std::is_nothrow_move_assignable<Alloc_pattern<test_move, 10>>::value,
-        "Not noexcept move assignable");
+template <template <typename, fixed::_impl::container_size_type>
+typename Alloc_pattern>
+void test_noexcept_constructor_with_non_trivial()
+{
+	static_assert(std::is_nothrow_default_constructible<
+		Alloc_pattern<test_move, 10>>::value,
+		"Not noexcept default constructible");
+	static_assert(
+		std::is_nothrow_move_constructible<Alloc_pattern<test_move, 10>>::value,
+		"Not noexcept move constructible");
+	static_assert(
+		std::is_nothrow_move_assignable<Alloc_pattern<test_move, 10>>::value,
+		"Not noexcept move assignable");
 
-    static_assert(std::is_nothrow_default_constructible<
-                      Alloc_pattern<test_emplace_struct, 10>>::value,
-        "Not noexcept default constructible");
-    static_assert(std::is_nothrow_move_constructible<
-                      Alloc_pattern<test_emplace_struct, 10>>::value,
-        "Not noexcept move constructible");
-    static_assert(std::is_nothrow_move_assignable<
-                      Alloc_pattern<test_emplace_struct, 10>>::value,
-        "Not noexcept move assignable");
+	static_assert(std::is_nothrow_default_constructible<
+		Alloc_pattern<test_emplace_struct, 10>>::value,
+		"Not noexcept default constructible");
+	static_assert(std::is_nothrow_move_constructible<
+		Alloc_pattern<test_emplace_struct, 10>>::value,
+		"Not noexcept move constructible");
+	static_assert(std::is_nothrow_move_assignable<
+		Alloc_pattern<test_emplace_struct, 10>>::value,
+		"Not noexcept move assignable");
+
 }
 
 template <template <typename, fixed::_impl::container_size_type>
@@ -54,13 +60,15 @@ void test_is_allocator()
         Alloc_pattern<int, 10> alloc;
         auto itbeg = alloc.begin();
         auto itend = alloc.end();
+		CHECK(std::distance(itbeg, itend) >= 10);
     }
 
     {
         Alloc_pattern<int, 10> alloc;
         auto itbeg = alloc.cbegin();
         auto itend = alloc.cend();
-    }
+		CHECK(std::distance(itbeg, itend) >= 10);
+	}
 
     {
         Alloc_pattern<int, 10> alloc;
@@ -104,10 +112,14 @@ TEST_CASE("testing allocation pattern", "[alloc]")
 		"Not supposed to be reconized as alloc pattern");
 
     test_allocator_pattern<fixed::_impl::aligned_stack_allocator>();
+	test_noexcept_constructor_with_non_trivial<fixed::_impl::aligned_stack_allocator>();
+	test_noexcept_constructor_with_non_trivial<fixed::_impl::aligned_heap_allocator>();
     test_allocator_pattern<fixed::_impl::aligned_heap_allocator>();
     test_allocator_pattern<fixed::_impl::constexpr_stack_allocator>();
     test_allocator_pattern<fixed::stack_allocator>();
-    test_allocator_pattern<fixed::heap_allocator>();
+	test_noexcept_constructor_with_non_trivial<fixed::stack_allocator>();
+	test_allocator_pattern<fixed::heap_allocator>();
+	test_noexcept_constructor_with_non_trivial<fixed::heap_allocator>();
 
     test_is_allocator_continous<fixed::_impl::aligned_stack_allocator>();
     test_is_allocator_continous<fixed::_impl::aligned_heap_allocator>();

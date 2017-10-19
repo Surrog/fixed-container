@@ -65,10 +65,6 @@ void test_string_noexcept_constructor()
 	static_assert(std::is_nothrow_default_constructible<STRING_T<int, 10, std::char_traits<int>, Alloc_pattern>>::value, "Not noexcept default constructible");
 	static_assert(std::is_nothrow_move_constructible<STRING_T<int, 10, std::char_traits<int>, Alloc_pattern>>::value, "Not noexcept move constructible");
 	static_assert(std::is_nothrow_move_assignable<STRING_T<int, 10, std::char_traits<int>, Alloc_pattern>>::value, "Not noexcept move assignable");
-
-	static_assert(std::is_nothrow_default_constructible<STRING_T<test_move, 10, std::char_traits<test_move>, Alloc_pattern>>::value, "Not noexcept default constructible");
-	static_assert(std::is_nothrow_move_constructible<STRING_T<test_move, 10, std::char_traits<test_move>, Alloc_pattern>>::value, "Not noexcept move constructible");
-	static_assert(std::is_nothrow_move_assignable<STRING_T<test_move, 10, std::char_traits<test_move>, Alloc_pattern>>::value, "Not noexcept move assignable");
 }
 
 

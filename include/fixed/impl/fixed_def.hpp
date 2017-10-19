@@ -128,7 +128,6 @@ namespace _impl
 	template <typename T>
 	constexpr bool is_nothrow_allocator_iterator_v = T::noexcept_iterators::value;
 #endif
-
 	template <typename T>
 	struct _alloc_pattern_contiguous_helper
 	{

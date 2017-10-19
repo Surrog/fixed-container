@@ -8,12 +8,33 @@
 
 namespace fixed
 {
+	namespace _impl
+	{
+		template <bool B,
+			template <typename, fixed::_impl::container_size_type> typename T,
+			template <typename, fixed::_impl::container_size_type> typename F,
+			typename VALUE, fixed::_impl::container_size_type SIZE>
+		struct allocator_dispatch
+		{
+			typedef typename T<VALUE, SIZE> type;
+		};
+
+		template <
+			template <typename, fixed::_impl::container_size_type> typename T,
+			template <typename, fixed::_impl::container_size_type> typename F,
+			typename VALUE, fixed::_impl::container_size_type SIZE>
+		struct allocator_dispatch<false, T, F, VALUE, SIZE>
+		{
+			 typedef typename F<VALUE, SIZE> type;
+		};
+	}
+
 	template <typename T, fixed::_impl::container_size_type SIZE>
-	using stack_allocator = typename std::conditional<
-		std::is_trivial<T>::value,
-		fixed::_impl::constexpr_stack_allocator<T, SIZE>,
-		fixed::_impl::aligned_stack_allocator<T, SIZE>
-	>::type;
+	using stack_allocator = typename _impl::allocator_dispatch<
+		astd::is_trivial_v<T>,
+		fixed::_impl::constexpr_stack_allocator,
+		fixed::_impl::aligned_stack_allocator,
+		T, SIZE>::type;
 
 	template <typename T, fixed::_impl::container_size_type SIZE>
 	using heap_allocator = fixed::_impl::aligned_heap_allocator<T, SIZE>;
