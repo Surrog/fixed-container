@@ -16,7 +16,7 @@ namespace fixed
 			typename VALUE, fixed::_impl::container_size_type SIZE>
 		struct allocator_dispatch
 		{
-			typedef typename T<VALUE, SIZE> type;
+			typedef T<VALUE, SIZE> type;
 		};
 
 		template <
@@ -25,7 +25,7 @@ namespace fixed
 			typename VALUE, fixed::_impl::container_size_type SIZE>
 		struct allocator_dispatch<false, T, F, VALUE, SIZE>
 		{
-			 typedef typename F<VALUE, SIZE> type;
+			 typedef F<VALUE, SIZE> type;
 		};
 	}
 
