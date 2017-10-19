@@ -58,7 +58,6 @@ namespace _impl
         template <typename Alloc_source,
             std::enable_if_t<fixed::_impl::is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(Alloc_source& alloc)
-			noexcept(std::is_nothrow_constructible<allocator_type_impl, Alloc_source&>::value)
             : _size(0)
             , _data_container(alloc)
         {

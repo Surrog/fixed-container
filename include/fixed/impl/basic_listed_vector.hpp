@@ -106,7 +106,7 @@ namespace _impl
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
-        explicit basic_listed_vector(Alloc_source& alloc)
+        basic_listed_vector(Alloc_source& alloc)
 			noexcept(
 				std::is_nothrow_constructible<allocator_type_data_impl, Alloc_source&>::value &&
 				std::is_nothrow_constructible<allocator_type_ptrs_impl, Alloc_source&>::value)
@@ -116,7 +116,7 @@ namespace _impl
         {}
 		//!default constructor
 		// constructor with count copies
-        explicit basic_listed_vector(size_type count)
+        basic_listed_vector(size_type count)
             : basic_listed_vector()
         {
             for(size_type i = 0; i < count; i++)
@@ -127,7 +127,7 @@ namespace _impl
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
-        explicit basic_listed_vector(size_type count, Alloc_source& alloc)
+        basic_listed_vector(size_type count, Alloc_source& alloc)
             : basic_listed_vector(alloc)
         {
             for(size_type i = 0; i < count; i++)
@@ -260,7 +260,7 @@ namespace _impl
             other.clear();
         }
 
-        template <class Alloc_source = empty_source,
+        template <class Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_listed_vector(
             basic_listed_vector&& other, Alloc_source& alloc) noexcept
@@ -275,7 +275,7 @@ namespace _impl
 
         template <container_size_type RSIZE,
             template <typename, container_size_type> typename RALLOC,
-            class Alloc_source = empty_source,
+            class Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_listed_vector(
             basic_listed_vector<T, RSIZE, RALLOC>&& other, Alloc_source& alloc)

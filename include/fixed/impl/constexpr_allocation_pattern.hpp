@@ -15,10 +15,16 @@ namespace _impl
 
     public:
         static_assert(SIZE > 0, "zero sized container not allowed !");
+		static_assert(std::is_trivial<T>::value, "T is supposed to be trivial");
 
 		constexpr constexpr_stack_allocator() noexcept
 			: _data()
 		{}
+
+		constexpr constexpr_stack_allocator(const fixed::_impl::empty_source&) noexcept
+			: _data()
+		{}
+
 
         typedef T value_type;
         typedef T aligned_type;

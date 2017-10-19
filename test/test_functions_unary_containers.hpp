@@ -46,11 +46,16 @@ void test_canonical_constructor()
     }
 
     fixed::_impl::empty_source alloc_source_inst;
-
     {
         CONTAINER_T<int, 20, Alloc_pattern> l(alloc_source_inst);
         CONTAINER_T<test_move, 20, Alloc_pattern> lm(alloc_source_inst);
     }
+
+	{
+		//CONTAINER_T<int, 20, Alloc_pattern> l(fixed::_impl::empty_source());
+		//CONTAINER_T<test_move, 20, Alloc_pattern> lm(fixed::_impl::empty_source());
+	}
+
     //! default constructor
 
     // copy constructor
@@ -104,6 +109,8 @@ void test_canonical_constructor()
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+		//CONTAINER_T<int, 20, Alloc_pattern> r1(l, fixed::_impl::empty_source());
 
 #ifdef FIXED_CONTAINER_CHECK_BOUND
         try
@@ -169,6 +176,8 @@ void test_canonical_constructor()
 
         CHECK(r.size() == 3);
         CHECK(std::equal(r.begin(), r.end(), exp.begin(), exp.end()));
+
+		//CONTAINER_T<int, 20, Alloc_pattern> r1(std::move(l), fixed::_impl::empty_source());
 
 #ifdef FIXED_CONTAINER_CHECK_BOUND
         try
@@ -279,6 +288,9 @@ void test_canonical_constructor()
         CONTAINER_T<int, 20, Alloc_pattern> l(exp, alloc_source_inst);
         CHECK(l.size() == 3);
         CHECK(std::equal(l.begin(), l.end(), exp.begin(), exp.end()));
+
+		//CONTAINER_T<int, 20, Alloc_pattern> l1(exp, fixed::_impl::empty_source());
+
     }
 
 #ifdef FIXED_CONTAINER_CHECK_BOUND

@@ -19,11 +19,11 @@ Patchs are welcome, templated tests can be found in the test/ directory.
 - All the major classes are now available to be include as "fixed/<class name>.hpp" 
 
 ## Current container finished and released:
-- [vector](https://github.com/Surrog/fixed-container/blob/master/vector.md)
+- [vector](https://github.com/Surrog/fixed-container/blob/master/docs/vector.md)
 - listed_vector
 
 ## Current allocator pattern:
-Presentation of the pattern [here](https://github.com/Surrog/fixed-container/blob/master/allocation_pattern.md)
+Presentation of the pattern [here](https://github.com/Surrog/fixed-container/blob/master/docs/allocation_pattern.md)
 - aligned_stack_allocator
 - aligned_heap_allocator
 - constexpr_stack_allocator

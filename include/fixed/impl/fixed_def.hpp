@@ -137,7 +137,8 @@ namespace _impl
 	};
 
 	template <typename T>
-	constexpr bool is_alloc_pattern_contiguous_v = std::is_member_function_pointer<decltype(
+	constexpr bool is_alloc_pattern_contiguous_v = is_allocation_pattern_v<T> 
+		&& std::is_member_function_pointer<decltype(
 		_alloc_pattern_contiguous_helper<T>::function(&T::data)
 		)>::value
 		&& std::is_member_function_pointer<decltype(

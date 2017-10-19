@@ -48,7 +48,7 @@ template <template <typename, fixed::_impl::container_size_type>
 void test_is_allocator()
 {
     static_assert(fixed::_impl::is_allocation_pattern_v<Alloc_pattern<int, 10>>,
-        "Not alloc pattern");
+        "Alloc_pattern is suppose to be properly reconized as such");
 
     {
         Alloc_pattern<int, 10> alloc;
@@ -60,12 +60,6 @@ void test_is_allocator()
         Alloc_pattern<int, 10> alloc;
         auto itbeg = alloc.cbegin();
         auto itend = alloc.cend();
-    }
-
-    {
-        Alloc_pattern<int, 10> alloc;
-        int& i = alloc[0];
-        alloc.valid_pointer(&i);
     }
 
     {
@@ -87,7 +81,7 @@ void test_is_allocator_continous()
 		p++;
     }
 
-    {
+	{
         const Alloc_pattern<int, 10> alloc;
         const auto* p = alloc.data();
 		p++;
@@ -104,6 +98,11 @@ void test_allocator_pattern()
 
 TEST_CASE("testing allocation pattern", "[alloc]")
 {
+	static_assert(!fixed::_impl::is_allocation_pattern<test>::value,
+		"Not supposed to be reconized as alloc pattern");
+	static_assert(!fixed::_impl::is_allocation_pattern_v<test>,
+		"Not supposed to be reconized as alloc pattern");
+
     test_allocator_pattern<fixed::_impl::aligned_stack_allocator>();
     test_allocator_pattern<fixed::_impl::aligned_heap_allocator>();
     test_allocator_pattern<fixed::_impl::constexpr_stack_allocator>();

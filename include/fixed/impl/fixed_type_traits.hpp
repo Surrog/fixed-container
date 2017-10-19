@@ -2,6 +2,7 @@
 #define FIXED_VOID_T_COMPATIBILITY_HPP
 
 #include <type_traits>
+#include <iterator>
 
 namespace fixed
 {
