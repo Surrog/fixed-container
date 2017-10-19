@@ -47,14 +47,7 @@ namespace _impl
 		template <typename Alloc_source,
 			std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
 		constexpr basic_string(Alloc_source& source)
-			noexcept(typename std::is_nothrow_constructible<data_type, Alloc_source&>::value)
-			: _data(source)
-		{}
-
-		template <typename Alloc_source,
-			std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
-			constexpr basic_string(const Alloc_source& source)
-			noexcept(typename std::is_nothrow_constructible<data_type, const Alloc_source&>::value)
+			noexcept(std::is_nothrow_constructible<data_type, Alloc_source&>::value)
 			: _data(source)
 		{}
     };

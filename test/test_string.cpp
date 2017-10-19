@@ -39,18 +39,18 @@ void test_string_constructor()
 		STRING_T<char32_t, 10, std::char_traits<char32_t>, Alloc_pattern> string(src);
 	}
 
-	{
-		STRING_T<char, 10, std::char_traits<char>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	}
-	{
-		STRING_T<wchar_t, 10, std::char_traits<wchar_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	}
-	{
-		STRING_T<char16_t, 10, std::char_traits<char16_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	}
-	{
-		STRING_T<char32_t, 10, std::char_traits<char32_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	}
+	//{
+	//	STRING_T<char, 10, std::char_traits<char>, Alloc_pattern> string(fixed::_impl::empty_source{});
+	//}
+	//{
+	//	STRING_T<wchar_t, 10, std::char_traits<wchar_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
+	//}
+	//{
+	//	STRING_T<char16_t, 10, std::char_traits<char16_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
+	//}
+	//{
+	//	STRING_T<char32_t, 10, std::char_traits<char32_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
+	//}
 }
 
 template <template <typename, fixed::_impl::container_size_type, typename,
