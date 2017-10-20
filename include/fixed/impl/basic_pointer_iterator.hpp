@@ -1,6 +1,8 @@
 #ifndef FIXED_VECTOR_ITERATORS_HPP
 #define FIXED_VECTOR_ITERATORS_HPP
 
+#include "fixed/impl/fixed_def.hpp"
+
 namespace fixed
 {
 namespace _impl

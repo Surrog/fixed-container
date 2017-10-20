@@ -2,6 +2,7 @@
 #define FIXED_BASIC_LIST_ITERATOR_HPP
 
 #include <type_traits>
+#include "fixed/impl/fixed_def.hpp"
 
 namespace fixed
 {
