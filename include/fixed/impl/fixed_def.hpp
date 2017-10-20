@@ -11,6 +11,7 @@ namespace fixed
 {
 namespace _impl
 {
+#ifdef FIXED_CONTAINER_SIGNED_INT_AS_SIZE_TYPE
     using size_t = int;
 #else
     using size_t = std::size_t;
