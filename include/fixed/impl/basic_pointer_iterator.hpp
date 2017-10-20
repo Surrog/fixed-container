@@ -1,8 +1,6 @@
 #ifndef FIXED_VECTOR_ITERATORS_HPP
 #define FIXED_VECTOR_ITERATORS_HPP
 
-#include <cassert>
-
 namespace fixed
 {
 namespace _impl
@@ -35,7 +33,7 @@ namespace _impl
 
 		constexpr reference operator*() const
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             return reinterpret_cast<reference>(*_value);
         }
 
@@ -55,14 +53,14 @@ namespace _impl
 
 		constexpr pointer_iterator& operator++()
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             ++_value;
             return *this;
         }
 
 		constexpr pointer_iterator operator++(int)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             pointer_iterator result = *this;
             ++(*this);
             return result;
@@ -70,14 +68,14 @@ namespace _impl
 
 		constexpr pointer_iterator& operator--()
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             --_value;
             return *this;
         }
 
 		constexpr pointer_iterator operator--(int)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             pointer_iterator result = *this;
             --(*this);
             return result;
@@ -85,27 +83,27 @@ namespace _impl
 
 		constexpr pointer_iterator& operator+=(difference_type n)
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
             _value += n;
             return *this;
         }
 
 		constexpr pointer_iterator operator+(difference_type n) const
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
             return pointer_iterator(_value + n);
         }
 
 		constexpr pointer_iterator& operator-=(difference_type n)
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
             _value -= n;
             return *this;
         }
 
 		constexpr pointer_iterator operator-(difference_type n) const
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
 			return pointer_iterator(_value - n);
         }
 
@@ -116,7 +114,7 @@ namespace _impl
 
 		constexpr reference operator[](difference_type n)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             return reinterpret_cast<reference>(_value[n]);
         }
 
@@ -168,7 +166,7 @@ namespace _impl
 
 		constexpr const reference operator*() const
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             return reinterpret_cast<const reference>(*_value);
         }
 
@@ -200,14 +198,14 @@ namespace _impl
 
 		constexpr const_pointer_iterator& operator++()
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             ++_value;
             return *this;
         }
 
 		constexpr const_pointer_iterator operator++(int)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             const_pointer_iterator result = (*this);
             ++(*this);
             return result;
@@ -215,14 +213,14 @@ namespace _impl
 
 		constexpr const_pointer_iterator& operator--()
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             _value--;
             return *this;
         }
 
 		constexpr const_pointer_iterator operator--(int)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             const_pointer_iterator result = (*this);
             --(*this);
             return result;
@@ -230,27 +228,27 @@ namespace _impl
 
 		constexpr const_pointer_iterator& operator+=(difference_type n)
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
             _value += n;
             return *this;
         }
 
 		constexpr const_pointer_iterator operator+(difference_type n) const
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
             return {_value + n};
         }
 
 		constexpr const_pointer_iterator& operator-=(difference_type n)
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
             _value -= n;
             return *this;
         }
 
 		constexpr const_pointer_iterator operator-(difference_type n) const
         {
-            assert(_value != nullptr || n == 0);
+            FIXED_CHECK_ITERATOR(_value != nullptr || n == 0);
             return const_pointer_iterator(_value - n);
         }
 
@@ -261,7 +259,7 @@ namespace _impl
 
 		constexpr reference operator[](difference_type n)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             return reinterpret_cast<reference>(_value[n]);
         }
 

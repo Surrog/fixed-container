@@ -16,7 +16,10 @@ Patchs are welcome, templated tests can be found in the test/ directory.
 ## Usage
 - Clone the project in your source file
 - Add the path of the include directory to your project file
-- All the major classes are now available to be include as "fixed/<class name>.hpp" 
+- All the major classes are now available to be include as "fixed/<class name>.hpp"
+
+## Configuration
+- The define FIXED_CONTAINER_CHECK_BOUND activate bound checking
 
 ## Current container finished and released:
 - [vector](https://github.com/Surrog/fixed-container/blob/master/docs/vector.md)

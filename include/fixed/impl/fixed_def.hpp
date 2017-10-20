@@ -30,6 +30,8 @@ namespace _impl
     (!(ex)) ? throw std::out_of_range("Container full") : ((void)0)
 #define FIXED_CHECK_EMPTY(ex)                                                  \
     (!(ex)) ? throw std::out_of_range("Empty container") : ((void)0)
+#define FIXED_CHECK_ITERATOR(ex)											   \
+    (!(ex)) ? throw std::out_of_range("Operation on an empty iterator") : ((void)0)
 #define FIXED_CHECK_CUSTOM(ex, msg)                                            \
     (!(ex)) ? throw std::out_of_range(msg) : ((void)0)
 #else //! defined(NDEBUG) || defined(FIXED_CONTAINER_CHECK_BOUND)
@@ -40,6 +42,8 @@ namespace _impl
 #define FIXED_CHECK_FULL(ex)                                                   \
     ((void)0)
 #define FIXED_CHECK_EMPTY(ex)                                                  \
+    ((void)0)
+#define FIXED_CHECK_ITERATOR(ex)                                               \
     ((void)0)
 #define FIXED_CHECK_CUSTOM(ex, msg)                                            \
     ((void)0)

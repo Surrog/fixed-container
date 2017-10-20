@@ -39,7 +39,7 @@ void test_string_constructor()
 		STRING_T<char32_t, 10, std::char_traits<char32_t>, Alloc_pattern> string(src);
 	}
 
-	//{
+	//{	
 	//	STRING_T<char, 10, std::char_traits<char>, Alloc_pattern> string(fixed::_impl::empty_source{});
 	//}
 	//{

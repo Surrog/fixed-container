@@ -18,6 +18,8 @@ namespace _impl
 	>
 		class basic_string
 	{
+		static_assert(std::is_trivial<CHAR_T>::value, "basic_string require that the character type to be trivial");
+
 		typedef fixed::vector<CHAR_T, SIZE, Alloc_pattern> data_type;
 		data_type _data;
 

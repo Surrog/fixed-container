@@ -1,7 +1,6 @@
 #ifndef FIXED_BASIC_LIST_ITERATOR_HPP
 #define FIXED_BASIC_LIST_ITERATOR_HPP
 
-#include <cassert>
 #include <type_traits>
 
 namespace fixed
@@ -33,7 +32,7 @@ namespace _impl
 
         reference operator*() const
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             return reinterpret_cast<reference>(**_value);
         }
 
@@ -60,14 +59,14 @@ namespace _impl
 
         basic_listed_vector_iterator& operator++()
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             ++_value;
             return *this;
         }
 
         basic_listed_vector_iterator operator++(int)
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             basic_listed_vector_iterator result = (*this);
             ++(*this);
             return result;
@@ -75,14 +74,14 @@ namespace _impl
 
         basic_listed_vector_iterator& operator--()
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             _value--;
             return *this;
         }
 
         basic_listed_vector_iterator operator--(int)
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             basic_listed_vector_iterator result = (*this);
             --(*this);
             return result;
@@ -90,27 +89,27 @@ namespace _impl
 
         basic_listed_vector_iterator& operator+=(difference_type n)
         {
-            assert(_value != STORAGE_T() || n == 0); //Arithmetic with nullptr is probably not something you wanted to do
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0); //Arithmetic with nullptr is probably not something you wanted to do
             _value += n;
             return *this;
         }
 
         basic_listed_vector_iterator operator+(difference_type n) const
         {
-            assert(_value != STORAGE_T() || n == 0);
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0);
             return {_value + n};
         }
 
         basic_listed_vector_iterator& operator-=(difference_type n)
         {
-            assert(_value != STORAGE_T() || n == 0);
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0);
             _value -= n;
             return *this;
         }
 
         basic_listed_vector_iterator operator-(difference_type n) const
         {
-            assert(_value != STORAGE_T() || n == 0);
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0);
             return {_value - n};
         }
 
@@ -121,7 +120,7 @@ namespace _impl
 
         reference operator[](difference_type n)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             return reinterpret_cast<reference>(*_value[n]);
         }
 
@@ -172,7 +171,7 @@ namespace _impl
 
         reference operator*() const
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             return **_value;
         }
 
@@ -209,14 +208,14 @@ namespace _impl
 
         const_basic_list_iterator& operator++()
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             ++_value;
             return *this;
         }
 
         const_basic_list_iterator operator++(int)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             const_basic_list_iterator result = (*this);
             ++(*this);
             return result;
@@ -224,14 +223,14 @@ namespace _impl
 
         const_basic_list_iterator& operator--()
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             --_value;
             return *this;
         }
 
         const_basic_list_iterator operator--(int)
         {
-            assert(_value != nullptr);
+            FIXED_CHECK_ITERATOR(_value != nullptr);
             const_basic_list_iterator result = (*this);
             --(*this);
             return result;
@@ -239,27 +238,27 @@ namespace _impl
 
         const_basic_list_iterator& operator+=(difference_type n)
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             _value += n;
             return *this;
         }
 
         const_basic_list_iterator operator+(difference_type n) const
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             return {_value + n};
         }
 
         const_basic_list_iterator& operator-=(difference_type n)
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             _value -= n;
             return *this;
         }
 
         const_basic_list_iterator operator-(difference_type n) const
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
             return const_basic_list_iterator{_value - n};
         }
 
@@ -270,7 +269,7 @@ namespace _impl
 
         reference operator[](difference_type n)
         {
-            assert(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
 
             return *_value[n];
         }
