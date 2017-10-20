@@ -20,8 +20,8 @@ Thread safety:
 ## Interface
 
 ```
-template <typename T, _impl::container_size_type SIZE,
-    template <typename, _impl::container_size_type> typename Alloc_pattern
+template <typename T, _impl:size_t SIZE,
+    template <typename, _impl::size_t> typename Alloc_pattern
     = _impl::aligned_stack_allocator>
 class vector;
 ```   
@@ -31,7 +31,7 @@ Guarrantee the container support, atleast, SIZE of elements T in continous memor
 |  Member type | Definition |
 | ---  | --- |
 | `value_type` | `T` | 
-| `template <typename T, container_size_type S> allocator_type` | `Alloc_pattern` |
+| `template <typename T, size_t S> allocator_type` | `Alloc_pattern` |
 | `size_type` |  Unsigned integer type (usually std::size_t) |
 | `difference_type` |  Signed integer type (usually std::ptrdiff_t) |
 | `reference` | `T&` |

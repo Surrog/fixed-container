@@ -20,7 +20,7 @@ Patchs are welcome, templated tests can be found in the test/ directory.
 
 ## Configuration
 - The define `FIXED_CONTAINER_CHECK_BOUND` activate bound checking (default on in debug configuration).
-- The define `FIXED_CONTAINER_SIGNED_INT_AS_SIZE_TYPE` modify the definition of size_t to use a signed integer.
+- The define `FIXED_CONTAINER_SIGNED_INT_AS_SIZE_TYPE` modify the definition of the container size_type to use a signed integer.
 
 ## Current container finished and released:
 - [vector](https://github.com/Surrog/fixed-container/blob/master/docs/vector.md)
