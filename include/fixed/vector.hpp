@@ -6,16 +6,16 @@
 
 namespace fixed
 {
-template <typename T, _impl::container_size_type SIZE,
-    template <typename, _impl::container_size_type> typename Alloc_pattern
+template <typename T, _impl::size_t SIZE,
+    template <typename, _impl::size_t> typename Alloc_pattern
     = _impl::aligned_stack_allocator>
 using vector = _impl::basic_vector<T, SIZE, Alloc_pattern>;
 }
 
-template <typename T, fixed::_impl::container_size_type LSIZE,
-    fixed::_impl::container_size_type RSIZE,
-    template <typename, fixed::_impl::container_size_type> typename LALLOC,
-    template <typename, fixed::_impl::container_size_type> typename RALLOC>
+template <typename T, fixed::_impl::size_t LSIZE,
+    fixed::_impl::size_t RSIZE,
+    template <typename, fixed::_impl::size_t> typename LALLOC,
+    template <typename, fixed::_impl::size_t> typename RALLOC>
 bool operator==(const fixed::vector<T, LSIZE, LALLOC>& lval,
     const fixed::vector<T, RSIZE, RALLOC>& rval)
 {
@@ -23,10 +23,10 @@ bool operator==(const fixed::vector<T, LSIZE, LALLOC>& lval,
         && std::equal(lval.begin(), lval.end(), rval.begin(), rval.end());
 }
 
-template <typename T, fixed::_impl::container_size_type LSIZE,
-    fixed::_impl::container_size_type RSIZE,
-    template <typename, fixed::_impl::container_size_type> typename LALLOC,
-    template <typename, fixed::_impl::container_size_type> typename RALLOC>
+template <typename T, fixed::_impl::size_t LSIZE,
+    fixed::_impl::size_t RSIZE,
+    template <typename, fixed::_impl::size_t> typename LALLOC,
+    template <typename, fixed::_impl::size_t> typename RALLOC>
 bool operator!=(const fixed::vector<T, LSIZE, LALLOC>& lval,
     const fixed::vector<T, RSIZE, RALLOC>& rval)
 {

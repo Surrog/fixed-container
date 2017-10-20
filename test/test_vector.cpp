@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename VECTOR_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector_constructor()
 {
@@ -21,10 +21,10 @@ void test_vector_constructor()
     test_assign<VECTOR_T, Alloc_pattern>();
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename VECTOR_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector_element_access()
 {
@@ -35,10 +35,10 @@ void test_vector_element_access()
     test_vector_data<VECTOR_T, Alloc_pattern>();
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename VECTOR_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector_iterator()
 {
@@ -46,10 +46,10 @@ void test_vector_iterator()
     test_rbegin_rend<VECTOR_T, Alloc_pattern>();
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename VECTOR_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector_capacity()
 {
@@ -57,10 +57,10 @@ void test_vector_capacity()
     test_vector_capacity_func<VECTOR_T, Alloc_pattern>();
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename VECTOR_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector_modifier()
 {
@@ -75,10 +75,10 @@ void test_vector_modifier()
     test_swap<VECTOR_T, Alloc_pattern>();
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename VECTOR_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector()
 {

@@ -4,10 +4,10 @@
 #include "fixed/impl/fixed_def.hpp"
 #include "test_struct.hpp"
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_noexcept_constructor()
 {
@@ -32,10 +32,10 @@ void test_noexcept_constructor()
         "Not noexcept move assignable");
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_canonical_constructor()
 {
@@ -422,10 +422,10 @@ void test_canonical_constructor()
     //! test move assignement
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_constructor()
 {
@@ -632,10 +632,10 @@ void test_constructor()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_operator_assignment()
 {
@@ -744,10 +744,10 @@ void test_operator_assignment()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_destructor()
 {
@@ -771,10 +771,10 @@ void test_destructor()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_begin_end()
 {
@@ -834,10 +834,10 @@ void test_begin_end()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_rbegin_rend()
 {
@@ -895,10 +895,10 @@ void test_rbegin_rend()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_front()
 {
@@ -925,10 +925,10 @@ void test_front()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_back()
 {
@@ -955,10 +955,10 @@ void test_back()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_operator_array()
 {
@@ -984,10 +984,10 @@ void test_operator_array()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_at()
 {
@@ -1025,10 +1025,10 @@ void test_at()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector_data()
 {
@@ -1075,10 +1075,10 @@ void test_vector_data()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_clear()
 {
@@ -1109,10 +1109,10 @@ void test_clear()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_assign()
 {
@@ -1201,10 +1201,10 @@ void test_assign()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_generic_capacity()
 {
@@ -1224,10 +1224,10 @@ void test_generic_capacity()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_vector_capacity_func()
 {
@@ -1239,10 +1239,10 @@ void test_vector_capacity_func()
     CHECK(c.capacity() >= 10);
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_insert()
 {
@@ -1353,10 +1353,10 @@ void test_insert()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_erase()
 {
@@ -1500,10 +1500,10 @@ void test_erase()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_resize()
 {
@@ -1558,10 +1558,10 @@ void test_resize()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_push_front()
 {
@@ -1610,10 +1610,10 @@ void test_push_front()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_emplace_front()
 {
@@ -1661,10 +1661,10 @@ void test_emplace_front()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_push_back()
 {
@@ -1747,10 +1747,10 @@ void test_push_back()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_emplace_back()
 {
@@ -1827,10 +1827,10 @@ void test_emplace_back()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_pop_back()
 {
@@ -1901,10 +1901,10 @@ void test_pop_back()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_swap()
 {
@@ -1931,10 +1931,10 @@ void test_swap()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_emplace()
 {
@@ -2013,10 +2013,10 @@ void test_emplace()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_list_constant_reference()
 {
@@ -2100,10 +2100,10 @@ void test_list_constant_reference()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_list_constant_iterator()
 {
@@ -2186,10 +2186,10 @@ void test_list_constant_iterator()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type,
-              template <typename, fixed::_impl::container_size_type> typename>
+template <template <typename, fixed::_impl::size_t,
+              template <typename, fixed::_impl::size_t> typename>
           typename CONTAINER_T,
-    template <typename, fixed::_impl::container_size_type>
+    template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_pop_front()
 {

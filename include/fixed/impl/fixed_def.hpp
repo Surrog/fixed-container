@@ -11,10 +11,9 @@ namespace fixed
 {
 namespace _impl
 {
-#ifdef SIGNED_INT_SIZE_TYPE
-    using container_size_type = std::int32_t;
+    using size_t = int;
 #else
-    using container_size_type = std::size_t;
+    using size_t = std::size_t;
 #endif
 
 #if !defined(NDEBUG) || defined(FIXED_CONTAINER_CHECK_BOUND)

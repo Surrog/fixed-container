@@ -12,8 +12,8 @@ namespace fixed
 {
 namespace _impl
 {
-    template <typename T, container_size_type SIZE,
-        template <typename, container_size_type> typename Alloc_pattern
+    template <typename T, size_t SIZE,
+        template <typename, size_t> typename Alloc_pattern
         = aligned_stack_allocator>
     class basic_vector
     {
@@ -23,7 +23,7 @@ namespace _impl
         typedef const T* const_pointer;
         typedef T& reference;
         typedef const T& const_reference;
-        typedef container_size_type size_type;
+        typedef size_t size_type;
         typedef std::ptrdiff_t difference_type;
 
         template <typename Types, size_type ALLOC_SIZE>
@@ -156,8 +156,8 @@ namespace _impl
             }
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RAlloc_pattern>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RAlloc_pattern>
         basic_vector(
             const basic_vector<T, RSIZE, RAlloc_pattern>& other) 
 			noexcept(SIZE >= RSIZE
@@ -177,8 +177,8 @@ namespace _impl
             }
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RAlloc_pattern,
+        template <size_t RSIZE,
+            template <typename, size_t> typename RAlloc_pattern,
             typename Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(const basic_vector<T, RSIZE, RAlloc_pattern>& other,
@@ -234,8 +234,8 @@ namespace _impl
             other.clear();
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RAlloc_pattern>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RAlloc_pattern>
         basic_vector(basic_vector<T, RSIZE, RAlloc_pattern>&& other) noexcept(
             SIZE >= RSIZE
             && std::is_nothrow_constructible<allocator_type_impl>::value
@@ -254,8 +254,8 @@ namespace _impl
             other.clear();
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RAlloc_pattern,
+        template <size_t RSIZE,
+            template <typename, size_t> typename RAlloc_pattern,
             typename Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_vector(basic_vector<T, RSIZE, RAlloc_pattern>&& other,
@@ -314,8 +314,8 @@ namespace _impl
             return *this;
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RAlloc_pattern>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RAlloc_pattern>
         basic_vector&
         operator=(const basic_vector<T, RSIZE, RAlloc_pattern>& rval) noexcept(
             SIZE >= RSIZE && std::is_nothrow_copy_constructible<T>::value)
@@ -470,7 +470,7 @@ namespace _impl
             std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         void assign(InputIt first, InputIt last)
         {
-            container_size_type size = std::distance(first, last);
+            size_t size = std::distance(first, last);
             FIXED_CHECK_FULL(size <= max_size());
             size_type i = 0;
             while(first != last)
@@ -576,7 +576,7 @@ namespace _impl
         iterator erase(const_iterator position)
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            container_size_type index = std::distance(cbegin(), position);
+            size_t index = std::distance(cbegin(), position);
             FIXED_CHECK_INBOUND(index < _size);
             if(index != _size - 1)
             {
@@ -589,8 +589,8 @@ namespace _impl
         iterator erase(const_iterator first, const_iterator last)
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            container_size_type beg_i = std::distance(cbegin(), first);
-            container_size_type end_i = std::distance(cbegin(), last);
+            size_t beg_i = std::distance(cbegin(), first);
+            size_t end_i = std::distance(cbegin(), last);
             FIXED_CHECK_INBOUND(beg_i < _size);
             FIXED_CHECK_INBOUND(end_i <= _size);
             FIXED_CHECK_BADRANGE(beg_i < end_i);
@@ -598,7 +598,7 @@ namespace _impl
             {
                 std::rotate(begin() + beg_i, begin() + end_i, end());
             }
-            for(container_size_type i = 0; i < (end_i - beg_i); i++)
+            for(size_t i = 0; i < (end_i - beg_i); i++)
             {
                 pop_back();
             }
@@ -606,7 +606,7 @@ namespace _impl
         }
 
         template <size_type RSIZE,
-            template <typename, container_size_type> typename RAlloc_pattern>
+            template <typename, size_t> typename RAlloc_pattern>
         void swap(basic_vector<T, RSIZE, RAlloc_pattern>& rval)
         {
             FIXED_CHECK_FULL(rval.size() < max_size());
@@ -656,7 +656,7 @@ namespace _impl
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args)
         {
-            container_size_type index = std::distance(cbegin(), position);
+            size_t index = std::distance(cbegin(), position);
             FIXED_CHECK_INBOUND(index <= _size);
             emplace_back(std::forward<Args>(args)...);
             std::rotate(begin() + index, end() - 1, end());
@@ -732,8 +732,8 @@ namespace _impl
         }
     };
 
-    template <typename T, container_size_type LSIZE,
-        template <typename, container_size_type> typename LALLOCATOR,
+    template <typename T, size_t LSIZE,
+        template <typename, size_t> typename LALLOCATOR,
         typename STDALLOC>
     bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval,
         const std::vector<T, STDALLOC>& rval)

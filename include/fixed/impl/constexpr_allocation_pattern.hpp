@@ -8,7 +8,7 @@ namespace fixed
 {
 namespace _impl
 {
-    template <typename T, container_size_type SIZE>
+    template <typename T, size_t SIZE>
     struct constexpr_stack_allocator
     {
         typedef T inner_type;
@@ -28,7 +28,7 @@ namespace _impl
 
         typedef T value_type;
         typedef T aligned_type;
-		typedef container_size_type size_type;
+		typedef size_t size_type;
         typedef allocation_pattern_tag allocation_pattern;
         typedef std::true_type noexcept_iterators;
         typedef pointer_iterator<T, aligned_type> iterator;

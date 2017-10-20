@@ -5,13 +5,13 @@
 
 namespace fixed
 {
-template <typename Key, typename T, _impl::container_size_type SIZE,
+template <typename Key, typename T, _impl::size_t SIZE,
     class HASH = std::hash<Key>, class PRED = std::equal_to<Key>>
 using unordered_map = _impl::basic_unordered_map<Key, T, SIZE, HASH, PRED>;
 
 template <typename Key, typename T, typename HASHER1, typename HASHER2,
-    typename EQUAL1, typename EQUAL2, _impl::container_size_type SIZE1,
-    _impl::container_size_type SIZE2>
+    typename EQUAL1, typename EQUAL2, _impl::size_t SIZE1,
+    _impl::size_t SIZE2>
 bool operator==(const unordered_map<Key, T, SIZE1, HASHER1, EQUAL1>& lval,
     const unordered_map<Key, T, SIZE2, HASHER2, EQUAL2>& rval)
 {
@@ -25,8 +25,8 @@ bool operator==(const unordered_map<Key, T, SIZE1, HASHER1, EQUAL1>& lval,
 }
 
 template <typename Key, typename T, typename HASHER1, typename HASHER2,
-    typename EQUAL1, typename EQUAL2, _impl::container_size_type SIZE1,
-    _impl::container_size_type SIZE2>
+    typename EQUAL1, typename EQUAL2, _impl::size_t SIZE1,
+    _impl::size_t SIZE2>
 bool operator!=(const unordered_map<Key, T, SIZE1, HASHER1, EQUAL1>& lval,
     const unordered_map<Key, T, SIZE2, HASHER2, EQUAL2>& rval)
 {

@@ -12,9 +12,9 @@ namespace fixed
 {
 namespace _impl
 {
-    template <typename CHAR_T, container_size_type SIZE,
+    template <typename CHAR_T, size_t SIZE,
         typename Traits = std::char_traits<CHAR_T>,
-		template <typename, container_size_type> typename Alloc_pattern = fixed::stack_allocator
+		template <typename, size_t> typename Alloc_pattern = fixed::stack_allocator
 	>
 		class basic_string
 	{
@@ -27,10 +27,10 @@ namespace _impl
 		typedef Traits traits_type;
 		typedef CHAR_T value_type;
 
-		template <typename T, container_size_type ASIZE>
+		template <typename T, size_t ASIZE>
 		using allocator_type = Alloc_pattern<T, ASIZE>;
 
-		typedef container_size_type size_type;
+		typedef size_t size_type;
 		typedef std::ptrdiff_t difference_type;
 		typedef value_type& reference;
 		typedef const value_type& const_reference;

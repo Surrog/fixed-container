@@ -8,7 +8,7 @@
 #include "fixed/impl/fixed_def.hpp"
 #include "test_struct.hpp"
 
-template <template <typename, fixed::_impl::container_size_type>
+template <template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_noexcept_constructor()
 {
@@ -23,7 +23,7 @@ void test_noexcept_constructor()
         "Not noexcept move assignable");
 }
 
-template <template <typename, fixed::_impl::container_size_type>
+template <template <typename, fixed::_impl::size_t>
 typename Alloc_pattern>
 void test_noexcept_constructor_with_non_trivial()
 {
@@ -49,7 +49,7 @@ void test_noexcept_constructor_with_non_trivial()
 
 }
 
-template <template <typename, fixed::_impl::container_size_type>
+template <template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_is_allocator()
 {
@@ -76,7 +76,7 @@ void test_is_allocator()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type>
+template <template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_is_allocator_continous()
 {
@@ -96,7 +96,7 @@ void test_is_allocator_continous()
     }
 }
 
-template <template <typename, fixed::_impl::container_size_type>
+template <template <typename, fixed::_impl::size_t>
     typename Alloc_pattern>
 void test_allocator_pattern()
 {

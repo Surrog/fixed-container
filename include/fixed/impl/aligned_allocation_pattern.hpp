@@ -13,7 +13,7 @@ namespace fixed
 namespace _impl
 {
     // Allocate your container on the stack
-    template <typename T, container_size_type SIZE>
+    template <typename T, size_t SIZE>
     struct aligned_stack_allocator
     {
         typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
@@ -38,7 +38,7 @@ namespace _impl
                 == sizeof(T),
             T, typename std::aligned_storage<sizeof(T), alignof(T)>::type>::type
             aligned_type;
-		typedef container_size_type size_type;
+		typedef size_t size_type;
         typedef allocation_pattern_tag allocation_pattern;
         typedef std::true_type noexcept_iterators;
         typedef pointer_iterator<T, aligned_type> iterator;
@@ -78,7 +78,7 @@ namespace _impl
     };
 
     // When your size is too big to being correctly stored on the stack
-    template <typename T, container_size_type SIZE>
+    template <typename T, size_t SIZE>
     struct aligned_heap_allocator
     {
         typedef typename std::aligned_storage<sizeof(T), alignof(T)>::type
@@ -106,7 +106,7 @@ namespace _impl
                 == sizeof(T),
             T, typename std::aligned_storage<sizeof(T), alignof(T)>::type>::type
             aligned_type;
-		typedef container_size_type size_type;
+		typedef size_t size_type;
         typedef pointer_iterator<T, aligned_type> iterator;
         typedef const_pointer_iterator<T, aligned_type> const_iterator;
 

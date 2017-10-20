@@ -14,9 +14,9 @@ namespace fixed
 {
 namespace _impl
 {
-    template <typename Key, typename T, container_size_type SIZE,
+    template <typename Key, typename T, size_t SIZE,
         class Hash = std::hash<Key>, class Pred = std::equal_to<Key>,
-        template <typename, container_size_type> typename Alloc_pattern
+        template <typename, size_t> typename Alloc_pattern
         = aligned_stack_allocator>
     class basic_unordered_map
     {
@@ -31,7 +31,7 @@ namespace _impl
         typedef const value_type& const_reference;
         typedef value_type* pointer;
         typedef const value_type* const_pointer;
-        typedef container_size_type size_type;
+        typedef size_t size_type;
         typedef std::ptrdiff_t difference_type;
 
         typedef pointer_iterator<T> iterator;

@@ -4,9 +4,9 @@
 #include "fixed/impl/basic_string.hpp"
 #include "fixed/impl/basic_allocation_sources.hpp"
 
-template <template <typename, fixed::_impl::container_size_type, typename, 
-	template <typename, fixed::_impl::container_size_type> typename > typename STRING_T,
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern>
+template <template <typename, fixed::_impl::size_t, typename, 
+	template <typename, fixed::_impl::size_t> typename > typename STRING_T,
+	template <typename, fixed::_impl::size_t> typename Alloc_pattern>
 void test_string_constructor()
 {
 	{
@@ -53,9 +53,9 @@ void test_string_constructor()
 	//}
 }
 
-template <template <typename, fixed::_impl::container_size_type, typename,
-	template <typename, fixed::_impl::container_size_type> typename > typename STRING_T,
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern>
+template <template <typename, fixed::_impl::size_t, typename,
+	template <typename, fixed::_impl::size_t> typename > typename STRING_T,
+	template <typename, fixed::_impl::size_t> typename Alloc_pattern>
 void test_string_noexcept_constructor()
 {
 	static_assert(std::is_nothrow_default_constructible<STRING_T<char, 10, std::char_traits<char>, Alloc_pattern>>::value, "Not noexcept default constructible");
@@ -68,9 +68,9 @@ void test_string_noexcept_constructor()
 }
 
 
-template <template <typename, fixed::_impl::container_size_type, typename,
-	template <typename, fixed::_impl::container_size_type> typename > typename STRING_T,
-	template <typename, fixed::_impl::container_size_type> typename Alloc_pattern>
+template <template <typename, fixed::_impl::size_t, typename,
+	template <typename, fixed::_impl::size_t> typename > typename STRING_T,
+	template <typename, fixed::_impl::size_t> typename Alloc_pattern>
 void test_string()
 {
 	test_string_noexcept_constructor<STRING_T, Alloc_pattern>();

@@ -12,14 +12,14 @@ namespace fixed
 {
 namespace _impl
 {
-    template <typename T, container_size_type SIZE,
-        template <typename, container_size_type> typename Alloc_pattern
+    template <typename T, size_t SIZE,
+        template <typename, size_t> typename Alloc_pattern
         = aligned_stack_allocator>
     class basic_listed_vector
     {
     public:
         typedef T value_type;
-        typedef container_size_type size_type;
+        typedef size_t size_type;
         typedef std::ptrdiff_t difference_type;
         typedef value_type& reference;
         typedef const value_type& const_reference;
@@ -210,8 +210,8 @@ namespace _impl
 			}
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other)
 			noexcept(SIZE >= RSIZE &&
 				is_nothrow_default_constructible_v<allocator_type_data_impl>
@@ -232,8 +232,8 @@ namespace _impl
 			}
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC,
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC,
             class Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other,
@@ -273,8 +273,8 @@ namespace _impl
             other.clear();
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC,
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC,
             class Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_listed_vector(
@@ -290,8 +290,8 @@ namespace _impl
             other.clear();
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         basic_listed_vector(basic_listed_vector<T, RSIZE, RALLOC>&& other)
             : basic_listed_vector()
         {
@@ -335,8 +335,8 @@ namespace _impl
             return *this;
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         basic_listed_vector& operator=(
             const basic_listed_vector<T, RSIZE, RALLOC>& other)
         {
@@ -368,8 +368,8 @@ namespace _impl
             return *this;
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         basic_listed_vector& operator=(
             basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
@@ -523,7 +523,7 @@ namespace _impl
 
         iterator insert(const_iterator pos, T&& value)
         {
-            container_size_type index = std::distance(cbegin(), pos);
+            size_t index = std::distance(cbegin(), pos);
             FIXED_CHECK_INBOUND(index <= _size);
             auto old_size = _size;
             push_back(std::move(value));
@@ -535,7 +535,7 @@ namespace _impl
 
         iterator insert(const_iterator pos, size_type count, const T& value)
         {
-            container_size_type index = std::distance(cbegin(), pos);
+            size_t index = std::distance(cbegin(), pos);
             FIXED_CHECK_INBOUND(index <= _size);
             auto old_size = _size;
             for(size_type i = 0; i < count; i++)
@@ -550,7 +550,7 @@ namespace _impl
             std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         iterator insert(const_iterator pos, InputIt first, InputIt last)
         {
-            container_size_type index = std::distance(cbegin(), pos);
+            size_t index = std::distance(cbegin(), pos);
             FIXED_CHECK_INBOUND(index <= _size);
             auto old_size = _size;
             size_type size_inserted = 0;
@@ -576,7 +576,7 @@ namespace _impl
         template <class... Args>
         iterator emplace(const_iterator pos, Args&&... args)
         {
-            container_size_type index = std::distance(cbegin(), pos);
+            size_t index = std::distance(cbegin(), pos);
             FIXED_CHECK_INBOUND(index <= _size);
             auto old_size = _size;
             emplace_back(std::forward<Args>(args)...);
@@ -589,7 +589,7 @@ namespace _impl
         iterator erase(const_iterator pos)
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            container_size_type index = std::distance(cbegin(), pos);
+            size_t index = std::distance(cbegin(), pos);
             FIXED_CHECK_INBOUND(index < _size);
             if(index != _size - 1) // move object to the back
                 std::rotate(_ptrs.begin() + index, _ptrs.begin() + index + 1,
@@ -601,8 +601,8 @@ namespace _impl
         iterator erase(const_iterator first, const_iterator last)
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            container_size_type beg_i = std::distance(cbegin(), first);
-            container_size_type end_i = std::distance(cbegin(), last);
+            size_t beg_i = std::distance(cbegin(), first);
+            size_t end_i = std::distance(cbegin(), last);
             FIXED_CHECK_INBOUND(beg_i < _size);
             FIXED_CHECK_INBOUND(end_i <= _size);
             FIXED_CHECK_BADRANGE(beg_i < end_i);
@@ -681,8 +681,8 @@ namespace _impl
 
         void resize(size_type count) { resize(count, value_type()); }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         void swap(basic_listed_vector<T, RSIZE, RALLOC>& rval)
         {
             FIXED_CHECK_FULL(rval.size() < max_size());
@@ -724,15 +724,15 @@ namespace _impl
         }
 
         // Operations
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         void merge(basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
             merge(std::move(other), std::less<T>());
         }
 
-        template <class Compare, container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <class Compare, size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         void merge(basic_listed_vector<T, RSIZE, RALLOC>&& other, Compare comp)
         {
             if(static_cast<void*>(&other) != static_cast<void*>(this))
@@ -747,16 +747,16 @@ namespace _impl
             }
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         void splice(
             const_iterator pos, basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
             splice(pos, std::move(other), other.cbegin(), other.cend());
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         void splice(const_iterator pos,
             basic_listed_vector<T, RSIZE, RALLOC>&& other, const_iterator it)
         {
@@ -764,14 +764,14 @@ namespace _impl
                 (void*)this != (void*)&other, "Splice with itself");
             auto elem_i = std::distance(other.cbegin(), it);
             FIXED_CHECK_INBOUND(elem_i > 0);
-            FIXED_CHECK_INBOUND(container_size_type(elem_i) <= other.size());
+            FIXED_CHECK_INBOUND(size_t(elem_i) <= other.size());
 
             insert(pos, std::move(*(other.begin() + elem_i)));
             other.erase(it);
         }
 
-        template <container_size_type RSIZE,
-            template <typename, container_size_type> typename RALLOC>
+        template <size_t RSIZE,
+            template <typename, size_t> typename RALLOC>
         void splice(const_iterator pos,
             basic_listed_vector<T, RSIZE, RALLOC>&& other, const_iterator first,
             const_iterator last)
@@ -781,7 +781,7 @@ namespace _impl
             auto pos_i = std::distance(cbegin(), pos);
             auto initial_size = size();
             FIXED_CHECK_INBOUND(pos_i >= 0);
-            FIXED_CHECK_INBOUND(container_size_type(pos_i) <= _size);
+            FIXED_CHECK_INBOUND(size_t(pos_i) <= _size);
 
             auto first_i = std::distance(other.cbegin(), first);
             auto last_i = std::distance(other.cbegin(), last);
@@ -791,9 +791,9 @@ namespace _impl
             {
                 FIXED_CHECK_FULL(size() + range_size <= max_size());
                 FIXED_CHECK_INBOUND(first_i >= 0);
-                FIXED_CHECK_INBOUND(container_size_type(first_i) <= other.size());
+                FIXED_CHECK_INBOUND(size_t(first_i) <= other.size());
                 FIXED_CHECK_INBOUND(last_i >= 0);
-                FIXED_CHECK_INBOUND(container_size_type(last_i) <= other.size());
+                FIXED_CHECK_INBOUND(size_t(last_i) <= other.size());
 
                 auto first_m_it = other.begin() + first_i;
                 auto last_m_it = other.begin() + last_i;
