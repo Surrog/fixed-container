@@ -239,27 +239,27 @@ namespace _impl
 
         const_basic_list_iterator& operator+=(difference_type n)
         {
-            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0);
             _value += n;
             return *this;
         }
 
         const_basic_list_iterator operator+(difference_type n) const
         {
-            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0);
             return {_value + n};
         }
 
         const_basic_list_iterator& operator-=(difference_type n)
         {
-            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0);
             _value -= n;
             return *this;
         }
 
         const_basic_list_iterator operator-(difference_type n) const
         {
-            FIXED_CHECK_ITERATOR(_value != STORAGE_T());
+            FIXED_CHECK_ITERATOR(_value != STORAGE_T() || n == 0);
             return const_basic_list_iterator{_value - n};
         }
 
