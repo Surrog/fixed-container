@@ -20,8 +20,8 @@ Thread safety:
 ## Interface
 
 ```
-template <typename T, _impl:size_t SIZE,
-    template <typename, _impl::size_t> typename Alloc_pattern
+template <typename T, fixed::_impl:size_t SIZE,
+    template <typename, fixed::_impl::size_t> typename Alloc_pattern
     = _impl::aligned_stack_allocator>
 class vector;
 ```   
@@ -30,14 +30,15 @@ Guarrantee the container support, atleast, SIZE of elements T in continous memor
 ### Member types
 |  Member type | Definition |
 | ---  | --- |
-| `value_type` | `T` | 
+| `value_type` | `Alloc_pattern::value_type` | 
+| `aligned_type` | `Alloc_pattern::aligned_type` | 
 | `template <typename T, size_t S> allocator_type` | `Alloc_pattern` |
-| `size_type` |  Unsigned integer type (usually std::size_t) |
-| `difference_type` |  Signed integer type (usually std::ptrdiff_t) |
-| `reference` | `T&` |
-| `const_reference` | `const T&` |
-| `pointer` | `T*` |
-| `const_pointer` | `const T*` |
+| `size_type` |  `Alloc_pattern::size_type` |
+| `difference_type` |  `Alloc_pattern::difference_type` |
+| `reference` | `Alloc_pattern::reference` |
+| `const_reference` | `Alloc_pattern::const_reference` |
+| `pointer` | `Alloc_pattern::pointer` |
+| `const_pointer` | `Alloc_pattern::const_pointer` |
 | `iterator` | RandomAccessIterator |
 | `const_iterator` | Constant random access iterator |
 | `reverse_iterator` | `std::reverse_iterator<iterator>` |

@@ -32,18 +32,28 @@ namespace _impl
         {
         }
 
+		typedef allocation_pattern_tag allocation_pattern;
+		typedef std::true_type noexcept_iterators;
+
         typedef T value_type;
         typedef typename std::conditional<
             sizeof(typename std::aligned_storage<sizeof(T), alignof(T)>::type)
                 == sizeof(T),
             T, typename std::aligned_storage<sizeof(T), alignof(T)>::type>::type
             aligned_type;
-		typedef size_t size_type;
-        typedef allocation_pattern_tag allocation_pattern;
-        typedef std::true_type noexcept_iterators;
-        typedef pointer_iterator<T, aligned_type> iterator;
-        typedef const_pointer_iterator<T, aligned_type> const_iterator;
 
+		typedef size_t size_type;
+		typedef std::ptrdiff_t difference_type;
+		
+		typedef T& reference;
+		typedef const T& const_reference;
+		typedef T* pointer;
+		typedef const T* const_pointer;
+		
+		typedef pointer_iterator<T, aligned_type> iterator;
+		typedef const_pointer_iterator<T, aligned_type> const_iterator;
+
+        
         aligned_type* data() noexcept
         {
             return reinterpret_cast<aligned_type*>(_data);
@@ -53,24 +63,21 @@ namespace _impl
             return reinterpret_cast<const aligned_type*>(_data);
         }
 
-        iterator begin() noexcept { return iterator(data()); }
-        iterator end() noexcept { return iterator(data() + SIZE); }
-
-        const_iterator begin() const noexcept { return cbegin(); }
-        const_iterator end() const noexcept { return cend(); }
+        iterator begin() noexcept 
+		{ return iterator(data()); }
+        iterator end() noexcept 
+		{ return iterator(data() + SIZE); }
+        const_iterator begin() const noexcept 
+		{ return cbegin(); }
+        const_iterator end() const noexcept 
+		{ return cend(); }
         const_iterator cbegin() const noexcept
-        {
-            return const_iterator(data());
-        }
+        { return const_iterator(data()); }
         const_iterator cend() const noexcept
-        {
-            return const_iterator(data() + SIZE);
-        }
+        { return const_iterator(data() + SIZE); }
 
         bool valid_pointer(const T* ptr) const noexcept
-        {
-            return ptr >= data() && ptr < data() + max_size();
-        }
+        { return ptr >= data() && ptr < data() + max_size(); }
         constexpr size_type max_size() const noexcept { return SIZE; }
 
     private:
@@ -106,9 +113,17 @@ namespace _impl
                 == sizeof(T),
             T, typename std::aligned_storage<sizeof(T), alignof(T)>::type>::type
             aligned_type;
+
 		typedef size_t size_type;
-        typedef pointer_iterator<T, aligned_type> iterator;
-        typedef const_pointer_iterator<T, aligned_type> const_iterator;
+		typedef std::ptrdiff_t difference_type;
+
+		typedef T& reference;
+		typedef const T& const_reference;
+		typedef T* pointer;
+		typedef const T* const_pointer;
+
+		typedef pointer_iterator<T, aligned_type> iterator;
+		typedef const_pointer_iterator<T, aligned_type> const_iterator;
 
         aligned_type* data()
         {

@@ -18,48 +18,50 @@ namespace _impl
     class basic_vector
     {
     public:
-        typedef T value_type;
-        typedef T* pointer;
-        typedef const T* const_pointer;
-        typedef T& reference;
-        typedef const T& const_reference;
-        typedef size_t size_type;
-        typedef std::ptrdiff_t difference_type;
-
-        template <typename Types, size_type ALLOC_SIZE>
-        using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
+        template <typename T, size_t ASIZE>
+        using allocator_type = Alloc_pattern<T, ASIZE>;
 
     private:
-        // datas
-
-        typedef Alloc_pattern<T, SIZE> allocator_type_impl;
-
-        size_type _size = 0;
-        allocator_type_impl _data_container;
+        typedef Alloc_pattern<T, SIZE> data_type;
+        static_assert(fixed::_impl::is_alloc_pattern_contiguous_v<data_type>,
+            "Alloc_pattern required to be continuous for this container");
 
     public:
-        typedef typename allocator_type_impl::aligned_type aligned_type;
-        typedef typename allocator_type_impl::iterator iterator;
-        typedef typename allocator_type_impl::const_iterator const_iterator;
+        typedef typename data_type::value_type value_type;
+        typedef typename data_type::aligned_type aligned_type;
+        typedef typename data_type::size_type size_type;
+        typedef typename data_type::difference_type difference_type;
+        typedef typename data_type::reference reference;
+        typedef typename data_type::const_reference const_reference;
+        typedef typename data_type::pointer pointer;
+        typedef typename data_type::const_pointer const_pointer;
+        typedef typename data_type::iterator iterator;
+        typedef typename data_type::const_iterator const_iterator;
+
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+    private:
+        size_type _size = 0;
+        data_type _data;
+
+    public:
         // destructor
         ~basic_vector() { clear(); }
         //! destructor
         // default constructor
-        basic_vector() 
-			noexcept(is_nothrow_default_constructible_v<allocator_type_impl>)
+        basic_vector() noexcept(is_nothrow_default_constructible_v<data_type>)
             : _size(0)
-            , _data_container()
+            , _data()
         {
         }
 
         template <typename Alloc_source,
-            std::enable_if_t<fixed::_impl::is_allocation_source_v<Alloc_source>, int> = 0>
+            std::enable_if_t<fixed::_impl::is_allocation_source_v<Alloc_source>,
+                int> = 0>
         basic_vector(Alloc_source& alloc)
             : _size(0)
-            , _data_container(alloc)
+            , _data(alloc)
         {
         }
         //! default constructor
@@ -133,10 +135,10 @@ namespace _impl
         }
         //! constructor with iterators
         // copy constructors
-        basic_vector(const basic_vector& other) 
-			noexcept(is_nothrow_default_constructible_v<allocator_type_impl>
-				&& is_nothrow_copy_constructible_v<T>
-				&& is_nothrow_allocator_iterator_v<allocator_type_impl>)
+        basic_vector(const basic_vector& other) noexcept(
+            is_nothrow_default_constructible_v<data_type>&&
+                is_nothrow_copy_constructible_v<T>&&
+                    is_nothrow_allocator_iterator_v<data_type>)
             : basic_vector()
         {
             for(const auto& val : other)
@@ -159,15 +161,14 @@ namespace _impl
         template <size_t RSIZE,
             template <typename, size_t> typename RAlloc_pattern>
         basic_vector(
-            const basic_vector<T, RSIZE, RAlloc_pattern>& other) 
-			noexcept(SIZE >= RSIZE
-            && is_nothrow_default_constructible_v<allocator_type_impl>
-            && is_nothrow_allocator_iterator_v<allocator_type_impl>
-            && is_nothrow_copy_constructible_v<T>)
+            const basic_vector<T, RSIZE, RAlloc_pattern>& other) noexcept(SIZE
+                >= RSIZE
+            && is_nothrow_default_constructible_v<
+                   data_type> && is_nothrow_allocator_iterator_v<data_type> && is_nothrow_copy_constructible_v<T>)
             : basic_vector()
         {
             fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-                [ rs = other.size(), mxs = max_size() ]() {
+                [rs = other.size(), mxs = max_size()]() {
                     FIXED_CHECK_FULL(rs <= mxs);
                 });
 
@@ -186,7 +187,7 @@ namespace _impl
             : basic_vector(source)
         {
             fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-                [ rs = other.size(), mxs = max_size() ]() {
+                [rs = other.size(), mxs = max_size()]() {
                     FIXED_CHECK_FULL(rs <= mxs);
                 });
             for(const auto& val : other)
@@ -198,28 +199,26 @@ namespace _impl
 
         // move constructors
         basic_vector(basic_vector&& other) noexcept(
-            is_nothrow_default_constructible_v<allocator_type_impl>
-            && (is_nothrow_move_constructible_v<allocator_type_impl>
-                   || (is_nothrow_allocator_iterator_v<allocator_type_impl>
-                          && (is_nothrow_move_constructible_v<T>
-                                 || is_nothrow_copy_constructible_v<T>))))
+            is_nothrow_default_constructible_v<
+                data_type> && (is_nothrow_move_constructible_v<data_type> || (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<T> || is_nothrow_copy_constructible_v<T>))))
             : basic_vector()
         {
-			if (this != &other)
-			{
-				fixed::astd::constexpr_if<std::is_nothrow_move_constructible<allocator_type_impl>::value>(
-					[this, &other]() {
-					std::swap(_data_container, other._data_container);
-					std::swap(_size, other._size);
-				}
-					)._else([this, &other]() {
-					for (auto& val : other)
-					{
-						push_back(std::move_if_noexcept(val));
-					}
-					other.clear();
-				});
-			}
+            if(this != &other)
+            {
+                fixed::astd::constexpr_if<
+                    std::is_nothrow_move_constructible<data_type>::value>(
+                    [this, &other]() {
+                        std::swap(_data, other._data);
+                        std::swap(_size, other._size);
+                    })
+                    ._else([this, &other]() {
+                        for(auto& val : other)
+                        {
+                            push_back(std::move_if_noexcept(val));
+                        }
+                        other.clear();
+                    });
+            }
         }
 
         template <typename Alloc_source,
@@ -237,14 +236,13 @@ namespace _impl
         template <size_t RSIZE,
             template <typename, size_t> typename RAlloc_pattern>
         basic_vector(basic_vector<T, RSIZE, RAlloc_pattern>&& other) noexcept(
-            SIZE >= RSIZE
-            && std::is_nothrow_constructible<allocator_type_impl>::value
+            SIZE >= RSIZE && std::is_nothrow_constructible<data_type>::value
             && (std::is_nothrow_move_constructible<T>::value
                    || std::is_nothrow_copy_constructible<T>::value))
             : basic_vector()
         {
             fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-                [ rs = other.size(), mxs = max_size() ]() {
+                [rs = other.size(), mxs = max_size()]() {
                     FIXED_CHECK_FULL(rs <= mxs);
                 });
             for(auto& val : other)
@@ -263,7 +261,7 @@ namespace _impl
             : basic_vector(source)
         {
             fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-                [ rs = other.size(), mxs = max_size() ]() {
+                [rs = other.size(), mxs = max_size()]() {
                     FIXED_CHECK_FULL(rs <= mxs);
                 });
             for(auto& val : other)
@@ -351,14 +349,14 @@ namespace _impl
         }
 
         template <size_type RSIZE,
-            template <typename, size_type> typename RAllocator>
+            template <typename, fixed::_impl::size_t> typename RAllocator>
         basic_vector& operator=(
             basic_vector<T, RSIZE, RAllocator>&& rval) noexcept(SIZE >= RSIZE
             && (std::is_nothrow_copy_constructible<T>::value
                    || std::is_nothrow_move_constructible<T>::value))
         {
             fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-                [ rs = rval.size(), mxs = max_size() ]() {
+                [rs = rval.size(), mxs = max_size()]() {
                     FIXED_CHECK_FULL(rs <= mxs);
                 });
             size_type i = 0;
@@ -400,16 +398,19 @@ namespace _impl
             return at(_size - 1);
         }
 
-        aligned_type* data() { return _data_container.data(); }
-        const aligned_type* data() const { return _data_container.data(); }
+        aligned_type* data() { return _data.data(); }
+        const aligned_type* data() const { return _data.data(); }
 
         // iterators
-        iterator begin() { return _data_container.begin(); }
-		const_iterator begin() const { return cbegin(); }
-        const_iterator cbegin() const { return _data_container.cbegin(); }
-        iterator end() { return iterator(_data_container.data() + _size); }
-		const_iterator end() const { return cend(); }
-        const_iterator cend() const { return const_iterator(_data_container.data() + _size); }
+        iterator begin() { return _data.begin(); }
+        const_iterator begin() const { return cbegin(); }
+        const_iterator cbegin() const { return _data.cbegin(); }
+        iterator end() { return iterator(_data.data() + _size); }
+        const_iterator end() const { return cend(); }
+        const_iterator cend() const
+        {
+            return const_iterator(_data.data() + _size);
+        }
 
         reverse_iterator rbegin() { return reverse_iterator(end()); }
         const_reverse_iterator rbegin() const
@@ -433,10 +434,7 @@ namespace _impl
         // capacity
         bool empty() const { return _size == 0; }
         size_type size() const { return _size; }
-        constexpr size_type max_size() const
-        {
-            return _data_container.max_size();
-        }
+        constexpr size_type max_size() const { return _data.max_size(); }
         constexpr void reserve(size_type) const {}
         constexpr size_type capacity() const { return max_size(); }
         constexpr void shrink_to_fit() const {}
@@ -715,7 +713,7 @@ namespace _impl
 
             for(size_type i = 0; i < count; i++)
             {
-                new(_data_container.data() + i) T(value);
+                new(_data.data() + i) T(value);
                 _size++;
             }
         }
@@ -726,15 +724,14 @@ namespace _impl
 
             for(size_type i = 0; i < count; i++)
             {
-                new(_data_container.data() + i) T();
+                new(_data.data() + i) T();
                 _size++;
             }
         }
     };
 
     template <typename T, size_t LSIZE,
-        template <typename, size_t> typename LALLOCATOR,
-        typename STDALLOC>
+        template <typename, size_t> typename LALLOCATOR, typename STDALLOC>
     bool operator==(const basic_vector<T, LSIZE, LALLOCATOR>& lval,
         const std::vector<T, STDALLOC>& rval)
     {

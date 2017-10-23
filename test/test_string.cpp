@@ -20,10 +20,46 @@ void test_string_constructor()
 
 	{
 		STRING_T<CHAR_T, 10, std::char_traits<CHAR_T>, Alloc_pattern> string(10, 'a');
+
+		CHECK(std::all_of(string.begin(), string.end(), [](const CHAR_T& c) { return c == CHAR_T('a'); }));
+		CHECK(string.size() == 10);
+		CHECK(*(string.begin() + 10) == '\0');
+	}
+
+	{
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		try
+		{
+			STRING_T<CHAR_T, 2, std::char_traits<CHAR_T>, Alloc_pattern> string(10, 'a');
+			CHECK(false);
+		}
+		catch (std::exception& )
+		{
+			CHECK(true);
+		}
+#endif
 	}
 	{
 		fixed::_impl::empty_source src;
 		STRING_T<CHAR_T, 10, std::char_traits<CHAR_T>, Alloc_pattern> string(10, 'a', src);
+
+		CHECK(std::all_of(string.begin(), string.end(), [](const CHAR_T& c) { return c == CHAR_T('a'); }));
+		CHECK(string.size() == 10);
+		CHECK(*(string.begin() + 10) == '\0');
+	}
+	{
+#ifdef FIXED_CONTAINER_CHECK_BOUND
+		try
+		{
+			fixed::_impl::empty_source src;
+			STRING_T<CHAR_T, 2, std::char_traits<CHAR_T>, Alloc_pattern> string(10, 'a', src);
+			CHECK(false);
+		}
+		catch (std::exception& )
+		{
+			CHECK(true);
+		}
+#endif
 	}
 }	
 

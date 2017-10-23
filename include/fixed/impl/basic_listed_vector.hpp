@@ -18,32 +18,41 @@ namespace _impl
     class basic_listed_vector
     {
     public:
-        typedef T value_type;
-        typedef size_t size_type;
-        typedef std::ptrdiff_t difference_type;
-        typedef value_type& reference;
-        typedef const value_type& const_reference;
-        typedef value_type* pointer;
-        typedef const value_type* const_pointer;
-
-        template <typename Types, size_type ALLOC_SIZE>
+        template <typename Types, size_t ALLOC_SIZE>
         using allocator_type = Alloc_pattern<Types, ALLOC_SIZE>;
 
     private:
-        typedef Alloc_pattern<T, SIZE> allocator_type_data_impl;
-        typedef Alloc_pattern<typename allocator_type_data_impl::iterator, SIZE>
-            allocator_type_ptrs_impl;
+        typedef allocator_type<T, SIZE> data_type;
+        typedef allocator_type<typename data_type::iterator, SIZE> ptrs_type;
 
-        allocator_type_data_impl _data_holder;
-        allocator_type_ptrs_impl _ptrs;
+    public:
+        typedef typename data_type::value_type value_type;
+        typedef typename data_type::aligned_type aligned_type;
+        typedef typename data_type::size_type size_type;
+        typedef typename data_type::difference_type difference_type;
+        typedef typename data_type::reference reference;
+        typedef typename data_type::const_reference const_reference;
+        typedef typename data_type::pointer pointer;
+        typedef typename data_type::const_pointer const_pointer;
+
+        typedef basic_listed_vector_iterator<T, typename ptrs_type::iterator>
+            iterator;
+        typedef const_basic_list_iterator<T, typename ptrs_type::const_iterator>
+            const_iterator;
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+    private:
+        data_type _data_holder;
+        ptrs_type _ptrs;
         size_type _size = 0;
 
         void set_at(size_type index, const T& value)
         {
             if(index < _size)
             {
-				auto it = begin();
-				std::advance(it, index);
+                auto it = begin();
+                std::advance(it, index);
                 (*it) = value;
             }
             else
@@ -56,48 +65,39 @@ namespace _impl
         {
             if(index < _size)
             {
-				auto it = begin();
-				std::advance(it, index);
-				(*it) = std::move(value);
-			}
+                auto it = begin();
+                std::advance(it, index);
+                (*it) = std::move(value);
+            }
             else
             {
                 push_back(std::move(value));
             }
         }
 
-		void initialize_ptrs() 
-			noexcept(is_nothrow_allocator_iterator_v<allocator_type_data_impl>)
-		{
-			auto data_beg = _data_holder.begin();
-			auto data_end = _data_holder.end();
-			auto ptrs_beg = _ptrs.begin();
-			auto ptrs_end = _ptrs.end();
-			auto i = size();
-			auto max = max_size();
+        void initialize_ptrs() noexcept(
+            is_nothrow_allocator_iterator_v<data_type>)
+        {
+            auto data_beg = _data_holder.begin();
+            auto data_end = _data_holder.end();
+            auto ptrs_beg = _ptrs.begin();
+            auto ptrs_end = _ptrs.end();
+            auto i = size();
+            auto max = max_size();
 
-			while (data_beg != data_end && ptrs_beg != ptrs_end && i < max)
-			{
-				*ptrs_beg = data_beg;
-				std::advance(data_beg, 1);
-				std::advance(ptrs_beg, 1);
-			}
-		}
+            while(data_beg != data_end && ptrs_beg != ptrs_end && i < max)
+            {
+                *ptrs_beg = data_beg;
+                std::advance(data_beg, 1);
+                std::advance(ptrs_beg, 1);
+            }
+        }
 
     public:
-        typedef basic_listed_vector_iterator<T,
-            typename allocator_type_ptrs_impl::iterator>
-            iterator;
-        typedef const_basic_list_iterator<T,
-            typename allocator_type_ptrs_impl::const_iterator>
-            const_iterator;
-        typedef std::reverse_iterator<iterator> reverse_iterator;
-        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-
-		// default constructor
+        // default constructor
         basic_listed_vector() noexcept(
-            std::is_nothrow_default_constructible<allocator_type_data_impl>::value &&
-                std::is_nothrow_default_constructible<allocator_type_ptrs_impl>::value)
+            std::is_nothrow_default_constructible<data_type>::value&&
+                std::is_nothrow_default_constructible<ptrs_type>::value)
             : _data_holder()
             , _ptrs()
             , _size(0)
@@ -106,16 +106,16 @@ namespace _impl
 
         template <typename Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
-        basic_listed_vector(Alloc_source& alloc)
-			noexcept(
-				std::is_nothrow_constructible<allocator_type_data_impl, Alloc_source&>::value &&
-				std::is_nothrow_constructible<allocator_type_ptrs_impl, Alloc_source&>::value)
+        basic_listed_vector(Alloc_source& alloc) noexcept(
+            std::is_nothrow_constructible<data_type, Alloc_source&>::value&&
+                std::is_nothrow_constructible<ptrs_type, Alloc_source&>::value)
             : _data_holder(alloc)
             , _ptrs(alloc)
             , _size(0)
-        {}
-		//!default constructor
-		// constructor with count copies
+        {
+        }
+        //! default constructor
+        // constructor with count copies
         basic_listed_vector(size_type count)
             : basic_listed_vector()
         {
@@ -156,8 +156,8 @@ namespace _impl
                 push_back(value);
             }
         }
-		//!constructor with count copies
-		// constructor with iterators
+        //! constructor with count copies
+        // constructor with iterators
         template <class InputIt,
             std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         basic_listed_vector(InputIt first, InputIt last)
@@ -182,20 +182,20 @@ namespace _impl
                 ++first;
             }
         }
-		//!constructor with iterators
-		// copy constructors
-        basic_listed_vector(const basic_listed_vector& other)
-			noexcept(is_nothrow_default_constructible_v<allocator_type_data_impl>
-				&& is_nothrow_default_constructible_v<allocator_type_ptrs_impl>
-				&& is_nothrow_copy_constructible_v<T>
-				&& is_nothrow_allocator_iterator_v<allocator_type_data_impl>
-				&& is_nothrow_allocator_iterator_v<allocator_type_ptrs_impl>)
-			: basic_listed_vector()
+        //! constructor with iterators
+        // copy constructors
+        basic_listed_vector(const basic_listed_vector& other) noexcept(
+            is_nothrow_default_constructible_v<data_type>&&
+                is_nothrow_default_constructible_v<ptrs_type>&&
+                    is_nothrow_copy_constructible_v<T>&&
+                        is_nothrow_allocator_iterator_v<data_type>&&
+                            is_nothrow_allocator_iterator_v<ptrs_type>)
+            : basic_listed_vector()
         {
-			for (const auto& val : other)
-			{
-				push_back(val);
-			}
+            for(const auto& val : other)
+            {
+                push_back(val);
+            }
         }
 
         template <class Alloc_source,
@@ -204,50 +204,46 @@ namespace _impl
             const basic_listed_vector& other, Alloc_source& alloc)
             : basic_listed_vector(alloc)
         {
-			for (const auto& val : other)
-			{
-				push_back(val);
-			}
+            for(const auto& val : other)
+            {
+                push_back(val);
+            }
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
-        basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other)
-			noexcept(SIZE >= RSIZE &&
-				is_nothrow_default_constructible_v<allocator_type_data_impl>
-				&& is_nothrow_default_constructible_v<allocator_type_ptrs_impl>
-				&& is_nothrow_copy_constructible_v<T>
-				&& is_nothrow_allocator_iterator_v<allocator_type_data_impl>
-				&& is_nothrow_allocator_iterator_v<allocator_type_ptrs_impl>)
-			: basic_listed_vector()
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
+        basic_listed_vector(
+            const basic_listed_vector<T, RSIZE, RALLOC>& other) noexcept(SIZE
+                >= RSIZE
+            && is_nothrow_default_constructible_v<
+                   data_type> && is_nothrow_default_constructible_v<ptrs_type> && is_nothrow_copy_constructible_v<T> && is_nothrow_allocator_iterator_v<data_type> && is_nothrow_allocator_iterator_v<ptrs_type>)
+            : basic_listed_vector()
         {
-			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-				[rs = other.size(), mxs = max_size()]() {
-				FIXED_CHECK_FULL(rs <= mxs);
-			});
+            fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+                [rs = other.size(), mxs = max_size()]() {
+                    FIXED_CHECK_FULL(rs <= mxs);
+                });
 
-			for (const auto& val : other)
-			{
-				push_back(val);
-			}
+            for(const auto& val : other)
+            {
+                push_back(val);
+            }
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC,
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC,
             class Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_listed_vector(const basic_listed_vector<T, RSIZE, RALLOC>& other,
             Alloc_source& alloc)
             : basic_listed_vector(alloc)
         {
-			fixed::astd::constexpr_if<(SIZE < RSIZE)>(
-				[rs = other.size(), mxs = max_size()]() {
-				FIXED_CHECK_FULL(rs <= mxs);
-			});
-			for (const auto& val : other)
-			{
-				push_back(val);
-			}
+            fixed::astd::constexpr_if<(SIZE < RSIZE)>(
+                [rs = other.size(), mxs = max_size()]() {
+                    FIXED_CHECK_FULL(rs <= mxs);
+                });
+            for(const auto& val : other)
+            {
+                push_back(val);
+            }
         }
 
         basic_listed_vector(basic_listed_vector&& other) noexcept
@@ -273,8 +269,7 @@ namespace _impl
             other.clear();
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC,
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC,
             class Alloc_source,
             std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
         basic_listed_vector(
@@ -290,8 +285,7 @@ namespace _impl
             other.clear();
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         basic_listed_vector(basic_listed_vector<T, RSIZE, RALLOC>&& other)
             : basic_listed_vector()
         {
@@ -323,7 +317,7 @@ namespace _impl
         {
             if(this != &other)
             {
-				shrink_to_size(other.size());
+                shrink_to_size(other.size());
                 size_type i = 0;
                 for(auto& val : other)
                 {
@@ -335,12 +329,11 @@ namespace _impl
             return *this;
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         basic_listed_vector& operator=(
             const basic_listed_vector<T, RSIZE, RALLOC>& other)
         {
-			shrink_to_size(other.size());
+            shrink_to_size(other.size());
             size_type i = 0;
             for(auto& val : other)
             {
@@ -355,7 +348,7 @@ namespace _impl
         {
             if(this != &other)
             {
-				shrink_to_size(other.size());
+                shrink_to_size(other.size());
                 size_type i = 0;
 
                 for(auto& val : other)
@@ -363,21 +356,20 @@ namespace _impl
                     set_at(i, std::move_if_noexcept(val));
                     ++i;
                 }
-				other.clear();
+                other.clear();
             }
             return *this;
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         basic_listed_vector& operator=(
             basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
             if((void*)this != (void*)&other)
             {
-				FIXED_CHECK_FULL(other.size() <= max_size());
+                FIXED_CHECK_FULL(other.size() <= max_size());
 
-				shrink_to_size(other.size());
+                shrink_to_size(other.size());
 
                 size_type i = 0;
 
@@ -387,7 +379,7 @@ namespace _impl
                     ++i;
                 }
 
-				other.clear();
+                other.clear();
             }
             return *this;
         }
@@ -396,7 +388,7 @@ namespace _impl
         {
             FIXED_CHECK_FULL(ilist.size() <= std::size_t(max_size()));
 
-			shrink_to_size(ilist.size());
+            shrink_to_size(ilist.size());
             size_type i = 0;
             for(auto& val : ilist)
             {
@@ -408,15 +400,15 @@ namespace _impl
 
         void assign(size_type count, const T& value)
         {
-			FIXED_CHECK_FULL(count <= max_size());
-			resize(count, value);
+            FIXED_CHECK_FULL(count <= max_size());
+            resize(count, value);
         }
 
         template <class InputIt,
             std::enable_if_t<fixed::astd::is_iterator_v<InputIt>, int> = 0>
         void assign(InputIt first, InputIt last)
         {
-			shrink_to_size(std::distance(first, last));
+            shrink_to_size(std::distance(first, last));
             size_type i = 0;
             while(first != last)
             {
@@ -447,43 +439,34 @@ namespace _impl
         reference back()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-			auto it = begin();
-			std::advance(it, _size - 1);
+            auto it = begin();
+            std::advance(it, _size - 1);
             return *it;
         }
 
         const_reference back() const
         {
             FIXED_CHECK_EMPTY(_size > 0);
-			auto it = begin();
-			std::advance(it, _size - 1);
-			return *it;
-		}
+            auto it = begin();
+            std::advance(it, _size - 1);
+            return *it;
+        }
 
         // Iterators
-        iterator begin()
-        {
-			return iterator(_ptrs.begin());
-        }
+        iterator begin() { return iterator(_ptrs.begin()); }
 
         const_iterator begin() const noexcept { return cbegin(); }
 
         const_iterator cbegin() const noexcept
         {
-			return const_iterator(_ptrs.begin());
+            return const_iterator(_ptrs.begin());
         }
 
-        iterator end()
-        {
-            return iterator(_ptrs.begin() + _size);            
-        }
+        iterator end() { return begin() + _size; }
 
         const_iterator end() const noexcept { return cend(); }
 
-        const_iterator cend() const noexcept
-        {
-			return const_iterator(_ptrs.begin() + _size);
-        }
+        const_iterator cend() const noexcept { return begin() + _size; }
 
         reverse_iterator rbegin() { return reverse_iterator(end()); }
 
@@ -511,10 +494,7 @@ namespace _impl
         constexpr size_type max_size() const noexcept { return SIZE; }
 
         // Modifiers
-        void clear()
-        {
-			shrink_to_size(0);
-        }
+        void clear() { shrink_to_size(0); }
 
         iterator insert(const_iterator pos, const T& value)
         {
@@ -609,8 +589,8 @@ namespace _impl
             if(end_i != _size)
                 std::rotate(_ptrs.begin() + beg_i, _ptrs.begin() + end_i,
                     _ptrs.begin() + _size);
-			auto size_to_shrink = end_i - beg_i;
-			shrink_to_size(_size - size_to_shrink);
+            auto size_to_shrink = end_i - beg_i;
+            shrink_to_size(_size - size_to_shrink);
             if(_size)
                 return begin() + std::min(beg_i, _size);
             return end();
@@ -618,7 +598,8 @@ namespace _impl
 
         void push_back(const T& value)
         {
-			if (_size == 0) initialize_ptrs();
+            if(_size == 0)
+                initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
             new(&*end()) T(value);
             ++_size;
@@ -626,7 +607,8 @@ namespace _impl
 
         void push_back(T&& value)
         {
-			if (_size == 0) initialize_ptrs();
+            if(_size == 0)
+                initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
             new(&*end()) T(std::move(value));
             ++_size;
@@ -634,7 +616,8 @@ namespace _impl
 
         template <class... Args> reference emplace_back(Args&&... args)
         {
-			if (_size == 0) initialize_ptrs();
+            if(_size == 0)
+                initialize_ptrs();
             FIXED_CHECK_FULL(_size < max_size());
             new(&*end()) T(std::forward<Args>(args)...);
             ++_size;
@@ -644,11 +627,11 @@ namespace _impl
         void pop_back()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-			auto it = begin();
-			std::advance(it, _size - 1);
-			(*it).~T();
-			--_size;
-		}
+            auto it = begin();
+            std::advance(it, _size - 1);
+            (*it).~T();
+            --_size;
+        }
 
         void push_front(const T& value) { insert(cbegin(), value); }
 
@@ -671,7 +654,7 @@ namespace _impl
 
         void resize(size_type count, const value_type& value)
         {
-			shrink_to_size(count);
+            shrink_to_size(count);
 
             while(_size < count)
             {
@@ -681,8 +664,7 @@ namespace _impl
 
         void resize(size_type count) { resize(count, value_type()); }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         void swap(basic_listed_vector<T, RSIZE, RALLOC>& rval)
         {
             FIXED_CHECK_FULL(rval.size() < max_size());
@@ -724,8 +706,7 @@ namespace _impl
         }
 
         // Operations
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         void merge(basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
             merge(std::move(other), std::less<T>());
@@ -747,16 +728,14 @@ namespace _impl
             }
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         void splice(
             const_iterator pos, basic_listed_vector<T, RSIZE, RALLOC>&& other)
         {
             splice(pos, std::move(other), other.cbegin(), other.cend());
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         void splice(const_iterator pos,
             basic_listed_vector<T, RSIZE, RALLOC>&& other, const_iterator it)
         {
@@ -770,8 +749,7 @@ namespace _impl
             other.erase(it);
         }
 
-        template <size_t RSIZE,
-            template <typename, size_t> typename RALLOC>
+        template <size_t RSIZE, template <typename, size_t> typename RALLOC>
         void splice(const_iterator pos,
             basic_listed_vector<T, RSIZE, RALLOC>&& other, const_iterator first,
             const_iterator last)
@@ -856,16 +834,16 @@ namespace _impl
         }
 
     private:
-		void shrink_to_size(size_type count)
-		{
-			while (_size > count)
-			{
-				auto it = begin();
-				std::advance(it, _size - 1);
-				(*it).~T();
-				--_size;
-			}
-		}
+        void shrink_to_size(size_type count)
+        {
+            while(_size > count)
+            {
+                auto it = begin();
+                std::advance(it, _size - 1);
+                (*it).~T();
+                --_size;
+            }
+        }
     };
 }
 }

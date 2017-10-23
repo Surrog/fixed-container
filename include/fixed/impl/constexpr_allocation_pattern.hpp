@@ -25,12 +25,17 @@ namespace _impl
 			: _data()
 		{}
 
+		typedef allocation_pattern_tag allocation_pattern;
+		typedef std::true_type noexcept_iterators;
 
         typedef T value_type;
         typedef T aligned_type;
 		typedef size_t size_type;
-        typedef allocation_pattern_tag allocation_pattern;
-        typedef std::true_type noexcept_iterators;
+		typedef std::ptrdiff_t difference_type;
+		typedef T& reference;
+		typedef const T& const_reference;
+		typedef T* pointer;
+		typedef const T* const_pointer;
         typedef pointer_iterator<T, aligned_type> iterator;
         typedef const_pointer_iterator<T, aligned_type> const_iterator;
 
