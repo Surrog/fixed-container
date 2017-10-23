@@ -1,16 +1,23 @@
 # Allocation pattern
 
-An Allocation pattern is a container design to handle memory allocation, it's lifetime and how it is allocated.
+An Allocation pattern is an object designed to handle memory allocation: it's lifetime and how it is allocated.
+
+## Allocation pattern categories
+
+Pattern are classified into 2 categories depending on the functionnality they implement:   
 
 ```
-template <typename T, container_size_type SIZE>
-struct allocator_pattern
+|-----------------|    |------------|   
+| Allocation base |<---| Contiguous |   
+|-----------------|    |------------|   
 ```
+
 
 ## Member types
 |  Member type | Definition |
 | ---  | --- |
 | `value_type` | `T` | 
+| `aligned_type` | `<implementation defined>` | 
 | `size_type` |  Unsigned integer type (usually std::size_t) |
 | `difference_type` |  Signed integer type (usually std::ptrdiff_t) |
 | `reference` | `T&` |
@@ -22,9 +29,16 @@ struct allocator_pattern
 
 ##  Member functions
 
+### Allocation base contract
+
+Expected signature:
 ```
-aligned_type* data();
-const aligned_type* data() const;
+template <typename T, fixed::_impl::size_t SIZE>
+struct allocator_pattern
+```
+
+Expected method:
+```
 iterator begin();
 iterator end();
 const_iterator begin() const;
@@ -35,3 +49,20 @@ bool valid_pointer(const T* ptr) const noexcept;
 container_size_type max_size() const noexcept;
 ```
 
+### Allocation contiguous contract
+
+A contiguous contract implement the Allocation base contract and also respect the following one.
+
+Expected method:
+```
+aligned_type* data();
+const aligned_type* data() const;
+```
+
+## Classes
+
+| Current released implementation |
+| ------------------------------- |
+| aligned_stack_allocator         |
+| aligned_heap_allocator          |
+| constexpr_stack_allocator       |

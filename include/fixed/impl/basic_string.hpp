@@ -42,7 +42,8 @@ namespace _impl
 		typedef std::reverse_iterator<iterator> reverse_iterator;
 		typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-		constexpr basic_string() noexcept(is_nothrow_default_constructible_v<data_type>)
+		constexpr basic_string() 
+			noexcept(is_nothrow_default_constructible_v<data_type>)
 			: _data()
 		{}
 
@@ -52,6 +53,20 @@ namespace _impl
 			noexcept(std::is_nothrow_constructible<data_type, Alloc_source&>::value)
 			: _data(source)
 		{}
+
+		constexpr basic_string(size_type count, value_type ch)
+			noexcept(is_nothrow_default_constructible_v<data_type>)
+			: _data()
+		{}
+
+		template <typename Alloc_source,
+			std::enable_if_t<is_allocation_source_v<Alloc_source>, int> = 0>
+		constexpr basic_string(size_type count, value_type ch,
+				Alloc_source& source)
+			noexcept(std::is_nothrow_constructible<data_type, Alloc_source&>::value)
+			: _data(source)
+		{}
+
     };
 }
 }

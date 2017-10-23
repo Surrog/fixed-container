@@ -4,53 +4,38 @@
 #include "fixed/impl/basic_string.hpp"
 #include "fixed/impl/basic_allocation_sources.hpp"
 
-template <template <typename, fixed::_impl::size_t, typename, 
+template <typename CHAR_T,
+	template <typename, fixed::_impl::size_t, typename,
 	template <typename, fixed::_impl::size_t> typename > typename STRING_T,
 	template <typename, fixed::_impl::size_t> typename Alloc_pattern>
 void test_string_constructor()
 {
 	{
-		STRING_T<char, 10, std::char_traits<char>, Alloc_pattern> string;
+		STRING_T<CHAR_T, 10, std::char_traits<CHAR_T>, Alloc_pattern> string;
 	}
 	{
-		STRING_T<wchar_t, 10, std::char_traits<wchar_t>, Alloc_pattern> string;
-	}
-	{
-		STRING_T<char16_t, 10, std::char_traits<char16_t>, Alloc_pattern> string;
-	}
-	{
-		STRING_T<char32_t, 10, std::char_traits<char32_t>, Alloc_pattern> string;
+		fixed::_impl::empty_source src;
+		STRING_T<CHAR_T, 10, std::char_traits<CHAR_T>, Alloc_pattern> string(src);
 	}
 
 	{
-		fixed::_impl::empty_source src;
-		STRING_T<char, 10, std::char_traits<char>, Alloc_pattern> string(src);
+		STRING_T<CHAR_T, 10, std::char_traits<CHAR_T>, Alloc_pattern> string(10, 'a');
 	}
 	{
 		fixed::_impl::empty_source src;
-		STRING_T<wchar_t, 10, std::char_traits<wchar_t>, Alloc_pattern> string(src);
+		STRING_T<CHAR_T, 10, std::char_traits<CHAR_T>, Alloc_pattern> string(10, 'a', src);
 	}
-	{
-		fixed::_impl::empty_source src;
-		STRING_T<char16_t, 10, std::char_traits<char16_t>, Alloc_pattern> string(src);
-	}
-	{
-		fixed::_impl::empty_source src;
-		STRING_T<char32_t, 10, std::char_traits<char32_t>, Alloc_pattern> string(src);
-	}
+}	
 
-	//{	
-	//	STRING_T<char, 10, std::char_traits<char>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	//}
-	//{
-	//	STRING_T<wchar_t, 10, std::char_traits<wchar_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	//}
-	//{
-	//	STRING_T<char16_t, 10, std::char_traits<char16_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	//}
-	//{
-	//	STRING_T<char32_t, 10, std::char_traits<char32_t>, Alloc_pattern> string(fixed::_impl::empty_source{});
-	//}
+template <template <typename, fixed::_impl::size_t, typename, 
+	template <typename, fixed::_impl::size_t> typename > typename STRING_T,
+	template <typename, fixed::_impl::size_t> typename Alloc_pattern>
+void test_string_constructor()
+{
+	test_string_constructor<char, STRING_T, Alloc_pattern>();
+	test_string_constructor<wchar_t, STRING_T, Alloc_pattern>();
+	test_string_constructor<char16_t, STRING_T, Alloc_pattern>();
+	test_string_constructor<char32_t, STRING_T, Alloc_pattern>();
 }
 
 template <template <typename, fixed::_impl::size_t, typename,
