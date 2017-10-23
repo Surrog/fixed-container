@@ -22,7 +22,7 @@ Thread safety:
 ```
 template <typename T, fixed::_impl:size_t SIZE,
     template <typename, fixed::_impl::size_t> typename Alloc_pattern
-    = _impl::aligned_stack_allocator>
+    = fixed::_impl::aligned_stack_allocator>
 class vector;
 ```   
 Guarrantee the container support, atleast, SIZE of elements T in continous memory.

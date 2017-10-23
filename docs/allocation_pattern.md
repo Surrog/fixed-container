@@ -29,7 +29,7 @@ Pattern are classified into 2 categories depending on the functionnality they im
 
 ##  Member functions
 
-### Allocation base contract
+### Allocation base interface
 
 Expected signature:
 ```
@@ -49,7 +49,7 @@ bool valid_pointer(const T* ptr) const noexcept;
 container_size_type max_size() const noexcept;
 ```
 
-### Allocation contiguous contract
+### Allocation contiguous interface
 
 A contiguous contract implement the Allocation base contract and also respect the following one.
 

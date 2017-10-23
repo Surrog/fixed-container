@@ -18,8 +18,8 @@ namespace _impl
     class basic_vector
     {
     public:
-        template <typename T, size_t ASIZE>
-        using allocator_type = Alloc_pattern<T, ASIZE>;
+        template <typename VALUE, size_t ASIZE>
+        using allocator_type = Alloc_pattern<VALUE, ASIZE>;
 
     private:
         typedef Alloc_pattern<T, SIZE> data_type;
