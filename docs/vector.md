@@ -30,15 +30,15 @@ Guarrantee the container support, atleast, SIZE of elements T in continous memor
 ### Member types
 |  Member type | Definition |
 | ---  | --- |
-| `value_type` | `Alloc_pattern::value_type` | 
-| `aligned_type` | `Alloc_pattern::aligned_type` | 
+| `value_type` | `Alloc_pattern<T, SIZE>::value_type` | 
+| `aligned_type` | `Alloc_pattern<T, SIZE>::aligned_type` | 
 | `template <typename T, size_t S> allocator_type` | `Alloc_pattern` |
-| `size_type` |  `Alloc_pattern::size_type` |
-| `difference_type` |  `Alloc_pattern::difference_type` |
-| `reference` | `Alloc_pattern::reference` |
-| `const_reference` | `Alloc_pattern::const_reference` |
-| `pointer` | `Alloc_pattern::pointer` |
-| `const_pointer` | `Alloc_pattern::const_pointer` |
+| `size_type` |  `Alloc_pattern<T, SIZE>::size_type` |
+| `difference_type` |  `Alloc_pattern<T, SIZE>::difference_type` |
+| `reference` | `Alloc_pattern<T, SIZE>::reference` |
+| `const_reference` | `Alloc_pattern<T, SIZE>::const_reference` |
+| `pointer` | `Alloc_pattern<T, SIZE>::pointer` |
+| `const_pointer` | `Alloc_pattern<T, SIZE>::const_pointer` |
 | `iterator` | RandomAccessIterator |
 | `const_iterator` | Constant random access iterator |
 | `reverse_iterator` | `std::reverse_iterator<iterator>` |
