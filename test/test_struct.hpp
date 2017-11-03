@@ -126,7 +126,7 @@ struct test_emplace_struct
     {
     }
 
-    bool operator==(const test_emplace_struct& rval) noexcept
+    bool operator==(const test_emplace_struct& rval) const noexcept
     {
         return i == rval.i && c == rval.c && ui == rval.ui;
     }
