@@ -97,29 +97,163 @@ namespace _impl
             return *this;
         }
 
-        constexpr iterator begin() { return _data.begin(); }
+		constexpr basic_string(const basic_string& str)
+			: basic_string()
+		{
+			std::copy(str.begin(), str.end(), _data.begin());
+		}
 
-        constexpr const_iterator begin() const { return cbegin(); }
+		constexpr basic_string& operator=(const basic_string& str)
+		{
+			if (this != &other)
+			{
+				std::copy(str.begin(), str.end(), _data.begin());
+			}
+			return *this;
+		}
 
-        constexpr const_iterator cbegin() const { return _data.begin(); }
+		constexpr basic_string(basic_string&& str) noexcept(
+			is_nothrow_default_constructible_v<data_type> 
+			&& (is_nothrow_move_constructible_v<data_type> 
+				|| (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<CHAR_T> || is_nothrow_copy_constructible_v<CHAR_T>))))
+			: basic_string()
+		{
+			if (this != &other)
+			{
+				fixed::astd::constexpr_if<
+					std::is_nothrow_move_constructible<data_type>::value>(
+						[this, &other]() {
+					std::swap(_data, other._data);
+					std::swap(_size, other._size);
+				})
+					._else([this, &other]() {
+					for (auto& val : other)
+					{
+						push_back(std::move_if_noexcept(val));
+					}
+					other.clear();
+				});
+			}
+		}
 
-        constexpr iterator end() { return _data.begin() + _size; }
+		constexpr basic_string& operator=(basic_string&& str) noexcept(
+			is_nothrow_default_constructible_v<data_type>
+			&& (is_nothrow_move_constructible_v<data_type>
+				|| (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<CHAR_T> || is_nothrow_copy_constructible_v<CHAR_T>))))
+		{
+			if (this != &other)
+			{
+				fixed::astd::constexpr_if<
+					std::is_nothrow_move_constructible<data_type>::value>(
+						[this, &other]() {
+					std::swap(_data, other._data);
+					std::swap(_size, other._size);
+				})
+					._else([this, &other]() {
+					clear();
+					for (auto& val : other)
+					{
+						push_back(std::move_if_noexcept(val));
+					}
+					other.clear();
+				});
+			}
+			return *this;
+		}
 
-        constexpr const_iterator end() const { return cend(); }
 
-        constexpr const_iterator cend() { return _data.begin() + _size; }
+		//Iterators
+        constexpr iterator begin() noexcept { return _data.begin(); }
 
-        constexpr aligned_type* data() { return _data.data(); }
+        constexpr const_iterator begin() const noexcept { return cbegin(); }
 
-        constexpr const aligned_type* data() const { return _data.data(); }
+        constexpr const_iterator cbegin() const noexcept { return _data.begin(); }
 
+        constexpr iterator end() noexcept { return _data.begin() + _size; }
+
+        constexpr const_iterator end() const noexcept { return cend(); }
+
+        constexpr const_iterator cend() noexcept { return _data.begin() + _size; }
+
+		constexpr reverse_iterator rbegin() noexcept {
+			return reverse_iterator(end());
+		}
+
+		constexpr reverse_iterator rend() noexcept {
+			return reverse_iterator(begin());
+		}
+
+		constexpr const_reverse_iterator rbegin() const noexcept {
+			return const_reverse_iterator(cend());
+		}
+
+		constexpr const_reverse_iterator rend() const noexcept {
+			return const_reverse_iterator(cbegin());
+		}
+
+
+		constexpr const_reverse_iterator crbegin() const noexcept {
+			return const_reverse_iterator(cend());
+		}
+
+		constexpr const_reverse_iterator crend() const noexcept {
+			return const_reverse_iterator(cbegin());
+		}
+
+		//Capacity
         constexpr size_type size() const noexcept { return _size; }
 
-        constexpr size_type max_size() const noexcept
-        {
-            return _data.max_size() - 1;
-        }
-    };
+		constexpr size_type length() const noexcept { return size(); }
+
+        constexpr size_type max_size() const noexcept { return _data.max_size() - 1; }
+
+		void resize(size_type s)
+		{
+			resize(s, T());
+		}
+		
+		void resize(size_type s, const CHAR_T& val)
+		{
+			while(_size > n)
+			{
+				pop_back();
+			}
+
+			while(_size < n)
+			{
+				push_back(val);
+			}
+		}
+
+		constexpr size_type capacity() const noexcept
+		{
+			return max_size() - size();
+		}
+
+		constexpr void clear() const noexcept
+		{
+			while (_size)
+			{
+				pop_back();
+			}
+		}
+
+		constexpr bool empty() const noexcept
+		{
+			return size() == 0;
+		}
+
+		constexpr void shrink_to_fit() const noexcept
+		{
+		//nop
+		}
+
+		//String operations
+		constexpr aligned_type* data() { return _data.data(); }
+
+		constexpr const aligned_type* data() const { return _data.data(); }
+
+	};
 }
 }
 
