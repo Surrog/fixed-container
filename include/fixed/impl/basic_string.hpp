@@ -239,6 +239,28 @@ namespace _impl
 
 		constexpr const aligned_type* data() const { return _data.data(); }
 
+		void push_back(const CHAR_T& value)
+		{
+			FIXED_CHECK_FULL(_size < max_size());
+			new(&*end()) T(value);
+			_size++;
+			new(&*end()) T();
+		}
+
+		void push_back(CHAR_T&& value)
+		{
+			FIXED_CHECK_FULL(_size < max_size());
+			new(&*end()) T(std::move(value));
+			_size++;
+			new(&*end()) T();
+		}
+
+		void pop_back()
+		{
+			FIXED_CHECK_EMPTY(_size > 0);
+			_size--;
+			(*end()) = T();
+		}
 	};
 }
 }

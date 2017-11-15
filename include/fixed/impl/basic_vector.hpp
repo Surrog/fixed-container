@@ -199,8 +199,9 @@ namespace _impl
 
         // move constructors
         basic_vector(basic_vector&& other) noexcept(
-            is_nothrow_default_constructible_v<
-                data_type> && (is_nothrow_move_constructible_v<data_type> || (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<T> || is_nothrow_copy_constructible_v<T>))))
+            is_nothrow_default_constructible_v<data_type> 
+			&& (is_nothrow_move_constructible_v<data_type> 
+				|| (is_nothrow_allocator_iterator_v<data_type> && is_nothrow_cpy_move_constructible_v<T>)))
             : basic_vector()
         {
             if(this != &other)
