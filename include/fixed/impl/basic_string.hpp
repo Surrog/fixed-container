@@ -3,6 +3,7 @@
 
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "fixed/allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
@@ -115,16 +116,16 @@ namespace _impl
 		constexpr basic_string(basic_string&& other) noexcept(
 			is_nothrow_default_constructible_v<data_type> 
 			&& (is_nothrow_move_constructible_v<data_type> 
-				|| (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<CHAR_T> || is_nothrow_copy_constructible_v<CHAR_T>))))
+				|| (is_nothrow_allocator_iterator_v<data_type> && is_nothrow_cpy_move_constructible_v<CHAR_T>)))
 			: basic_string()
 		{
-			operator=(std::forward(other));
+			operator=(std::move(other));
 		}
 
 		constexpr basic_string& operator=(basic_string&& other) noexcept(
 			is_nothrow_default_constructible_v<data_type>
 			&& (is_nothrow_move_constructible_v<data_type>
-				|| (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<CHAR_T> || is_nothrow_copy_constructible_v<CHAR_T>))))
+				|| (is_nothrow_allocator_iterator_v<data_type> && is_nothrow_cpy_move_constructible_v<CHAR_T>)))
 		{
 			if (this != &other)
 			{
