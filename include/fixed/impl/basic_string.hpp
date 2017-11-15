@@ -112,31 +112,16 @@ namespace _impl
 			return *this;
 		}
 
-		constexpr basic_string(basic_string&& str) noexcept(
+		constexpr basic_string(basic_string&& other) noexcept(
 			is_nothrow_default_constructible_v<data_type> 
 			&& (is_nothrow_move_constructible_v<data_type> 
 				|| (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<CHAR_T> || is_nothrow_copy_constructible_v<CHAR_T>))))
 			: basic_string()
 		{
-			if (this != &other)
-			{
-				fixed::astd::constexpr_if<
-					std::is_nothrow_move_constructible<data_type>::value>(
-						[this, &other]() {
-					std::swap(_data, other._data);
-					std::swap(_size, other._size);
-				})
-					._else([this, &other]() {
-					for (auto& val : other)
-					{
-						push_back(std::move_if_noexcept(val));
-					}
-					other.clear();
-				});
-			}
+			operator=(std::forward(other));
 		}
 
-		constexpr basic_string& operator=(basic_string&& str) noexcept(
+		constexpr basic_string& operator=(basic_string&& other) noexcept(
 			is_nothrow_default_constructible_v<data_type>
 			&& (is_nothrow_move_constructible_v<data_type>
 				|| (is_nothrow_allocator_iterator_v<data_type> && (is_nothrow_move_constructible_v<CHAR_T> || is_nothrow_copy_constructible_v<CHAR_T>))))
