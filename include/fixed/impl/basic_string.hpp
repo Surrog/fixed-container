@@ -105,7 +105,7 @@ namespace _impl
 
 		constexpr basic_string& operator=(const basic_string& str)
 		{
-			if (this != &other)
+			if (this != &str)
 			{
 				std::copy(str.begin(), str.end(), _data.begin());
 			}
@@ -194,17 +194,17 @@ namespace _impl
 
 		void resize(size_type s)
 		{
-			resize(s, T());
+			resize(s, CHAR_T());
 		}
 		
 		void resize(size_type s, const CHAR_T& val)
 		{
-			while(_size > n)
+			while(_size > s)
 			{
 				pop_back();
 			}
 
-			while(_size < n)
+			while(_size < s)
 			{
 				push_back(val);
 			}
