@@ -216,7 +216,7 @@ namespace _impl
 			return max_size() - size();
 		}
 
-		constexpr void clear() const noexcept
+		constexpr void clear() noexcept
 		{
 			while (_size)
 			{
