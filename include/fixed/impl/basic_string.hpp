@@ -242,24 +242,24 @@ namespace _impl
 		void push_back(const CHAR_T& value)
 		{
 			FIXED_CHECK_FULL(_size < max_size());
-			new(&*end()) T(value);
+			new(&*end()) CHAR_T(value);
 			_size++;
-			new(&*end()) T();
+			new(&*end()) CHAR_T();
 		}
 
 		void push_back(CHAR_T&& value)
 		{
 			FIXED_CHECK_FULL(_size < max_size());
-			new(&*end()) T(std::move(value));
+			new(&*end()) CHAR_T(std::move(value));
 			_size++;
-			new(&*end()) T();
+			new(&*end()) CHAR_T();
 		}
 
 		void pop_back()
 		{
 			FIXED_CHECK_EMPTY(_size > 0);
 			_size--;
-			(*end()) = T();
+			(*end()) = CHAR_T();
 		}
 	};
 }
