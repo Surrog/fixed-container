@@ -7,7 +7,6 @@
 #include <utility>
 #include <cassert>
 
-#include "fixed/impl/fixed_def.hpp"
 #include "fixed/impl/aligned_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
 #include "fixed/impl/basic_pointer_iterator.hpp"
