@@ -5,7 +5,9 @@
 #include <array>
 #include <numeric>
 #include <utility>
+#include <cassert>
 
+#include "fixed/impl/fixed_def.hpp"
 #include "fixed/impl/aligned_allocation_pattern.hpp"
 #include "fixed/impl/fixed_def.hpp"
 #include "fixed/impl/basic_pointer_iterator.hpp"
@@ -52,25 +54,30 @@ namespace fixed
 				destruct_all();
 			}
 
+			std::size_t size() const {
+				return _size;
+			}
+
 			T& operator[](const Key& key)
 			{
 				auto hash = _hash(key);
-				node*& buck_ptr = *std::next(_buckets.begin(), hash % _buckets.size());
-				while (buck_ptr && buckptr->next_node && !_equal(buck_ptr->item->first, key))
+				auto it = std::next(_buckets.begin(), hash % _buckets.max_size());
+				node* buck_ptr = *it;
+				while (buck_ptr && buck_ptr->next_node && !_equal(buck_ptr->item->first, key))
 				{
 					buck_ptr = buck_ptr->next_node;
 				}
-				if (_equal(buck_ptr->item->first, key))
+				if (buck_ptr && _equal(buck_ptr->item->first, key))
 				{
 					return buck_ptr->item->second;
 				}
 				else
 				{
 					if (buck_ptr) {
-						return allocate_new_node(buck_ptr->next_node);
+						return allocate_new_node_in(buck_ptr->next_node, key);
 					}
 					else {
-						return allocate_new_node(buck_ptr);
+						return allocate_new_node_in(*it, key);
 					}
 				}
 			}
@@ -93,24 +100,21 @@ namespace fixed
 					&& but_data_beg != but_data_end)
 				{
 					but_data_beg->item = &(*data_beg);
-					++but_ptr_beg;
-					++but_data_beg;
+					data_beg = std::next(data_beg);
+					but_data_beg = std::next(but_data_beg);
 				}
 			}
 
 			T& allocate_new_node_in(node*& bucket, const Key& key, const T& val = T())
 			{
-				if (_size < _buckets.size())
+				if (_size < _buckets.max_size())
 				{
-					bucket = &(*std::next(_data.begin(), _size));
+					bucket = &(*std::next(_bucket_data.begin(), _size));
 					_size++;
 					new(bucket->item) value_type(key, val);
-					return bucket_data_it->item->second;
+					return bucket->item->second;
 				}
-				else
-				{
-					assert(false) // new node allocation not yet handle 
-				}
+				throw std::out_of_range("Container full");
 			}
 
 			void destruct_all()

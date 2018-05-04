@@ -3,9 +3,9 @@
 #include "catch.hpp"
 #include <algorithm>
 
-/*
-typedef fixed::unordered_map<std::string, std::string, 10> testing_hm;
 
+typedef fixed::unordered_map<std::string, std::string, 10> testing_hm;
+/*
 static void test_constructor()
 {
 	testing_hm hash_a;
@@ -172,13 +172,33 @@ static void test_limit()
 	CHECK_THROWS(hash.insert({ 6, 'a' }));
 #endif
 }
+*/
 
 TEST_CASE("testing hashmap", "[statics]")
 {
+	/*
 	test_constructor();
 	test_capacity();
 	test_access();
 	test_modifiers();
 	test_limit();
+	*/
+
+	testing_hm hash;
+	hash["test"] = "toto";
+	hash["titi"] = "tutu";
+	hash["tata"] = "tyty";
+
+	std::array<testing_hm::value_type, 3> valid = {
+		testing_hm::value_type{ "test", "toto" },
+		testing_hm::value_type{ "titi", "tutu" },
+		testing_hm::value_type{ "tata", "tyty" }
+	};
+
+	CHECK(hash.size() == 3);
+	for (auto& pair : valid)
+	{
+		CHECK(hash[pair.first] == pair.second);
+	}
+
 }
-*/
