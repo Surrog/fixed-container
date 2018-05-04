@@ -51,8 +51,7 @@ namespace _impl
         {
             if(index < _size)
             {
-                auto it = begin();
-                std::advance(it, index);
+                auto it = std::next(begin(), index);
                 (*it) = value;
             }
             else
@@ -65,8 +64,7 @@ namespace _impl
         {
             if(index < _size)
             {
-                auto it = begin();
-                std::advance(it, index);
+                auto it = std::next(begin(), index);
                 (*it) = std::move(value);
             }
             else
@@ -439,18 +437,14 @@ namespace _impl
         reference back()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            auto it = begin();
-            std::advance(it, _size - 1);
-            return *it;
+            return *std::next(begin(), _size - 1);
         }
 
         const_reference back() const
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            auto it = begin();
-            std::advance(it, _size - 1);
-            return *it;
-        }
+			return *std::next(begin(), _size - 1);
+		}
 
         // Iterators
         iterator begin() { return iterator(_ptrs.begin()); }
@@ -627,9 +621,7 @@ namespace _impl
         void pop_back()
         {
             FIXED_CHECK_EMPTY(_size > 0);
-            auto it = begin();
-            std::advance(it, _size - 1);
-            (*it).~T();
+            back().~T();
             --_size;
         }
 
@@ -838,9 +830,7 @@ namespace _impl
         {
             while(_size > count)
             {
-                auto it = begin();
-                std::advance(it, _size - 1);
-                (*it).~T();
+				(*std::next(begin(), _size - 1)).~T();
                 --_size;
             }
         }
