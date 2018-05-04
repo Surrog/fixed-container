@@ -88,6 +88,9 @@ namespace fixed
 				node* next_node;
 			};
 
+			/**
+			* initialize bucket data with uninitialized value_type data
+			*/
 			void setup_bucket()
 			{
 				auto but_data_beg = _bucket_data.begin();
@@ -96,9 +99,10 @@ namespace fixed
 				auto data_end = _data.end();
 
 				while (data_beg != data_end
-					&& but_data_beg != but_data_end)
+					&& but_data_beg != but_data_end) //we do that until we run out of bucket or value_types
 				{
-					but_data_beg->item = &(*data_beg);
+					new(&*but_data_beg) node(); //Alloc_pattern distribute raw memory that need to be initialize
+					but_data_beg->item = &(*data_beg); //raw memory of value_type will be initialized later
 					data_beg = std::next(data_beg);
 					but_data_beg = std::next(but_data_beg);
 				}
@@ -108,9 +112,9 @@ namespace fixed
 			{
 				if (_size < _buckets.max_size())
 				{
-					bucket = &(*std::next(_bucket_data.begin(), _size));
+					bucket = &(*std::next(_bucket_data.begin(), _size)); //fetching the last in bucket_data : a bucket that don't own any used value_type
 					_size++;
-					new(bucket->item) value_type(key, val);
+					new(bucket->item) value_type(key, val); //the bucket now own a proper value_type
 					return bucket->item->second;
 				}
 				throw std::out_of_range("Container full");
