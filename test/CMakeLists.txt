@@ -13,16 +13,19 @@ set (CMAKE_CXX_STANDARD 17)
 #compiler requirement
 if (MSVC)
 	add_compile_options(/W4)
+	add_compile_options(/std:c++17)
 	add_compile_options(/permissive-)
 	if (CHECK_BOUND)
 		add_compile_options(/DFIXED_CONTAINER_CHECK_BOUND)
 	endif()
 else ()
-	add_compile_options(-Wall -Wextra -Wpedantic -std=c++1z)
+	add_compile_options(-Wall -Wextra -Wpedantic -std=c++17)
 	if (CHECK_BOUND)
 		add_compile_options(-DFIXED_CONTAINER_CHECK_BOUND)
 	endif()
 endif()
+
+add_definitions(-DCATCH_CPP14_OR_GREATER)
 
 set(INCLUDE_DIRS 
 	"${PROJECT_SOURCE_DIR}/../include/")
