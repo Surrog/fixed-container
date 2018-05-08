@@ -8,10 +8,12 @@ project (fixed_test)
 
 set (CHECK_BOUND FALSE CACHE BOOL "Activate bound checking")
 
+set (CMAKE_CXX_STANDARD 17)
+
 #compiler requirement
 if (MSVC)
 	add_compile_options(/W4)
-	set (CMAKE_CXX_STANDARD 14)
+	add_compile_options(/permissive-)
 	if (CHECK_BOUND)
 		add_compile_options(/DFIXED_CONTAINER_CHECK_BOUND)
 	endif()
