@@ -102,7 +102,7 @@ namespace _impl
 	template <typename T>
 	constexpr bool is_nothrow_move_assignable_v = std::is_nothrow_move_assignable<T>::value;
 
-#if __cplusplus > 201602L || _HAS_CXX17 == 1
+/*#if __cplusplus > 201602L || _HAS_CXX17 == 1
 
 	template <typename T>
 	struct _nothrow_allocator_iterator_helper
@@ -113,28 +113,28 @@ namespace _impl
 
 	template <typename T>
 	constexpr bool is_nothrow_allocator_iterator_v = 
-		std::is_nothrow_invocable_r<T, 
+		std::is_nothrow_invocable_r<T, decltype(
 			_nothrow_allocator_iterator_helper<T>::function(&T::begin)
-			>::value
-		&& std::is_nothrow_invocable_r<T, 
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
 			_nothrow_allocator_iterator_helper<T>::function(&T::end)
-			>::value
-		&& std::is_nothrow_invocable_r<T, 
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::begin)
-			>::value
-		&& std::is_nothrow_invocable_r<T, 
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::end)
-			>::value
-		&& std::is_nothrow_invocable_r<T, 
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::cbegin)
-			>::value
-		&& std::is_nothrow_invocable_r<T, 
+			)>::value
+		&& std::is_nothrow_invocable_r<T, decltype(
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::cend)
-			>::value;
-#else
+			)>::value;
+#else*/
 	template <typename T>
 	constexpr bool is_nothrow_allocator_iterator_v = T::noexcept_iterators::value;
-#endif
+// #endif
 	template <typename T>
 	struct _alloc_pattern_contiguous_helper
 	{
