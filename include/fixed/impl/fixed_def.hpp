@@ -113,24 +113,24 @@ namespace _impl
 
 	template <typename T>
 	constexpr bool is_nothrow_allocator_iterator_v = 
-		std::is_nothrow_invocable_r<T, decltype(
+		std::is_nothrow_invocable_r<T, 
 			_nothrow_allocator_iterator_helper<T>::function(&T::begin)
-			)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(
+			>::value
+		&& std::is_nothrow_invocable_r<T, 
 			_nothrow_allocator_iterator_helper<T>::function(&T::end)
-			)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(
+			>::value
+		&& std::is_nothrow_invocable_r<T, 
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::begin)
-			)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(
+			>::value
+		&& std::is_nothrow_invocable_r<T, 
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::end)
-			)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(
+			>::value
+		&& std::is_nothrow_invocable_r<T, 
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::cbegin)
-			)>::value
-		&& std::is_nothrow_invocable_r<T, decltype(
+			>::value
+		&& std::is_nothrow_invocable_r<T, 
 			_nothrow_allocator_iterator_helper<T>::const_function(&T::cend)
-			)>::value;
+			>::value;
 #else
 	template <typename T>
 	constexpr bool is_nothrow_allocator_iterator_v = T::noexcept_iterators::value;
