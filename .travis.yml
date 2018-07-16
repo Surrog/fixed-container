@@ -34,10 +34,10 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5
+            - g++-7
             - cppcheck
       env:
-        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         - CONFIG=Release
     - os: linux
       addons:
@@ -45,10 +45,10 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5
+            - g++-7
             - cppcheck
       env:
-        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         - CONFIG=Debug
 
 before_install:
