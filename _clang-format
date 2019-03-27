@@ -11,4 +11,4 @@ IndentCaseLabels: false
 DerivePointerAlignment: true
 SpaceBeforeParens: Never
 SpacesBeforeTrailingComments: 1
-ColumnLimit: 80
+ColumnLimit: 120
